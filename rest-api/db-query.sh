@@ -12,6 +12,13 @@ QS=""
 QS="${QS#&}"
 URL="https://api.worqhat.com/db/query"
 [ -n "$QS" ] && URL+="?$QS"
+# Example:
+# curl -X POST "https://api.worqhat.com/db/query" \
+#   -H "Authorization: Bearer $API_KEY" \
+#   -H "Content-Type: application/json" \
+#   -d '{
+#     "query": "SELECT * FROM users WHERE status = 'active' LIMIT 10"
+#   }'
 curl -sS -X POST "$URL" \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \

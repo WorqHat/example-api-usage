@@ -21,6 +21,28 @@ if [ -f "$source_dir/.env" ]; then export $(grep -v '^#' "$source_dir/.env" | xa
 #       "name": "Updated Name"
 #     }
 #   }'
+
+# Sample Response:
+# {
+#   "success": true,
+#   "data": [
+#     {
+#       "documentId": "22904fb3-8ead-44de-83f6-4689d4958d7d",
+#       "createdAt": "2025-08-05 18:36:40",
+#       "updatedAt": "2025-08-11 11:40:36",
+#       "customer_name": "Alice Johnson",
+#       "customer_email": "alice@example.com",
+#       "customer_phone_number": "+91-9876543210",
+#       "customer_address": "456 Park Street, Mumbai",
+#       "customer_type": "individual"
+#     }
+#     {Additional Records}
+#   ],
+#   "count": 7,
+#   "executionTime": 387,
+#   "message": "7 record(s) updated successfully in customer_management_data"
+# }
+
 curl -sS -X PUT "https://api.worqhat.com/db/update" \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \

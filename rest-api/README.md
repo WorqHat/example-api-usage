@@ -3,7 +3,7 @@
 This folder contains cURL scripts for all WorqHat API endpoints.
 
 Prerequisites:
-- Copy `.env.example` to `.env` and set API_URL and API_KEY.
+- Copy `.env.example` to `.env` and set API_KEY. Base URL is fixed to https://api.worqhat.com.
 - Make scripts executable: `chmod +x *.sh`
 
 Usage examples:

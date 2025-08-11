@@ -10,6 +10,6 @@ QS=""
 [ -n "$END_DATE" ] && QS+="&end_date=$END_DATE"
 [ -n "$STATUS" ] && QS+="&status=$STATUS"
 QS="${QS#&}"
-URL="$API_URL/flows/metrics"
+URL="https://api.worqhat.com/flows/metrics"
 [ -n "$QS" ] && URL+="?$QS"
 curl -sS -H "Authorization: Bearer $API_KEY" "$URL" | jq .

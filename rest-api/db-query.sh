@@ -10,7 +10,7 @@ QS=""
 [ -n "$LIMIT" ] && QS+="limit=$LIMIT"
 [ -n "$OFFSET" ] && QS+="&offset=$OFFSET"
 QS="${QS#&}"
-URL="$API_URL/db/query"
+URL="https://api.worqhat.com/db/query"
 [ -n "$QS" ] && URL+="?$QS"
 curl -sS -X POST "$URL" \
   -H "Authorization: Bearer $API_KEY" \

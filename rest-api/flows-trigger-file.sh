@@ -7,12 +7,12 @@ if [ -z "$FLOW_ID" ] || [ -z "$FILE_PATH" ]; then echo "Usage: $0 <flowId> <file
 source_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ -f "$source_dir/.env" ]; then export $(grep -v '^#' "$source_dir/.env" | xargs); fi
 if [ -n "$METADATA_JSON" ]; then
-  curl -sS -X POST "$API_URL/flows/file/$FLOW_ID" \
+  curl -sS -X POST "https://api.worqhat.com/flows/file/$FLOW_ID" \
     -H "Authorization: Bearer $API_KEY" \
     -F "file=@$FILE_PATH" \
     -F "metadata=$METADATA_JSON" | jq .
 else
-  curl -sS -X POST "$API_URL/flows/file/$FLOW_ID" \
+  curl -sS -X POST "https://api.worqhat.com/flows/file/$FLOW_ID" \
     -H "Authorization: Bearer $API_KEY" \
     -F "file=@$FILE_PATH" | jq .
 fi

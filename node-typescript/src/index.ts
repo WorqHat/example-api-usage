@@ -20,8 +20,8 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
   next();
 });
 
-// Root status check (calls remote '/')
-app.get('/', async (_req: Request, res: Response) => {
+// Root status check (calls remote '/status')
+app.get('/status', async (_req: Request, res: Response) => {
   try {
     await checkStatus();
     res.send('Status checked. See server logs for response.');
@@ -111,7 +111,7 @@ app.get('/flows/trigger-json', async (_req: Request, res: Response) => {
 // Flows: Metrics
 app.get('/flows/metrics', async (_req: Request, res: Response) => {
   try {
-    await getFlowsMetrics({ status: 'completed' });
+    await getFlowsMetrics();
     res.send('getFlowsMetrics executed. See server logs for response.');
   } catch (err) {
     console.error(err);

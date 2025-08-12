@@ -1,16 +1,12 @@
-import axios from 'axios';
 import dotenv from 'dotenv';
+import Worqhat from 'worqhat';
 
 dotenv.config();
 
-// Per repository rule: do NOT use API_URL env var; use the literal base URL
-export const API_URL = 'https://api.worqhat.com';
 export const API_KEY = process.env.API_KEY || '';
 
-export const client = axios.create({
-  baseURL: API_URL,
-  headers: API_KEY ? { Authorization: `Bearer ${API_KEY}` } : undefined,
-  timeout: 5 * 60 * 1000,
+export const client = new Worqhat({
+  apiKey: API_KEY,
 });
 
 export function requireKey() {

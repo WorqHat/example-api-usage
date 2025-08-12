@@ -66,6 +66,7 @@ export async function dbInsert() {
 //   "executionTime": 241,
 //   "message": "Data inserted successfully into customer_management_data"
 // }
+
 // Bulk insert response:
 //  {
 //   "success": true,

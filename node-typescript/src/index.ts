@@ -67,7 +67,7 @@ app.get('/db/insert', async (_req: Request, res: Response) => {
 // DB: Update
 app.get('/db/update', async (_req: Request, res: Response) => {
   try {
-    await dbUpdate('my_table', { id: 1 }, { name: 'Bob' });
+    await dbUpdate();
     res.send('dbUpdate executed. See server logs for response.');
   } catch (err) {
     console.error(err);

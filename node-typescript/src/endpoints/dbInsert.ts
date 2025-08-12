@@ -1,9 +1,9 @@
-import dotenv from 'dotenv';
-import Worqhat from 'worqhat';
+import dotenv from "dotenv";
+import Worqhat from "worqhat";
 
 dotenv.config();
 
-const API_KEY = process.env.API_KEY || '';
+const API_KEY = process.env.API_KEY || "";
 
 export const client = new Worqhat({
   apiKey: API_KEY,
@@ -25,7 +25,10 @@ export async function dbInsert() {
     data: singleData,
   });
 
-  console.log("Single insert response:\n", JSON.stringify(singleResponse, null, 2));
+  console.log(
+    "Single insert response:\n",
+    JSON.stringify(singleResponse, null, 2)
+  );
 
   // Sample 2: array of JSONs as data (bulk insert)
   const bulkData = [

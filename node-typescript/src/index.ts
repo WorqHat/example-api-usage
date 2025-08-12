@@ -100,7 +100,7 @@ app.get('/db/nl-query', async (_req: Request, res: Response) => {
 // Flows: Trigger JSON
 app.get('/flows/trigger-json', async (_req: Request, res: Response) => {
   try {
-    await triggerFlowJson('demo-flow-id', { message: 'Hello from demo route' });
+    await triggerFlowJson();
     res.send('triggerFlowJson executed. See server logs for response.');
   } catch (err) {
     console.error(err);

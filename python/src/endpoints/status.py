@@ -1,11 +1,7 @@
-# Placeholder script for GET /
-from ..client import WorqHatClient
+from ..client import client
 
-def run():
-    client = WorqHatClient()
-    resp = client.get('/')
-    print(resp.status_code)
-    print(resp.text)
 
-if __name__ == '__main__':
-    run()
+def check_status():
+    """Fetch WorqHat server info."""
+    return client.get_server_info()
+

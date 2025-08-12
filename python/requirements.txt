@@ -1,2 +1,5 @@
 requests==2.32.4
 python-dotenv==1.0.1
+worqhat==3.5.0
+fastapi==0.111.0
+uvicorn==0.30.3

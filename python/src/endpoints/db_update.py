@@ -1,10 +1,11 @@
-from ..client import WorqHatClient
+from typing import Any, Dict
+from ..client import client
 
-def run(table: str, where: dict, data: dict):
-    client = WorqHatClient()
-    resp = client.put('/db/update', json={'table': table, 'where': where, 'data': data})
-    print(resp.status_code)
-    print(resp.text)
 
-if __name__ == '__main__':
-    run('users', {"id": "123"}, {"status": "active"})
+def db_update() -> Dict[str, Any]:
+    """Update records (mirrors TS example)."""
+    table = "users"
+    where = {"id": "123", "email": "user@example.com"}
+    data = {"status": "active", "name": "Updated Name"}
+    return client.db.update_records(table=table, where=where, data=data)
+

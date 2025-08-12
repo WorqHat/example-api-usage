@@ -1,10 +1,7 @@
-from ..client import WorqHatClient
+from ..client import client
 
-def run():
-    client = WorqHatClient()
-    resp = client.get('/health')
-    print(resp.status_code)
-    print(resp.text)
 
-if __name__ == '__main__':
-    run()
+def check_health():
+    """Call WorqHat health endpoint."""
+    return client.health.check()
+

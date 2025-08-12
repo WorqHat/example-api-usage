@@ -1,24 +1,25 @@
-from ..client import WorqHatClient
+from pathlib import Path
+from typing import Any, Dict
+from ..client import client
 
-# Use one of these helpers depending on input type
 
-def run_file(flow_id: str, file_path: str, metadata: dict | None = None):
-    client = WorqHatClient()
-    with open(file_path, 'rb') as f:
-        files = {'file': (file_path.split('/')[-1], f)}
-        data = {'metadata': metadata} if metadata else None
-        resp = client.post(f'/flows/file/{flow_id}', files=files, data=data)
-        print(resp.status_code)
-        print(resp.text)
+def trigger_flow_with_file() -> Dict[str, Any]:
+    """Trigger a workflow with a local file upload (mirrors TS example)."""
+    workflow_id = "e3f35867-77f4-4c49-b376-ac0f0cedb423"
+    image_path = Path(__file__).parent.parent / "image.png"
+    with open(image_path, "rb") as f:
+        return client.flows.trigger_with_file(
+            workflow_id,
+            {"file": f, "input1": "value1", "input2": "value2"},
+        )
 
-def run_url(flow_id: str, url: str, metadata: dict | None = None):
-    client = WorqHatClient()
-    data = {'url': url}
-    if metadata:
-        data['metadata'] = metadata
-    resp = client.post(f'/flows/file/{flow_id}', data=data)
-    print(resp.status_code)
-    print(resp.text)
 
-if __name__ == '__main__':
-    run_url('your-flow-id', 'https://example.com/file.pdf')
+def trigger_flow_with_url() -> Dict[str, Any]:
+    """Trigger a workflow with a remote file URL (mirrors TS example)."""
+    workflow_id = "e3f35867-77f4-4c49-b376-ac0f0cedb423"
+    url = "https://assets.worqhat.com/worqkitties/kitty-hi.png"
+    return client.flows.trigger_with_file(
+        workflow_id,
+        {"url": url, "input1": "value1", "input2": "value2"},
+    )
+

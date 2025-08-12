@@ -1,10 +1,13 @@
-from ..client import WorqHatClient
+from typing import Any, Dict
+from ..client import client
 
-def run(question: str, table: str):
-    client = WorqHatClient()
-    resp = client.post('/db/nl-query', json={'question': question, 'table': table})
-    print(resp.status_code)
-    print(resp.text)
+
+def db_nl_query() -> Dict[str, Any]:
+    """Ask an NL question on a table (mirrors TS example)."""
+    question = "How many rows are in my_table?"
+    table = "customer_management_data"
+    return client.db.process_nl_query(question=question, table=table)
+
 
 if __name__ == '__main__':
-    run('How many active users?', 'users')
+    print(db_nl_query())

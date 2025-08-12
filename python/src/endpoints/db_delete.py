@@ -1,10 +1,10 @@
-from ..client import WorqHatClient
+from typing import Any, Dict
+from ..client import client
 
-def run(table: str, where: dict):
-    client = WorqHatClient()
-    resp = client.delete('/db/delete', json={'table': table, 'where': where})
-    print(resp.status_code)
-    print(resp.text)
 
-if __name__ == '__main__':
-    run('users', {"id": "123"})
+def db_delete() -> Dict[str, Any]:
+    """Delete records (mirrors TS example)."""
+    table = "users"
+    where = {"id": "123", "email": "user@example.com"}
+    return client.db.delete_records(table=table, where=where)
+

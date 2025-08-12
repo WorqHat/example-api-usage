@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
 import Worqhat from "worqhat";
+import fs from "fs";
+import path from "path";
 
 dotenv.config();
 
@@ -10,24 +12,30 @@ export const client = new Worqhat({
 });
 
 export async function triggerFlowWithFile() {
+  const workflow_id = "e3f35867-77f4-4c49-b376-ac0f0cedb423";
 
+  const filePath = path.join(__dirname, "../image.png"); // from src/endpoints -> src
+  const response = await client.flows.triggerWithFile(workflow_id, {
+    file: fs.createReadStream(filePath),
+    input1: "value1",
+    input2: "value2",
+  });
+
+  console.log(JSON.stringify(response, null, 2));
 }
 
 export async function triggerFlowWithUrl() {
   const workflow_id = "e3f35867-77f4-4c49-b376-ac0f0cedb423";
   const url = "https://assets.worqhat.com/worqkitties/kitty-hi.png";
 
-    // Trigger the image analysis workflow with a URL
-    const response = await client.flows.triggerWithFile(
-      workflow_id,
-      {
-        url: url,
-        "input1": "value1",
-        "input2": "value2"
-      }
-    );
+  // Trigger the image analysis workflow with a URL
+  const response = await client.flows.triggerWithFile(workflow_id, {
+    url: url,
+    input1: "value1",
+    input2: "value2",
+  });
 
-    console.log(response);
+  console.log(response);
 }
 
 // Sample Response

@@ -56,7 +56,7 @@ app.get('/db/query', async (_req: Request, res: Response) => {
 // DB: Insert
 app.get('/db/insert', async (_req: Request, res: Response) => {
   try {
-    await dbInsert('my_table', { id: 1, name: 'Alice' });
+    await dbInsert();
     res.send('dbInsert executed. See server logs for response.');
   } catch (err) {
     console.error(err);

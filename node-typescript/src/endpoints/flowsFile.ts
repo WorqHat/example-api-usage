@@ -14,7 +14,7 @@ export const client = new Worqhat({
 export async function triggerFlowWithFile() {
   const workflow_id = "e3f35867-77f4-4c49-b376-ac0f0cedb423";
 
-  const filePath = path.join(__dirname, "../image.png"); // from src/endpoints -> src
+  const filePath = path.join(__dirname, "../image.png");
   const response = await client.flows.triggerWithFile(workflow_id, {
     file: fs.createReadStream(filePath),
     input1: "value1",
@@ -35,7 +35,7 @@ export async function triggerFlowWithUrl() {
     input2: "value2",
   });
 
-  console.log(response);
+  console.log(JSON.stringify(response, null, 2));
 }
 
 // Sample Response

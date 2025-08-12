@@ -3,7 +3,8 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const API_URL = process.env.API_URL || 'http://localhost:3000';
+// Per repository rule: do NOT use API_URL env var; use the literal base URL
+export const API_URL = 'https://api.worqhat.com';
 export const API_KEY = process.env.API_KEY || '';
 
 export const client = axios.create({

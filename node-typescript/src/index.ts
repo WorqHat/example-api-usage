@@ -122,7 +122,7 @@ app.get('/flows/metrics', async (_req: Request, res: Response) => {
 // Flows: Trigger with URL (no local file dependency)
 app.get('/flows/file-url', async (_req: Request, res: Response) => {
   try {
-    await triggerFlowWithUrl('demo-flow-id', 'https://example.com/image.jpg', { note: 'demo via url' });
+    await triggerFlowWithUrl();
     res.send('triggerFlowWithUrl executed. See server logs for response.');
   } catch (err) {
     console.error(err);
@@ -133,7 +133,7 @@ app.get('/flows/file-url', async (_req: Request, res: Response) => {
 // Flows: Trigger with file (uses repo README as a demo file)
 app.get('/flows/file-upload', async (_req: Request, res: Response) => {
   try {
-    await triggerFlowWithFile('demo-flow-id', `${process.cwd()}/README.md`, { note: 'demo file upload' });
+    await triggerFlowWithFile();
     res.send('triggerFlowWithFile executed. See server logs for response.');
   } catch (err) {
     console.error(err);

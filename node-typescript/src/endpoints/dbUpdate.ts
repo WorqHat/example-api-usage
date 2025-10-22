@@ -1,40 +1,89 @@
-import dotenv from "dotenv";
 import Worqhat from "worqhat";
 
-dotenv.config();
+export async function updateUserStatus() {
+  // Initialize the client with your API key
+  const apiKey = process.env.WORQHAT_API_KEY;
+  if (!apiKey) {
+    throw new Error("WORQHAT_API_KEY environment variable is required");
+  }
 
-const API_KEY = process.env.API_KEY || "";
-
-export const client = new Worqhat({
-  apiKey: API_KEY,
-});
-
-export async function dbUpdate() {
-  const table = "users";
-  // Where usage:
-  // - You can provide a SINGLE condition, e.g. { id: "123" }
-  // - Or MULTIPLE conditions, e.g. { id: "123", email: "user@example.com" }
-  //   Multiple keys are treated as AND filters (id = '123' AND email = 'user@example.com').
-  //
-  // Examples:
-  // const whereSingle = { id: "123" };
-  // const whereMultiple = { id: "123", email: "user@example.com" };
-  const where = {
-    id: "123",
-    email: "user@example.com",
-  };
-  const data = {
-    status: "active",
-    name: "Updated Name",
-  };
-
-  const response = await client.db.updateRecords({
-    table,
-    where,
-    data,
+  const client = new Worqhat({
+    apiKey, // Always use environment variables for API keys
+    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
   });
 
-  console.log(JSON.stringify(response, null, 2));
+  try {
+    // Call the updateRecords method
+    const response = await client.db.updateRecords({
+      table: "users", // The table to update
+      where: {
+        // Which records to update
+        id: "123", // Find records with id = 123
+        email: "user@example.com", // AND email = user@example.com
+      },
+      data: {
+        // New values to set
+        status: "active", // Change status to active
+        name: "Updated Name", // Update the name
+      },
+    });
+
+    // Handle the successful response
+    console.log(`Updated ${response.count} records`);
+    console.log("Updated records:", response.data);
+    return response;
+  } catch (error) {
+    // Handle any errors
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error updating records:", errorMessage);
+    throw error;
+  }
+}
+
+export async function updateInactiveUsers() {
+  // Initialize the client with your API key
+  const apiKey = process.env.WORQHAT_API_KEY;
+  if (!apiKey) {
+    throw new Error("WORQHAT_API_KEY environment variable is required");
+  }
+
+  const client = new Worqhat({
+    apiKey,
+    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
+  });
+
+  try {
+    // Update all inactive users to active
+    const response = await client.db.updateRecords({
+      table: "users", // The table to update
+      where: {
+        // Which records to update
+        status: "inactive", // Find ALL records with status = inactive
+      },
+      data: {
+        // New values to set
+        status: "active", // Change status to active
+        updatedBy: "system", // Add audit information
+      },
+    });
+
+    // Handle the successful response
+    console.log(`Updated ${response.count} inactive users to active status`);
+    return response;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error updating users:", errorMessage);
+    throw error;
+  }
+}
+
+// Export a function to run all examples (for backward compatibility)
+export async function dbUpdate() {
+  // Call the function
+  await updateUserStatus();
+
+  // Call the function
+  await updateInactiveUsers();
 }
 
 // Sample Response:

@@ -1,23 +1,87 @@
-import dotenv from "dotenv";
 import Worqhat from "worqhat";
 
-dotenv.config();
+export async function getWorkflowMetrics() {
+  // Initialize the client with your API key
+  const apiKey = process.env.WORQHAT_API_KEY;
+  if (!apiKey) {
+    throw new Error("WORQHAT_API_KEY environment variable is required");
+  }
 
-const API_KEY = process.env.API_KEY || "";
+  const client = new Worqhat({
+    apiKey, // Always use environment variables for API keys
+    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
+  });
 
-export const client = new Worqhat({
-  apiKey: API_KEY,
-});
+  try {
+    // Call the getMetrics method
+    const response = await client.workflows.getMetrics({
+      start_date: "2025-07-01", // Start date in YYYY-MM-DD format
+      end_date: "2025-07-24", // End date in YYYY-MM-DD format
+      status: "completed", // Only include completed workflows
+    });
 
+    // Handle the successful response
+    console.log(`Total Executions: ${response.metrics.totalExecutions}`);
+    console.log(`Success Rate: ${response.metrics.successRate}%`);
+    console.log(`Average Duration: ${response.metrics.averageDuration}ms`);
+
+    // Log metrics for individual workflows
+    response.workflowMetrics.forEach((workflow) => {
+      console.log(`\nWorkflow: ${workflow.name} (${workflow.id})`);
+      console.log(`  Executions: ${workflow.executions}`);
+      console.log(`  Success Rate: ${workflow.successRate}%`);
+      console.log(`  Most Common Error: ${workflow.mostCommonError || "None"}`);
+    });
+
+    return response;
+  } catch (error) {
+    // Handle any errors
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error getting workflow metrics:", errorMessage);
+    throw error;
+  }
+}
+
+export async function getAllWorkflowMetrics() {
+  // Initialize the client with your API key
+  const apiKey = process.env.WORQHAT_API_KEY;
+  if (!apiKey) {
+    throw new Error("WORQHAT_API_KEY environment variable is required");
+  }
+
+  const client = new Worqhat({
+    apiKey,
+    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
+  });
+
+  try {
+    // Call the getMetrics method without date parameters
+    // This will use the default date range (current month)
+    const response = await client.workflows.getMetrics();
+
+    // Handle the successful response
+    console.log(
+      `Period: ${response.period.startDate} to ${response.period.endDate}`
+    );
+    console.log(`Total Executions: ${response.metrics.totalExecutions}`);
+    console.log(`Success Rate: ${response.metrics.successRate}%`);
+    console.log(`Error Rate: ${response.metrics.errorRate}%`);
+
+    return response;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error getting workflow metrics:", errorMessage);
+    throw error;
+  }
+}
+
+// Export a function to run all examples (for backward compatibility)
 export async function getFlowsMetrics() {
-  const params: Record<string, unknown> = {
-    start_date: "2025-08-01",
-    end_date: "2025-08-31",
-    status: "completed",
-  };
+  // Call the function
+  await getWorkflowMetrics();
 
-  const response = await client.flows.getMetrics(params);
-  console.log(JSON.stringify(response, null, 2));
+  // Call the function
+  await getAllWorkflowMetrics();
 }
 
 // Sample Response

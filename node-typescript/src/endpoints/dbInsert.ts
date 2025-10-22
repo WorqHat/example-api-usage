@@ -1,77 +1,195 @@
-import dotenv from "dotenv";
 import Worqhat from "worqhat";
 
-dotenv.config();
+export async function createUser() {
+  // Initialize the client with your API key
+  const apiKey = process.env.WORQHAT_API_KEY;
+  if (!apiKey) {
+    throw new Error("WORQHAT_API_KEY environment variable is required");
+  }
 
-const API_KEY = process.env.API_KEY || "";
+  const client = new Worqhat({
+    apiKey, // Always use environment variables for API keys
+  });
 
-export const client = new Worqhat({
-  apiKey: API_KEY,
-});
+  try {
+    // Call the insertRecord method
+    const response = await client.db.insertRecord({
+      table: "users", // The table to insert into
+      data: {
+        // The data to insert
+        name: "John Doe",
+        email: "john@example.com",
+        role: "user",
+        active: true,
+      },
+    });
 
+    // Handle the successful response
+    console.log("User created with ID:", (response.data as any).documentId);
+    console.log("Created user:", response.data);
+    return response;
+  } catch (error) {
+    // Handle any errors
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error creating user:", errorMessage);
+    throw error;
+  }
+}
+
+export async function createProductWithCustomId() {
+  // Initialize the client with your API key
+  const apiKey = process.env.WORQHAT_API_KEY;
+  if (!apiKey) {
+    throw new Error("WORQHAT_API_KEY environment variable is required");
+  }
+
+  const client = new Worqhat({
+    apiKey,
+  });
+
+  try {
+    // Generate a custom ID
+    const customId = `prod_${Date.now()}`;
+
+    // Call the insertRecord method with custom documentId
+    const response = await client.db.insertRecord({
+      table: "products", // The table to insert into
+      data: {
+        // The data to insert
+        documentId: customId, // Specify your own document ID
+        name: "Premium Widget",
+        price: 99.99,
+        inStock: true,
+        category: "electronics",
+      },
+    });
+
+    // Handle the successful response
+    console.log(
+      `Product created with custom ID: ${(response.data as any).documentId}`
+    );
+    return response;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error creating product:", errorMessage);
+    throw error;
+  }
+}
+
+export async function createMultipleProducts() {
+  // Initialize the client with your API key
+  const apiKey = process.env.WORQHAT_API_KEY;
+  if (!apiKey) {
+    throw new Error("WORQHAT_API_KEY environment variable is required");
+  }
+
+  const client = new Worqhat({
+    apiKey,
+  });
+
+  try {
+    // Call the insertRecord method with an array of data objects
+    const response = await client.db.insertRecord({
+      table: "products", // The table to insert into
+      data: [
+        // Array of data objects to insert
+        {
+          name: "Basic Widget",
+          price: 19.99,
+          inStock: true,
+          category: "essentials",
+        },
+        {
+          name: "Standard Widget",
+          price: 49.99,
+          inStock: true,
+          category: "essentials",
+        },
+        {
+          name: "Premium Widget",
+          price: 99.99,
+          inStock: false,
+          category: "premium",
+        },
+      ],
+    });
+
+    // Handle the successful response
+    console.log(`Inserted ${(response.data as any[]).length} products`);
+    console.log("Created products:", response.data);
+    return response;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error creating products:", errorMessage);
+    throw error;
+  }
+}
+
+// Export a function to run all examples (for backward compatibility)
 export async function dbInsert() {
-  const table = "customer_management_data";
-  // Sample 1: single JSON as data
-  const singleData = {
-    customer_name: "Alice Johnson",
-    customer_email: "alice@example.com",
-    customer_phone_number: "+91-9876543210",
-    customer_address: "123 MG Road, Pune",
-    customer_type: "individual",
-  };
+  // Call the function
+  await createUser();
 
-  const singleResponse = await client.db.insertRecord({
-    table,
-    data: singleData,
-  });
+  // Call the function
+  await createProductWithCustomId();
 
-  console.log(
-    "Single insert response:\n",
-    JSON.stringify(singleResponse, null, 2)
-  );
-
-  // Sample 2: array of JSONs as data (bulk insert)
-  const bulkData = [
-    {
-      customer_name: "Bob Smith",
-      customer_email: "bob@example.com",
-      customer_phone_number: "+91-9000000001",
-      customer_address: "456 Brigade Road, Bengaluru",
-      customer_type: "business",
-    },
-    {
-      customer_name: "Carol Lee",
-      customer_email: "carol@example.com",
-      customer_phone_number: "+91-9000000002",
-      customer_address: "789 Park Street, Kolkata",
-      customer_type: "individual",
-    },
-  ];
-
-  const bulkResponse = await client.db.insertRecord({
-    table,
-    data: bulkData,
-  });
-
-  console.log("Bulk insert response:\n", JSON.stringify(bulkResponse, null, 2));
+  // Call the function
+  await createMultipleProducts();
 }
 
 // Sample Response
 
-// Single insert response:
+// Single user insert response:
 //  {
 //   "success": true,
-//   "table": "customer_management_data",
-//   "count": 1,
-//   "executionTime": 241,
-//   "message": "Data inserted successfully into customer_management_data"
+//   "data": {
+//     "documentId": "doc_12345abcde",
+//     "name": "John Doe",
+//     "email": "john@example.com",
+//     "role": "user",
+//     "active": true
+//   },
+//   "message": "Record inserted successfully"
 // }
 
-// Bulk insert response:
+// Product insert with custom ID response:
 //  {
 //   "success": true,
-//   "table": "customer_management_data",
-//   "count": 2,
-//   "executionTime": 207,
-//   "message": "Data inserted successfully into customer_management_data"
+//   "data": {
+//     "documentId": "prod_1627384950",
+//     "name": "Premium Widget",
+//     "price": 99.99,
+//     "inStock": true,
+//     "category": "electronics"
+//   },
+//   "message": "Record inserted successfully"
+// }
+
+// Bulk products insert response:
+//  {
+//   "success": true,
+//   "data": [
+//     {
+//       "documentId": "doc_12345abcde",
+//       "name": "Basic Widget",
+//       "price": 19.99,
+//       "inStock": true,
+//       "category": "essentials"
+//     },
+//     {
+//       "documentId": "doc_67890fghij",
+//       "name": "Standard Widget",
+//       "price": 49.99,
+//       "inStock": true,
+//       "category": "essentials"
+//     },
+//     {
+//       "documentId": "doc_54321klmno",
+//       "name": "Premium Widget",
+//       "price": 99.99,
+//       "inStock": false,
+//       "category": "premium"
+//     }
+//   ],
+//   "message": "3 records inserted successfully"
 // }

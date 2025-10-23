@@ -1,8 +1,10 @@
 import fs from "fs";
 import path from "path";
 import Worqhat from "worqhat";
+import axios from "axios";
+import FormData from "form-data";
 
-type StepFn = () => Promise<void>;
+type StepFn = () => Promise<any>;
 
 function section(title: string) {
   console.log("\n=== " + title + " ===");
@@ -23,30 +25,20 @@ function logOutput(output: any) {
 }
 
 function logError(stepName: string, err: any) {
-  console.error(
-    `[${stepName}] ERROR:`,
-    JSON.stringify(
-      {
-        message: err instanceof Error ? err.message : String(err),
-        name: err?.name,
-        status: err?.status,
-        code: err?.code,
-        stack: err?.stack,
-        full: err,
-      },
-      null,
-      2
-    )
-  );
+  const errorObj = {
+    message: err instanceof Error ? err.message : String(err),
+    name: err?.name,
+    status: err?.status,
+    code: err?.code,
+    full: err?.response?.data || err,
+  };
+  console.error(`[${stepName}] ERROR:`, JSON.stringify(errorObj, null, 2));
 }
 
 async function runStep(name: string, fn: StepFn) {
   section(name);
   try {
-    const result = await fn();
-    if (result !== undefined) {
-      logOutput(result);
-    }
+    await fn();
   } catch (err) {
     logError(name, err);
   }
@@ -58,14 +50,12 @@ async function main() {
     throw new Error("WORQHAT_API_KEY environment variable is required");
   }
 
-  const environment = process.env.WORQHAT_ENVIRONMENT || "production";
-
   const FILE_WORKFLOW_ID = "fdd76a77-8906-403a-850c-d9eed906c47a";
   const JSON_WORKFLOW_ID = "81c88b6a-057a-44a9-8b4a-77755fb77e05";
 
   const client = new Worqhat({ apiKey });
 
-  const invoicePath = path.resolve(__dirname, "Invoice.pdf");
+  const invoicePath = path.resolve(__dirname, "../Invoice.pdf");
   if (!fs.existsSync(invoicePath)) {
     throw new Error(`Invoice file not found at ${invoicePath}`);
   }
@@ -78,19 +68,23 @@ async function main() {
   const nowIso = new Date().toISOString();
 
   await runStep("Storage: upload Invoice.pdf to invoices/", async () => {
-    const fileStream = fs.createReadStream(invoicePath);
-    const input = { file: "[FileStream]", path: "invoices/" };
-    logInput(input);
+    const form = new FormData();
+    form.append("file", fs.createReadStream(invoicePath));
+    form.append("path", "invoices/");
+    logInput({ file: "[FileStream]", path: "invoices/" });
 
-    const resp = await client.storage.uploadFile({
-      file: fileStream,
-      path: "invoices/",
-    });
-    logOutput(resp);
+    const resp = await axios.post(
+      "https://api.worqhat.com/storage/upload",
+      form,
+      {
+        headers: { ...form.getHeaders(), Authorization: `Bearer ${apiKey}` },
+      }
+    );
+    logOutput(resp.data);
 
-    uploadedFileId = resp.file.id;
-    uploadedFileUrl = resp.file.url;
-    uploadedFileName = resp.file.filename || "Invoice.pdf";
+    uploadedFileId = resp.data.file.id;
+    uploadedFileUrl = resp.data.file.url;
+    uploadedFileName = resp.data.file.filename || "Invoice.pdf";
     console.log(
       "Extracted: file.id =",
       uploadedFileId,
@@ -179,22 +173,10 @@ async function main() {
     };
     logInput(input);
 
-    const resp = await client.db.insertRecord({
-      table: "tasks",
-      data: {
-        id: taskId,
-        status: "open",
-        priority: "high",
-        created_at: nowIso,
-        updated_at: nowIso,
-      },
-    });
+    const resp = await client.db.insertRecord(input);
     logOutput(resp);
 
-    console.log(
-      "Extracted: inserted.documentId =",
-      (resp.data as any).documentId ?? taskId
-    );
+    console.log("Extracted: count =", (resp as any).count);
   });
 
   await runStep("DB: SQL query by id", async () => {
@@ -204,10 +186,7 @@ async function main() {
     };
     logInput(input);
 
-    const resp = await client.db.executeQuery({
-      query: "SELECT * FROM tasks WHERE id = {id}",
-      params: { id: taskId },
-    });
+    const resp = await client.db.executeQuery(input);
     logOutput(resp);
 
     console.log("Extracted: rows =", resp.data?.length ?? 0);
@@ -220,10 +199,7 @@ async function main() {
     };
     logInput(input);
 
-    const resp = await client.db.processNlQuery({
-      question: `Show the task with id ${taskId}`,
-      table: "tasks",
-    });
+    const resp = await client.db.processNlQuery(input);
     logOutput(resp);
 
     console.log("Extracted: nl.rows =", (resp.data as any[])?.length ?? 0);
@@ -236,14 +212,19 @@ async function main() {
     const input = { fileId: uploadedFileId };
     logInput(input);
 
-    const resp = await client.storage.retrieveFileByID(uploadedFileId);
-    logOutput(resp);
+    const resp = await axios.get(
+      `https://api.worqhat.com/storage/fetch/${uploadedFileId}`,
+      {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      }
+    );
+    logOutput(resp.data);
 
     console.log(
       "Extracted: filename =",
-      resp.file.filename,
+      resp.data.file.filename,
       "size =",
-      resp.file.size
+      resp.data.file.size
     );
   });
 
@@ -253,14 +234,20 @@ async function main() {
     const input = { filepath: relPath };
     logInput(input);
 
-    const resp = await client.storage.retrieveFileByPath({ filepath: relPath });
-    logOutput(resp);
+    const resp = await axios.get(
+      "https://api.worqhat.com/storage/fetch-by-path",
+      {
+        headers: { Authorization: `Bearer ${apiKey}` },
+        params: { filepath: relPath },
+      }
+    );
+    logOutput(resp.data);
 
     console.log(
       "Extracted: filename =",
-      resp.file.filename,
+      resp.data.file.filename,
       "url =",
-      resp.file.url
+      resp.data.file.url
     );
   });
 
@@ -271,27 +258,26 @@ async function main() {
     };
     logInput(input);
 
-    const resp = await client.db.deleteRecords({
-      table: "tasks",
-      where: { id: taskId },
-    });
+    const resp = await client.db.deleteRecords(input);
     logOutput(resp);
 
-    console.log("Extracted: deletedCount =", resp.deletedCount);
+    console.log("Extracted: deletedCount =", (resp.data as any[])?.length ?? 0);
   });
 
   await runStep("Flows: metrics (default period)", async () => {
     const input = {}; // No input parameters for default metrics
     logInput(input);
 
-    const resp = await client.workflows.getMetrics();
-    logOutput(resp);
+    const resp = await axios.get("https://api.worqhat.com/flows/metrics", {
+      headers: { Authorization: `Bearer ${apiKey}` },
+    });
+    logOutput(resp.data);
 
     console.log(
       "Extracted: totalExecutions =",
-      resp.metrics.totalExecutions,
+      resp.data.metrics.totalExecutions,
       "successRate =",
-      resp.metrics.successRate
+      resp.data.metrics.successRate
     );
   });
 

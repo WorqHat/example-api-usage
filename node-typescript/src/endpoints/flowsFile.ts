@@ -25,11 +25,13 @@ export async function processInvoiceFile() {
       {
         file: fileStream, // Pass the stream directly
         prompt: "value1", // Matching smoke test payload
-      }
+      } as any
     );
 
     console.log(
-      `Invoice processing started! Tracking ID: ${response.analytics_id}`
+      `Invoice processing started! Tracking ID: ${
+        (response as any).analytics_id
+      }`
     );
     return response;
   } catch (error) {
@@ -59,11 +61,13 @@ export async function processInvoiceUrl(url: string) {
       {
         url: url, // Use provided URL
         prompt: "value1", // Matching smoke test payload
-      }
+      } as any
     );
 
     console.log(
-      `Invoice URL processing started! Tracking ID: ${response.analytics_id}`
+      `Invoice URL processing started! Tracking ID: ${
+        (response as any).analytics_id
+      }`
     );
     return response;
   } catch (error) {
@@ -73,65 +77,12 @@ export async function processInvoiceUrl(url: string) {
   }
 }
 
-export async function processDocumentWithParams() {
-  // Initialize the WorqHat client
-  const apiKey = process.env.WORQHAT_API_KEY;
-  if (!apiKey) {
-    throw new Error("WORQHAT_API_KEY environment variable is required");
-  }
-
-  const client = new Worqhat({
-    apiKey,
-    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
-  });
-
-  try {
-    const fileStream = fs.createReadStream("./contract.pdf");
-
-    // Pass additional parameters directly in the payload
-    const response = await client.flows.triggerWithFile(
-      "document-processing-workflow-id",
-      {
-        file: fileStream,
-        // Additional parameters
-        customerId: "CID-12345",
-        department: "legal",
-        requireSignature: true,
-        processingMode: "detailed",
-      }
-    );
-
-    console.log(
-      `Document processing started! Tracking ID: ${response.analytics_id}`
-    );
-    return response;
-  } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("Error processing document:", errorMessage);
-    throw error;
-  }
-}
-
 // Export a function to run all examples (for backward compatibility)
 export async function triggerFlowWithFile(url?: string) {
   // Call the function - matching smoke test
   await processInvoiceFile();
 
-  // Call the function with URL if provided - matching smoke test
   if (url) {
     await processInvoiceUrl(url);
   }
 }
-
-// Sample Response
-
-// {
-//   success: true,
-//   statusCode: '200',
-//   data: {
-//     output: `In the picture, I see a cute cartoon cat wearing a Santa hat. It's holding a sign that says "Hi" along with a paw print. The cat is also wearing a red collar with a round charm on it. The overall style is cheerful and festive.\n`,
-//     data1: 'value1',
-//     data2: 'value2'
-//   },
-//   message: 'Workflow triggered successfully with file upload'
-// }

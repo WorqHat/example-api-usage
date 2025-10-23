@@ -1,37 +1,41 @@
-import Worqhat from "worqhat";
 import fs from "fs";
 import path from "path";
+import axios from "axios";
+import FormData from "form-data";
 
 export async function uploadInvoice() {
-  // Initialize the WorqHat client - matching smoke test
   const apiKey = process.env.WORQHAT_API_KEY;
   if (!apiKey) {
     throw new Error("WORQHAT_API_KEY environment variable is required");
   }
 
-  const client = new Worqhat({
-    apiKey, // Always use environment variables for API keys
-    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
-  });
-
   try {
-    const filePath = path.resolve(__dirname, "../Invoice.pdf"); // Matching smoke test path
+    const filePath = path.resolve(__dirname, "../Invoice.pdf");
+    if (!fs.existsSync(filePath)) {
+      throw new Error(`Invoice file not found at ${filePath}`);
+    }
     const fileStream = fs.createReadStream(filePath);
 
-    // Call the uploadFile method - matching smoke test
-    const response = await client.storage.uploadFile({
-      file: fileStream,
-      path: "invoices/", // Matching smoke test path
-    });
+    const form = new FormData();
+    form.append("file", fileStream);
+    form.append("path", "invoices/");
 
-    // Handle the successful response
+    const response = await axios.post(
+      "https://api.worqhat.com/storage/upload",
+      form,
+      {
+        headers: {
+          ...form.getHeaders(),
+          Authorization: `Bearer ${apiKey}`,
+        },
+      }
+    );
+
     console.log("Invoice uploaded successfully!");
-    console.log("File ID:", response.file.id);
-    console.log("Download URL:", response.file.url);
-    console.log("File path:", response.file.path);
-    return response;
+    console.log("File ID:", response.data.file.id);
+    console.log("Download URL:", response.data.file.url);
+    return response.data;
   } catch (error) {
-    // Handle any errors
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("Error uploading invoice:", errorMessage);
     throw error;
@@ -39,30 +43,23 @@ export async function uploadInvoice() {
 }
 
 export async function fetchFileById(fileId: string) {
-  // Initialize the WorqHat client
   const apiKey = process.env.WORQHAT_API_KEY;
   if (!apiKey) {
     throw new Error("WORQHAT_API_KEY environment variable is required");
   }
 
-  const client = new Worqhat({
-    apiKey,
-    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
-  });
-
   try {
-    // Call the retrieveFileByID method
-    const response = await client.storage.retrieveFileByID(fileId);
+    const response = await axios.get(
+      `https://api.worqhat.com/storage/fetch/${fileId}`,
+      {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      }
+    );
 
-    // Handle the successful response
     console.log("File retrieved successfully!");
-    console.log("File name:", response.file.filename);
-    console.log("File size:", response.file.size, "bytes");
-    console.log("Download URL:", response.file.url);
-    console.log("Uploaded at:", response.file.uploadedAt);
-    return response;
+    console.log("File name:", response.data.file.filename);
+    return response.data;
   } catch (error) {
-    // Handle any errors
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("Error fetching file:", errorMessage);
     throw error;
@@ -70,32 +67,24 @@ export async function fetchFileById(fileId: string) {
 }
 
 export async function fetchInvoiceByPath(filename: string = "Invoice.pdf") {
-  // Initialize the WorqHat client - matching smoke test
   const apiKey = process.env.WORQHAT_API_KEY;
   if (!apiKey) {
     throw new Error("WORQHAT_API_KEY environment variable is required");
   }
 
-  const client = new Worqhat({
-    apiKey,
-    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
-  });
-
   try {
-    // Call the retrieveFileByPath method - matching smoke test
-    const response = await client.storage.retrieveFileByPath({
-      filepath: `invoices/${filename}`, // Matching smoke test path
-    });
+    const response = await axios.get(
+      "https://api.worqhat.com/storage/fetch-by-path",
+      {
+        headers: { Authorization: `Bearer ${apiKey}` },
+        params: { filepath: `invoices/${filename}` },
+      }
+    );
 
-    // Handle the successful response
     console.log("File retrieved successfully!");
-    console.log("File name:", response.file.filename);
-    console.log("File size:", response.file.size, "bytes");
-    console.log("Download URL:", response.file.url);
-    console.log("Full path:", response.file.path);
-    return response;
+    console.log("File name:", response.data.file.filename);
+    return response.data;
   } catch (error) {
-    // Handle any errors
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("Error fetching file:", errorMessage);
     throw error;
@@ -103,36 +92,35 @@ export async function fetchInvoiceByPath(filename: string = "Invoice.pdf") {
 }
 
 export async function deleteFileById(fileId: string) {
-  // Initialize the WorqHat client
   const apiKey = process.env.WORQHAT_API_KEY;
   if (!apiKey) {
     throw new Error("WORQHAT_API_KEY environment variable is required");
   }
 
-  const client = new Worqhat({
-    apiKey,
-    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
-  });
-
   try {
-    // Call the deleteFileByID method
-    const response = await client.storage.deleteFileByID(fileId);
+    const response = await axios.delete(
+      `https://api.worqhat.com/storage/delete/${fileId}`,
+      {
+        headers: { Authorization: `Bearer ${apiKey}` },
+      }
+    );
 
-    // Handle the successful response
     console.log("File deleted successfully!");
-    console.log("Message:", response.message);
-    console.log("Deleted at:", response.deletedAt);
-    return response;
+    console.log("Message:", response.data.message);
+    return response.data;
   } catch (error) {
-    // Handle any errors
     const errorMessage = error instanceof Error ? error.message : String(error);
     console.error("Error deleting file:", errorMessage);
     throw error;
   }
 }
 
-// Export a function to run all examples (for backward compatibility)
 export async function storage() {
-  // Call the function - matching smoke test
-  await uploadInvoice();
+  console.log("Running storage examples...");
+  const uploadResponse = await uploadInvoice();
+  if (uploadResponse?.file?.id) {
+    await fetchFileById(uploadResponse.file.id);
+    await fetchInvoiceByPath(uploadResponse.file.filename);
+    await deleteFileById(uploadResponse.file.id);
+  }
 }

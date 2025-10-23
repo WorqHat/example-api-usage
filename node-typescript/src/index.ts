@@ -46,7 +46,7 @@ app.get("/health", async (_req: Request, res: Response) => {
 // DB: SQL query
 app.get("/db/query", async (req: Request, res: Response) => {
   try {
-    const taskId = parseInt(req.query.id as string) || 1761247141; // Use smoke test ID as default
+    const taskId = parseInt(req.query.id as string) || 1; // Default to 1 if not provided
     await dbQuery(taskId);
     res.send("dbQuery executed. See server logs for response.");
   } catch (err) {
@@ -80,7 +80,7 @@ app.get("/db/update", async (_req: Request, res: Response) => {
 // DB: Delete
 app.get("/db/delete", async (req: Request, res: Response) => {
   try {
-    const taskId = parseInt(req.query.id as string) || 1761247141; // Use smoke test ID as default
+    const taskId = parseInt(req.query.id as string) || 1; // Default to 1 if not provided
     await dbDelete(taskId);
     res.send("dbDelete executed. See server logs for response.");
   } catch (err) {
@@ -92,7 +92,7 @@ app.get("/db/delete", async (req: Request, res: Response) => {
 // DB: Natural language query
 app.get("/db/nl-query", async (req: Request, res: Response) => {
   try {
-    const taskId = parseInt(req.query.id as string) || 1761247141; // Use smoke test ID as default
+    const taskId = parseInt(req.query.id as string) || 1; // Default to 1 if not provided
     await dbNlQuery(taskId);
     res.send("dbNlQuery executed. See server logs for response.");
   } catch (err) {

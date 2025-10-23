@@ -1,7 +1,7 @@
 import Worqhat from "worqhat";
 
-export async function fetchActiveUsers() {
-  // Initialize the client with your API key
+export async function fetchTaskById(taskId: number) {
+  // Initialize the client with your API key - matching smoke test
   const apiKey = process.env.WORQHAT_API_KEY;
   if (!apiKey) {
     throw new Error("WORQHAT_API_KEY environment variable is required");
@@ -13,17 +13,16 @@ export async function fetchActiveUsers() {
   });
 
   try {
-    // Call the executeQuery method with named parameters
+    // Call the executeQuery method with named parameters - matching smoke test
     const response = await client.db.executeQuery({
-      query: "SELECT * FROM users WHERE status = {status} LIMIT {limit}",
+      query: "SELECT * FROM tasks WHERE id = {id}",
       params: {
-        status: "active",
-        limit: 10,
+        id: taskId,
       },
     });
 
     // Handle the successful response
-    console.log(`Found ${response.data.length} active users`);
+    console.log(`Found ${response.data.length} tasks`);
     console.log("Query execution time:", response.executionTime, "ms");
     console.log("Results:", response.data);
     return response;
@@ -114,15 +113,9 @@ export async function searchUsers() {
 }
 
 // Export a function to run all examples (for backward compatibility)
-export async function dbQuery() {
-  // Call the function
-  await fetchActiveUsers();
-
-  // Call the function
-  await generateSalesReport();
-
-  // Call the function
-  await searchUsers();
+export async function dbQuery(taskId: number) {
+  // Call the function - matching smoke test
+  await fetchTaskById(taskId);
 }
 
 // Sample Response:

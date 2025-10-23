@@ -1,7 +1,7 @@
 import Worqhat from "worqhat";
 
-export async function countActiveUsers() {
-  // Initialize the client with your API key
+export async function queryTaskById(taskId: number) {
+  // Initialize the client with your API key - matching smoke test
   const apiKey = process.env.WORQHAT_API_KEY;
   if (!apiKey) {
     throw new Error("WORQHAT_API_KEY environment variable is required");
@@ -9,14 +9,13 @@ export async function countActiveUsers() {
 
   const client = new Worqhat({
     apiKey, // Always use environment variables for API keys
-    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
   });
 
   try {
-    // Call the processNlQuery method
+    // Call the processNlQuery method - matching smoke test
     const response = await client.db.processNlQuery({
-      question: "How many active users do we have?",
-      table: "users",
+      question: `Show the task with id ${taskId}`,
+      table: "tasks",
     });
 
     // Handle the successful response
@@ -64,12 +63,9 @@ export async function analyzeSalesData() {
 }
 
 // Export a function to run all examples (for backward compatibility)
-export async function dbNlQuery() {
-  // Call the function
-  await countActiveUsers();
-
-  // Call the function
-  await analyzeSalesData();
+export async function dbNlQuery(taskId: number) {
+  // Call the function - matching smoke test
+  await queryTaskById(taskId);
 }
 
 // Sample Response:

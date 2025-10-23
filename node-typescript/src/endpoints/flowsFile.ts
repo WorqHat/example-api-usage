@@ -2,8 +2,8 @@ import Worqhat from "worqhat";
 import fs from "fs";
 import path from "path";
 
-export async function processDocument() {
-  // Initialize the WorqHat client
+export async function processInvoiceFile() {
+  // Initialize the WorqHat client - matching smoke test
   const apiKey = process.env.WORQHAT_API_KEY;
   if (!apiKey) {
     throw new Error("WORQHAT_API_KEY environment variable is required");
@@ -15,37 +15,33 @@ export async function processDocument() {
   });
 
   try {
-    // RECOMMENDED: Use a readable stream for efficient file handling
-    const filePath = path.resolve("./contract.pdf");
+    // RECOMMENDED: Use a readable stream for efficient file handling - matching smoke test
+    const filePath = path.resolve(__dirname, "../Invoice.pdf");
     const fileStream = fs.createReadStream(filePath);
 
-    // Trigger the document processing workflow
+    // Trigger the file workflow - matching smoke test
     const response = await client.flows.triggerWithFile(
-      "document-processing-workflow-id",
+      "fdd76a77-8906-403a-850c-d9eed906c47a", // File workflow ID from smoke test
       {
         file: fileStream, // Pass the stream directly
-        // Additional fields go directly on the payload
-        documentType: "contract",
-        priority: "high",
-        department: "legal",
-        requestedBy: "jane.smith@example.com",
+        prompt: "value1", // Matching smoke test payload
       }
     );
 
     console.log(
-      `Document processing started! Tracking ID: ${response.analytics_id}`
+      `Invoice processing started! Tracking ID: ${response.analytics_id}`
     );
     return response;
   } catch (error) {
     // Handle any errors
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("Error processing document:", errorMessage);
+    console.error("Error processing invoice:", errorMessage);
     throw error;
   }
 }
 
-export async function processRemoteImage() {
-  // Initialize the WorqHat client
+export async function processInvoiceUrl(url: string) {
+  // Initialize the WorqHat client - matching smoke test
   const apiKey = process.env.WORQHAT_API_KEY;
   if (!apiKey) {
     throw new Error("WORQHAT_API_KEY environment variable is required");
@@ -57,25 +53,22 @@ export async function processRemoteImage() {
   });
 
   try {
-    // Trigger the image analysis workflow with a URL
+    // Trigger the file workflow with URL - matching smoke test
     const response = await client.flows.triggerWithFile(
-      "image-analysis-workflow-id",
+      "fdd76a77-8906-403a-850c-d9eed906c47a", // File workflow ID from smoke test
       {
-        url: "https://storage.example.com/products/laptop-x1.jpg",
-        // Additional fields go directly on the payload
-        imageType: "product",
-        category: "electronics",
-        productId: "PROD-12345",
+        url: url, // Use provided URL
+        prompt: "value1", // Matching smoke test payload
       }
     );
 
     console.log(
-      `Image analysis started! Tracking ID: ${response.analytics_id}`
+      `Invoice URL processing started! Tracking ID: ${response.analytics_id}`
     );
     return response;
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    console.error("Error processing remote image:", errorMessage);
+    console.error("Error processing invoice URL:", errorMessage);
     throw error;
   }
 }
@@ -120,15 +113,14 @@ export async function processDocumentWithParams() {
 }
 
 // Export a function to run all examples (for backward compatibility)
-export async function triggerFlowWithFile() {
-  // Call the function
-  await processDocument();
+export async function triggerFlowWithFile(url?: string) {
+  // Call the function - matching smoke test
+  await processInvoiceFile();
 
-  // Call the function
-  await processRemoteImage();
-
-  // Call the function
-  await processDocumentWithParams();
+  // Call the function with URL if provided - matching smoke test
+  if (url) {
+    await processInvoiceUrl(url);
+  }
 }
 
 // Sample Response

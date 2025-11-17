@@ -1,38 +1,44 @@
-import dotenv from "dotenv";
 import Worqhat from "worqhat";
 
-dotenv.config();
+export async function triggerJsonWorkflow() {
+  // Initialize the WorqHat client - matching smoke test
+  const apiKey = process.env.WORQHAT_API_KEY;
+  if (!apiKey) {
+    throw new Error("WORQHAT_API_KEY environment variable is required");
+  }
 
-const API_KEY = process.env.API_KEY || "";
+  const client = new Worqhat({
+    apiKey, // Always use environment variables for API keys
+  });
 
-export const client = new Worqhat({
-  apiKey: API_KEY,
-});
-
-export async function triggerFlowJson() {
-  const workflow_id = "a4a0053f-adec-4a3d-abf6-87ccac03b391";
-  const data = {
-    "input1": "value1",
-    "input2": "value2"
+  // JSON payload matching smoke test
+  const payload = {
+    prompt: "value1",
   };
 
-  const response = await client.flows.triggerWithPayload(
-    workflow_id,
-    { body: data }
-  );
+  try {
+    // Trigger the JSON workflow - matching smoke test
+    const response = await client.flows.triggerWithPayload(
+      "81c88b6a-057a-44a9-8b4a-77755fb77e05", // JSON workflow ID from smoke test
+      { body: payload } as any
+    );
 
-  console.log(response);
+    console.log(
+      `JSON workflow started! Tracking ID: ${(response as any).analytics_id}`
+    );
+
+    // You can store this analytics_id to check the status later
+    return response;
+  } catch (error) {
+    // Handle any errors
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error triggering JSON workflow:", errorMessage);
+    throw error;
+  }
 }
 
-// Sample Response
-
-// {
-//   success: true,
-//   message: 'Workflow a4a0053f-adec-4a3d-abf6-87ccac03b391 triggered successfully',
-//   timestamp: '2025-08-12T13:02:52.973Z',
-//   data: {
-//     success: true,
-//     statusCode: '200',
-//     data: { output1: 'value1', output2: 'value2' }
-//   }
-// }
+// Export a function to run all examples (for backward compatibility)
+export async function triggerFlowJson() {
+  // Call the function - matching smoke test
+  await triggerJsonWorkflow();
+}

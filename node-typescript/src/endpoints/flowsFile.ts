@@ -1,52 +1,88 @@
-import dotenv from "dotenv";
 import Worqhat from "worqhat";
 import fs from "fs";
 import path from "path";
 
-dotenv.config();
+export async function processInvoiceFile() {
+  // Initialize the WorqHat client - matching smoke test
+  const apiKey = process.env.WORQHAT_API_KEY;
+  if (!apiKey) {
+    throw new Error("WORQHAT_API_KEY environment variable is required");
+  }
 
-const API_KEY = process.env.API_KEY || "";
-
-export const client = new Worqhat({
-  apiKey: API_KEY,
-});
-
-export async function triggerFlowWithFile() {
-  const workflow_id = "e3f35867-77f4-4c49-b376-ac0f0cedb423";
-
-  const filePath = path.join(__dirname, "../image.png");
-  const response = await client.flows.triggerWithFile(workflow_id, {
-    file: fs.createReadStream(filePath),
-    input1: "value1",
-    input2: "value2",
+  const client = new Worqhat({
+    apiKey, // Always use environment variables for API keys
+    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
   });
 
-  console.log(JSON.stringify(response, null, 2));
+  try {
+    // RECOMMENDED: Use a readable stream for efficient file handling - matching smoke test
+    const filePath = path.resolve(__dirname, "../Invoice.pdf");
+    const fileStream = fs.createReadStream(filePath);
+
+    // Trigger the file workflow - matching smoke test
+    const response = await client.flows.triggerWithFile(
+      "fdd76a77-8906-403a-850c-d9eed906c47a", // File workflow ID from smoke test
+      {
+        file: fileStream, // Pass the stream directly
+        prompt: "value1", // Matching smoke test payload
+      } as any
+    );
+
+    console.log(
+      `Invoice processing started! Tracking ID: ${
+        (response as any).analytics_id
+      }`
+    );
+    return response;
+  } catch (error) {
+    // Handle any errors
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error processing invoice:", errorMessage);
+    throw error;
+  }
 }
 
-export async function triggerFlowWithUrl() {
-  const workflow_id = "e3f35867-77f4-4c49-b376-ac0f0cedb423";
-  const url = "https://assets.worqhat.com/worqkitties/kitty-hi.png";
+export async function processInvoiceUrl(url: string) {
+  // Initialize the WorqHat client - matching smoke test
+  const apiKey = process.env.WORQHAT_API_KEY;
+  if (!apiKey) {
+    throw new Error("WORQHAT_API_KEY environment variable is required");
+  }
 
-  // Trigger the image analysis workflow with a URL
-  const response = await client.flows.triggerWithFile(workflow_id, {
-    url: url,
-    input1: "value1",
-    input2: "value2",
+  const client = new Worqhat({
+    apiKey,
+    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
   });
 
-  console.log(JSON.stringify(response, null, 2));
+  try {
+    // Trigger the file workflow with URL - matching smoke test
+    const response = await client.flows.triggerWithFile(
+      "fdd76a77-8906-403a-850c-d9eed906c47a", // File workflow ID from smoke test
+      {
+        url: url, // Use provided URL
+        prompt: "value1", // Matching smoke test payload
+      } as any
+    );
+
+    console.log(
+      `Invoice URL processing started! Tracking ID: ${
+        (response as any).analytics_id
+      }`
+    );
+    return response;
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error processing invoice URL:", errorMessage);
+    throw error;
+  }
 }
 
-// Sample Response
+// Export a function to run all examples (for backward compatibility)
+export async function triggerFlowWithFile(url?: string) {
+  // Call the function - matching smoke test
+  await processInvoiceFile();
 
-// {
-//   success: true,
-//   statusCode: '200',
-//   data: {
-//     output: `In the picture, I see a cute cartoon cat wearing a Santa hat. It's holding a sign that says "Hi" along with a paw print. The cat is also wearing a red collar with a round charm on it. The overall style is cheerful and festive.\n`,
-//     data1: 'value1',
-//     data2: 'value2'
-//   },
-//   message: 'Workflow triggered successfully with file upload'
-// }
+  if (url) {
+    await processInvoiceUrl(url);
+  }
+}

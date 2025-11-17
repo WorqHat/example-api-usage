@@ -1,77 +1,47 @@
-import dotenv from "dotenv";
 import Worqhat from "worqhat";
 
-dotenv.config();
+export async function createTask() {
+  // Initialize the client with your API key - matching smoke test
+  const apiKey = process.env.WORQHAT_API_KEY;
+  if (!apiKey) {
+    throw new Error("WORQHAT_API_KEY environment variable is required");
+  }
 
-const API_KEY = process.env.API_KEY || "";
-
-export const client = new Worqhat({
-  apiKey: API_KEY,
-});
-
-export async function dbInsert() {
-  const table = "customer_management_data";
-  // Sample 1: single JSON as data
-  const singleData = {
-    customer_name: "Alice Johnson",
-    customer_email: "alice@example.com",
-    customer_phone_number: "+91-9876543210",
-    customer_address: "123 MG Road, Pune",
-    customer_type: "individual",
-  };
-
-  const singleResponse = await client.db.insertRecord({
-    table,
-    data: singleData,
+  const client = new Worqhat({
+    apiKey, // Always use environment variables for API keys
   });
 
-  console.log(
-    "Single insert response:\n",
-    JSON.stringify(singleResponse, null, 2)
-  );
+  try {
+    const taskId = Math.floor(Date.now() / 1000);
+    const nowIso = new Date().toISOString();
 
-  // Sample 2: array of JSONs as data (bulk insert)
-  const bulkData = [
-    {
-      customer_name: "Bob Smith",
-      customer_email: "bob@example.com",
-      customer_phone_number: "+91-9000000001",
-      customer_address: "456 Brigade Road, Bengaluru",
-      customer_type: "business",
-    },
-    {
-      customer_name: "Carol Lee",
-      customer_email: "carol@example.com",
-      customer_phone_number: "+91-9000000002",
-      customer_address: "789 Park Street, Kolkata",
-      customer_type: "individual",
-    },
-  ];
+    // Call the insertRecord method - matching smoke test
+    const response = await client.db.insertRecord({
+      table: "tasks", // The table to insert into - matching smoke test
+      data: {
+        // The data to insert - matching smoke test structure
+        id: taskId,
+        status: "open",
+        priority: "high",
+        created_at: nowIso,
+        updated_at: nowIso,
+      },
+    });
 
-  const bulkResponse = await client.db.insertRecord({
-    table,
-    data: bulkData,
-  });
-
-  console.log("Bulk insert response:\n", JSON.stringify(bulkResponse, null, 2));
+    // Handle the successful response
+    console.log("Task created with ID:", taskId);
+    console.log("Created task:", response.data);
+    return response;
+  } catch (error) {
+    // Handle any errors
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error creating task:", errorMessage);
+    throw error;
+  }
 }
 
-// Sample Response
-
-// Single insert response:
-//  {
-//   "success": true,
-//   "table": "customer_management_data",
-//   "count": 1,
-//   "executionTime": 241,
-//   "message": "Data inserted successfully into customer_management_data"
-// }
-
-// Bulk insert response:
-//  {
-//   "success": true,
-//   "table": "customer_management_data",
-//   "count": 2,
-//   "executionTime": 207,
-//   "message": "Data inserted successfully into customer_management_data"
-// }
+// Export a function to run all examples (for backward compatibility)
+export async function dbInsert() {
+  // Call the function - matching smoke test
+  await createTask();
+}

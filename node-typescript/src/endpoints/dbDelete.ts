@@ -1,44 +1,41 @@
-import dotenv from "dotenv";
 import Worqhat from "worqhat";
 
-dotenv.config();
+export async function deleteTaskById(taskId: number) {
+  // Initialize the client with your API key - matching smoke test
+  const apiKey = process.env.WORQHAT_API_KEY;
+  if (!apiKey) {
+    throw new Error("WORQHAT_API_KEY environment variable is required");
+  }
 
-const API_KEY = process.env.API_KEY || "";
-
-export const client = new Worqhat({
-  apiKey: API_KEY,
-});
-
-export async function dbDelete() {
-  const table = "users";
-
-  // Where usage:
-  // - You can provide a SINGLE condition, e.g. { id: "123" }
-  // - Or MULTIPLE conditions, e.g. { id: "123", email: "user@example.com" }
-  //   Multiple keys are treated as AND filters (id = '123' AND email = 'user@example.com').
-  //
-  // Examples:
-  // const whereSingle = { id: "123" };
-  // const whereMultiple = { id: "123", email: "user@example.com" };
-
-  const where = {
-    id: "123",
-    email: "user@example.com",
-  };
-
-  const response = await client.db.deleteRecords({
-    table,
-    where,
+  const client = new Worqhat({
+    apiKey, // Always use environment variables for API keys
+    environment: process.env.WORQHAT_ENVIRONMENT || "production", // Defaults to production
   });
 
-  console.log(JSON.stringify(response, null, 2));
+  try {
+    // Call the deleteRecords method - matching smoke test
+    const response = await client.db.deleteRecords({
+      table: "tasks", // The table to delete from - matching smoke test
+      where: {
+        // The condition to match records - matching smoke test
+        id: taskId,
+      },
+    });
+
+    // Handle the successful response
+    console.log(`Deleted task with ID: ${taskId}`);
+    console.log(`Message: ${response.message}`);
+    return response;
+  } catch (error) {
+    // Handle any errors
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Error deleting task:", errorMessage);
+    throw error;
+  }
 }
 
-// Sample Response:
-// {
-//   "success": true,
-//   "table": "users",
-//   "count": 1,
-//   "executionTime": 241,
-//   "message": "Data deleted successfully from users"
-// }
+// Export a function to run all examples (for backward compatibility)
+export async function dbDelete(taskId: number) {
+  // Call the function - matching smoke test
+  await deleteTaskById(taskId);
+}

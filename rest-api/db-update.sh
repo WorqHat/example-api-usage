@@ -6,10 +6,17 @@ DATA_JSON="${3:-}"
 if [ -z "$TABLE" ] || [ -z "$WHERE_JSON" ] || [ -z "$DATA_JSON" ]; then echo "Usage: $0 <table> '<where-json>' '<data-json>'"; exit 1; fi
 source_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 if [ -f "$source_dir/.env" ]; then export $(grep -v '^#' "$source_dir/.env" | xargs); fi
-# Example:
+# Examples:
+# 1) Update records using multiple where conditions
+# ./db-update.sh users '{"id": "123", "email": "user@example.com"}' '{"status": "active", "name": "Updated Name"}'
+#
+# 2) Update all inactive users to active
+# ./db-update.sh users '{"status": "inactive"}' '{"status": "active", "updatedBy": "system"}'
+#
+# Example cURL commands:
 # curl -X PUT "https://api.worqhat.com/db/update" \
-#   -H "Authorization: Bearer $API_KEY" \
 #   -H "Content-Type: application/json" \
+#   -H "Authorization: Bearer YOUR_API_KEY" \
 #   -d '{
 #     "table": "users",
 #     "where": {
@@ -19,7 +26,8 @@ if [ -f "$source_dir/.env" ]; then export $(grep -v '^#' "$source_dir/.env" | xa
 #     "data": {
 #       "status": "active",
 #       "name": "Updated Name"
-#     }
+#     },
+#     "environment": "production"
 #   }'
 
 # Sample Response:

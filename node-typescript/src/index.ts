@@ -1,15 +1,16 @@
-import express from 'express';
-import type { Request, Response, NextFunction } from 'express';
-import { checkStatus } from './endpoints/status';
-import { checkHealth } from './endpoints/health';
-import { dbQuery } from './endpoints/dbQuery';
-import { dbInsert } from './endpoints/dbInsert';
-import { dbUpdate } from './endpoints/dbUpdate';
-import { dbDelete } from './endpoints/dbDelete';
-import { dbNlQuery } from './endpoints/dbNlQuery';
-import { triggerFlowJson } from './endpoints/flowsTriggerJson';
-import { getFlowsMetrics } from './endpoints/flowsMetrics';
-import { triggerFlowWithFile, triggerFlowWithUrl } from './endpoints/flowsFile';
+import express from "express";
+import type { Request, Response, NextFunction } from "express";
+import { checkStatus } from "./endpoints/status";
+import { checkHealth } from "./endpoints/health";
+import { dbQuery } from "./endpoints/dbQuery";
+import { dbInsert } from "./endpoints/dbInsert";
+import { dbUpdate } from "./endpoints/dbUpdate";
+import { dbDelete } from "./endpoints/dbDelete";
+import { dbNlQuery } from "./endpoints/dbNlQuery";
+import { triggerFlowJson } from "./endpoints/flowsTriggerJson";
+import { getFlowsMetrics } from "./endpoints/flowsMetrics";
+import { triggerFlowWithFile } from "./endpoints/flowsFile";
+import { storage } from "./endpoints/storage";
 
 const app = express();
 const PORT = process.env.PORT ? Number(process.env.PORT) : 4000;
@@ -21,123 +22,127 @@ app.use((req: Request, _res: Response, next: NextFunction) => {
 });
 
 // Root status check (calls remote '/status')
-app.get('/status', async (_req: Request, res: Response) => {
+app.get("/status", async (_req: Request, res: Response) => {
   try {
     await checkStatus();
-    res.send('Status checked. See server logs for response.');
+    res.send("Status checked. See server logs for response.");
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error checking status');
+    res.status(500).send("Error checking status");
   }
 });
 
 // Health check (calls remote '/health')
-app.get('/health', async (_req: Request, res: Response) => {
+app.get("/health", async (_req: Request, res: Response) => {
   try {
     await checkHealth();
-    res.send('Health checked. See server logs for response.');
+    res.send("Health checked. See server logs for response.");
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error checking health');
+    res.status(500).send("Error checking health");
   }
 });
 
 // DB: SQL query
-app.get('/db/query', async (_req: Request, res: Response) => {
+app.get("/db/query", async (req: Request, res: Response) => {
   try {
-    await dbQuery('SELECT * FROM my_table', 10, 0);
-    res.send('dbQuery executed. See server logs for response.');
+    const taskId = parseInt(req.query.id as string) || 1; // Default to 1 if not provided
+    await dbQuery(taskId);
+    res.send("dbQuery executed. See server logs for response.");
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error executing dbQuery');
+    res.status(500).send("Error executing dbQuery");
   }
 });
 
 // DB: Insert
-app.get('/db/insert', async (_req: Request, res: Response) => {
+app.get("/db/insert", async (_req: Request, res: Response) => {
   try {
     await dbInsert();
-    res.send('dbInsert executed. See server logs for response.');
+    res.send("dbInsert executed. See server logs for response.");
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error executing dbInsert');
+    res.status(500).send("Error executing dbInsert");
   }
 });
 
 // DB: Update
-app.get('/db/update', async (_req: Request, res: Response) => {
+app.get("/db/update", async (_req: Request, res: Response) => {
   try {
     await dbUpdate();
-    res.send('dbUpdate executed. See server logs for response.');
+    res.send("dbUpdate executed. See server logs for response.");
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error executing dbUpdate');
+    res.status(500).send("Error executing dbUpdate");
   }
 });
 
 // DB: Delete
-app.get('/db/delete', async (_req: Request, res: Response) => {
+app.get("/db/delete", async (req: Request, res: Response) => {
   try {
-    await dbDelete('my_table', { id: 1 });
-    res.send('dbDelete executed. See server logs for response.');
+    const taskId = parseInt(req.query.id as string) || 1; // Default to 1 if not provided
+    await dbDelete(taskId);
+    res.send("dbDelete executed. See server logs for response.");
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error executing dbDelete');
+    res.status(500).send("Error executing dbDelete");
   }
 });
 
 // DB: Natural language query
-app.get('/db/nl-query', async (_req: Request, res: Response) => {
+app.get("/db/nl-query", async (req: Request, res: Response) => {
   try {
-    await dbNlQuery('How many rows are in my_table?', 'my_table');
-    res.send('dbNlQuery executed. See server logs for response.');
+    const taskId = parseInt(req.query.id as string) || 1; // Default to 1 if not provided
+    await dbNlQuery(taskId);
+    res.send("dbNlQuery executed. See server logs for response.");
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error executing dbNlQuery');
+    res.status(500).send("Error executing dbNlQuery");
   }
 });
 
 // Flows: Trigger JSON
-app.get('/flows/trigger-json', async (_req: Request, res: Response) => {
+app.get("/flows/trigger-json", async (_req: Request, res: Response) => {
   try {
     await triggerFlowJson();
-    res.send('triggerFlowJson executed. See server logs for response.');
+    res.send("triggerFlowJson executed. See server logs for response.");
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error triggering flow (JSON)');
+    res.status(500).send("Error triggering flow (JSON)");
   }
 });
 
 // Flows: Metrics
-app.get('/flows/metrics', async (_req: Request, res: Response) => {
+app.get("/flows/metrics", async (_req: Request, res: Response) => {
   try {
     await getFlowsMetrics();
-    res.send('getFlowsMetrics executed. See server logs for response.');
+    res.send("getFlowsMetrics executed. See server logs for response.");
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error fetching flows metrics');
+    res.status(500).send("Error fetching flows metrics");
   }
 });
 
-// Flows: Trigger with URL (no local file dependency)
-app.get('/flows/file-url', async (_req: Request, res: Response) => {
+// Flows: Trigger with file (uses Invoice.pdf)
+app.get("/flows/file-upload", async (req: Request, res: Response) => {
   try {
-    await triggerFlowWithUrl();
-    res.send('triggerFlowWithUrl executed. See server logs for response.');
+    const url = req.query.url as string; // Optional URL parameter
+    await triggerFlowWithFile(url);
+    res.send("triggerFlowWithFile executed. See server logs for response.");
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error triggering flow with URL');
+    res.status(500).send("Error triggering flow with file");
   }
 });
 
-// Flows: Trigger with file (uses repo README as a demo file)
-app.get('/flows/file-upload', async (_req: Request, res: Response) => {
+// Storage operations
+app.get("/storage/upload", async (_req: Request, res: Response) => {
   try {
-    await triggerFlowWithFile();
-    res.send('triggerFlowWithFile executed. See server logs for response.');
+    await storage();
+    res.send("Storage operations executed. See server logs for response.");
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error triggering flow with file');
+    res.status(500).send("Error with storage operations");
   }
 });
 

@@ -27,7 +27,7 @@
     "mockResponse": {
       "success": true,
       "status": "ok",
-      "latency": 42
+      "latency": 77
     }
   },
   {

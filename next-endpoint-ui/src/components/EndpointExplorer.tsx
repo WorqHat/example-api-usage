@@ -110,16 +110,16 @@ export default function EndpointExplorer({ endpoints }: ExplorerProps) {
     new Date(responseState.timestamp).toLocaleTimeString();
 
   return (
-    <div className="min-h-screen bg-[#050A30] px-4 py-8 text-white md:px-8">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 lg:flex-row">
-        <aside className="w-full rounded-3xl border border-white/10 bg-[#0C1649] p-4 lg:max-w-xs">
-          <div className="mb-4 flex items-center justify-between text-xs uppercase tracking-[0.2em] text-white/60">
+    <div className="bg-gradient-to-b from-black via-[#050A30] to-black px-4 py-8 text-white md:px-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 text-[#050A30] lg:flex-row">
+        <aside className="w-full rounded-3xl border border-black/10 bg-white p-5 shadow-2xl shadow-black/20 lg:max-w-xs">
+          <div className="mb-4 flex items-center justify-between text-xs uppercase tracking-[0.2em] text-black/50">
             <span>Endpoints</span>
-            <span className="rounded-full bg-white/10 px-3 py-1 text-[10px] text-white/70">
+            <span className="rounded-full bg-black/5 px-3 py-1 text-[10px] text-black/60">
               {endpoints.length} total
             </span>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-3">
             {endpoints.map((endpoint) => {
               const isActive = endpoint.id === selectedEndpoint.id;
               return (
@@ -128,18 +128,28 @@ export default function EndpointExplorer({ endpoints }: ExplorerProps) {
                   onClick={() => setSelectedId(endpoint.id)}
                   className={`w-full rounded-2xl border px-4 py-3 text-left transition ${
                     isActive
-                      ? "border-[#FDCEB0]/60 bg-[#1A4289]/60 text-white"
-                      : "border-white/10 bg-transparent text-white/70 hover:border-white/30 hover:bg-white/5"
+                      ? "border-[#050A30] bg-[#050A30] text-white shadow-lg shadow-[#050A30]/30"
+                      : "border-black/5 bg-white text-[#050A30] hover:border-[#1A4289]/40 hover:bg-[#f7f8fb]"
                   }`}
                 >
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-[#FDCEB0]">
+                  <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-[#1A4289]">
                     <MethodBadge method={endpoint.method} />
                     <span>{endpoint.path}</span>
                   </div>
-                  <p className="mt-1 text-sm font-semibold text-white">
+                  <p
+                    className={`mt-1 text-sm font-semibold ${
+                      isActive ? "text-white" : "text-[#050A30]"
+                    }`}
+                  >
                     {endpoint.name}
                   </p>
-                  <p className="text-xs text-white/60">{endpoint.summary}</p>
+                  <p
+                    className={`text-xs ${
+                      isActive ? "text-white/80" : "text-black/60"
+                    }`}
+                  >
+                    {endpoint.summary}
+                  </p>
                 </button>
               );
             })}
@@ -147,20 +157,20 @@ export default function EndpointExplorer({ endpoints }: ExplorerProps) {
         </aside>
 
         <section className="flex flex-1 flex-col gap-6">
-          <article className="rounded-3xl border border-white/10 bg-[#0C1649] p-6 shadow-2xl shadow-black/50">
-            <header className="flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+          <article className="rounded-3xl border border-black/10 bg-white p-6 shadow-2xl shadow-black/20">
+            <header className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 pb-4">
               <div>
                 <div className="flex items-center gap-3">
                   <MethodBadge method={selectedEndpoint.method} size="lg" />
-                  <span className="text-lg font-semibold">
+                  <span className="text-lg font-semibold text-[#050A30]">
                     {selectedEndpoint.path}
                   </span>
                 </div>
-                <p className="mt-1 text-sm text-white/70">
+                <p className="mt-1 text-sm text-black/60">
                   {selectedEndpoint.summary}
                 </p>
               </div>
-              <span className="rounded-full border border-[#FDCEB0]/40 bg-[#FDCEB0]/10 px-4 py-1 text-xs uppercase tracking-wide text-[#FDCEB0]">
+              <span className="rounded-full border border-[#1A4289]/30 bg-[#1A4289]/10 px-4 py-1 text-xs uppercase tracking-wide text-[#1A4289]">
                 Request
               </span>
             </header>
@@ -174,8 +184,8 @@ export default function EndpointExplorer({ endpoints }: ExplorerProps) {
                     onClick={() => setActiveTab(tab.id)}
                     className={`rounded-2xl px-5 py-2 text-sm font-semibold transition ${
                       isActive
-                        ? "bg-[#FDCEB0] text-[#050A30]"
-                        : "border border-white/15 text-white/70 hover:border-white/40 hover:text-white"
+                        ? "bg-black text-white shadow-md shadow-black/30"
+                        : "border border-black/10 text-black/70 hover:border-black/40 hover:text-black"
                     }`}
                   >
                     {tab.label}
@@ -184,20 +194,20 @@ export default function EndpointExplorer({ endpoints }: ExplorerProps) {
               })}
             </nav>
 
-            <div className="mt-4 rounded-2xl border border-white/10 bg-black/40 p-4">
+            <div className="mt-4 rounded-2xl border border-black/10 bg-black p-4">
               <pre className="whitespace-pre-wrap text-sm leading-6 text-[#FDCEB0]">
                 {codeSnippet}
               </pre>
             </div>
           </article>
 
-          <article className="flex flex-1 flex-col rounded-3xl border border-white/10 bg-[#0C1649] p-6 shadow-2xl shadow-black/50">
-            <header className="flex items-center justify-between border-b border-white/10 pb-4">
+          <article className="flex flex-1 flex-col rounded-3xl border border-black/10 bg-white p-6 shadow-2xl shadow-black/20">
+            <header className="flex items-center justify-between border-b border-black/10 pb-4">
               <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-white/50">
+                <p className="text-sm uppercase tracking-[0.2em] text-black/50">
                   Live Response
                 </p>
-                <p className="text-xs text-white/60">
+                <p className="text-xs text-black/60">
                   Automatically refreshed whenever you choose a different
                   endpoint.
                 </p>
@@ -208,23 +218,23 @@ export default function EndpointExplorer({ endpoints }: ExplorerProps) {
                 {responseBadge.label}
               </span>
             </header>
-            <div className="mt-4 flex flex-col gap-3 text-sm text-white/70 md:flex-row">
-              <div className="flex-1 rounded-2xl border border-white/10 bg-black/30 p-4">
-                <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.25em] text-white/40">
+            <div className="mt-4 flex flex-col gap-3 text-sm text-black/70 md:flex-row">
+              <div className="flex-1 rounded-2xl border border-black/10 bg-black/5 p-4">
+                <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.25em] text-black/50">
                   <span>Status</span>
-                  <span className="text-white">
+                  <span className="text-black">
                     {responseState.statusCode ?? "—"}{" "}
                     {responseState.statusText ?? ""}
                   </span>
                 </div>
-                <div className="mt-2 text-xs text-white/60">
+                <div className="mt-2 text-xs text-black/60">
                   Source: {responseState.source ?? "—"}
                 </div>
-                <div className="mt-1 text-xs text-white/60">
+                <div className="mt-1 text-xs text-black/60">
                   Updated: {lastUpdated ?? "—"}
                 </div>
               </div>
-              <div className="flex-1 rounded-2xl border border-dashed border-white/15 bg-black/20 p-4 text-xs text-white/70">
+              <div className="flex-1 rounded-2xl border border-dashed border-black/15 bg-black/90 p-4 text-xs text-white/80">
                 <pre className="max-h-72 overflow-auto whitespace-pre-wrap leading-6 text-[#FDCEB0]">
                   {formattedResponse}
                 </pre>

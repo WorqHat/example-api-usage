@@ -1,41 +1,60 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const LOGO_URL = "https://assets.worqhat.com/logos/worqhat-logo-dark.png";
 
+const navTabs = [
+  { label: "Docs", href: "/docs" },
+  { label: "API reference", href: "/api-reference" },
+  { label: "Cookbook", href: "/cookbook" },
+];
+
 export default function SiteHeader() {
+  const pathname = usePathname();
+
   return (
-    <header className="border-b border-white/10 bg-black/90 px-6 py-5 text-white backdrop-blur-md">
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
+    <header className="border-b border-white/10 bg-black px-6 py-4 text-white">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-6">
+        <div className="flex items-center gap-3">
           <Image
             src={LOGO_URL}
-            alt="WorqHat logo"
-            width={180}
-            height={80}
+            alt="WorqHat"
+            width={120}
+            height={60}
             priority
             className="h-12 w-auto"
           />
-          <div>
-            <h1 className="text-2xl font-semibold text-white">
-              API Playground
-            </h1>
-            <p className="text-sm text-white/70">
-              Preview every endpoint before you wire it into your own apps.
-            </p>
-          </div>
         </div>
+
+        <nav className="flex items-center gap-1">
+          {navTabs.map((tab) => {
+            const isActive = pathname === tab.href;
+            return (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                className={`px-4 py-2 text-sm transition-colors ${
+                  isActive
+                    ? "text-white"
+                    : "text-white/60 hover:text-white/80"
+                }`}
+              >
+                {tab.label}
+              </Link>
+            );
+          })}
+        </nav>
+
         <div className="flex items-center gap-3">
-          <span className="text-xs uppercase tracking-[0.35em] text-white/50">
-            Build your own app
-          </span>
-          <a  
-            className="rounded-full bg-[#FDCEB0] px-5 py-2 text-sm font-semibold text-[#050A30] shadow-lg shadow-[#FDCEB0]/30 transition hover:translate-y-0.5 hover:bg-[#ffddb3]"
-            href="https://worqhat.com"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            Start building
-          </a>
+          <button className="rounded-lg bg-white/10 px-4 py-2 text-sm text-white transition-colors hover:bg-white/20">
+            Log in
+          </button>
+          <button className="rounded-lg bg-white px-4 py-2 text-sm text-black transition-colors hover:bg-white/90">
+            Sign up
+          </button>
         </div>
       </div>
     </header>

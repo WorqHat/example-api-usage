@@ -17,7 +17,7 @@ export default function SiteHeader() {
           />
           <div>
             <h1 className="text-2xl font-semibold text-white">
-              WorqHat API Playground
+              API Playground
             </h1>
             <p className="text-sm text-white/70">
               Preview every endpoint before you wire it into your own apps.

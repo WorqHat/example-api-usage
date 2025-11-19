@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { EndpointDefinition } from "@/types/endpoints";
+import type {
+  EndpointCategory,
+  EndpointDefinition,
+} from "@/types/endpoints";
 
 type ExplorerProps = {
   endpoints: EndpointDefinition[];
@@ -12,6 +15,35 @@ type TabId = "api" | "sdk";
 const tabs: { id: TabId; label: string }[] = [
   { id: "api", label: "Test via API" },
   { id: "sdk", label: "Test via SDK" },
+];
+
+type SectionMeta = {
+  id: EndpointCategory;
+  label: string;
+  description: string;
+};
+
+const sections: SectionMeta[] = [
+  {
+    id: "system",
+    label: "System",
+    description: "Platform health, status and heartbeat checks.",
+  },
+  {
+    id: "database",
+    label: "Database",
+    description: "Direct data mutations powered by WorqHat tables.",
+  },
+  {
+    id: "workflows",
+    label: "Workflows",
+    description: "Automation triggers and flow orchestration.",
+  },
+  {
+    id: "storage",
+    label: "Storage",
+    description: "Files, assets and bucket-level operations.",
+  },
 ];
 
 type ResponseState = {
@@ -33,6 +65,17 @@ export default function EndpointExplorer({ endpoints }: ExplorerProps) {
   const selectedEndpoint = useMemo(
     () => endpoints.find((endpoint) => endpoint.id === selectedId),
     [endpoints, selectedId]
+  );
+
+  const groupedSections = useMemo(
+    () =>
+      sections.map((section) => ({
+        ...section,
+        endpoints: endpoints.filter(
+          (endpoint) => endpoint.category === section.id
+        ),
+      })),
+    [endpoints]
   );
 
   const codeSnippet =
@@ -116,48 +159,66 @@ export default function EndpointExplorer({ endpoints }: ExplorerProps) {
   return (
     <div className="bg-gradient-to-b from-black via-[#050A30] to-black px-4 py-8 text-white md:px-8">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 text-[#050A30] lg:flex-row">
-        <aside className="w-full rounded-3xl border border-black/10 bg-white p-5 shadow-2xl shadow-black/20 lg:max-w-xs">
-          <div className="mb-4 flex items-center justify-between text-xs uppercase tracking-[0.2em] text-black/50">
+        <aside className="w-full space-y-4 rounded-3xl border border-black/10 bg-white p-5 shadow-2xl shadow-black/20 lg:max-w-xs">
+          <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-black/50">
             <span>Endpoints</span>
             <span className="rounded-full bg-black/5 px-3 py-1 text-[10px] text-black/60">
               {endpoints.length} total
             </span>
           </div>
-          <div className="space-y-3">
-            {endpoints.map((endpoint) => {
-              const isActive = endpoint.id === selectedEndpoint.id;
-              return (
-                <button
-                  key={endpoint.id}
-                  onClick={() => setSelectedId(endpoint.id)}
-                  className={`w-full rounded-2xl border px-4 py-3 text-left transition ${
-                    isActive
-                      ? "border-[#050A30] bg-[#050A30] text-white shadow-lg shadow-[#050A30]/30"
-                      : "border-black/5 bg-white text-[#050A30] hover:border-[#1A4289]/40 hover:bg-[#f7f8fb]"
-                  }`}
-                >
-                  <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-[#1A4289]">
-                    <MethodBadge method={endpoint.method} />
-                    <span>{endpoint.path}</span>
+          {groupedSections.map((section) => (
+            <div
+              key={section.id}
+              className="rounded-2xl border border-black/5 bg-white/60 p-4"
+            >
+              <div className="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-black/45">
+                <span>{section.label}</span>
+                <span className="text-black/50">{section.endpoints.length}</span>
+              </div>
+              <p className="mt-1 text-xs text-black/50">{section.description}</p>
+              <div className="mt-3 space-y-3">
+                {section.endpoints.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-black/10 bg-white/70 px-4 py-3 text-xs text-black/50">
+                    Coming soon
                   </div>
-                  <p
-                    className={`mt-1 text-sm font-semibold ${
-                      isActive ? "text-white" : "text-[#050A30]"
-                    }`}
-                  >
-                    {endpoint.name}
-                  </p>
-                  <p
-                    className={`text-xs ${
-                      isActive ? "text-white/80" : "text-black/60"
-                    }`}
-                  >
-                    {endpoint.summary}
-                  </p>
-                </button>
-              );
-            })}
-          </div>
+                ) : (
+                  section.endpoints.map((endpoint) => {
+                    const isActive = endpoint.id === selectedEndpoint.id;
+                    return (
+                      <button
+                        key={endpoint.id}
+                        onClick={() => setSelectedId(endpoint.id)}
+                        className={`w-full rounded-2xl border px-4 py-3 text-left transition ${
+                          isActive
+                            ? "border-[#050A30] bg-[#050A30] text-white shadow-lg shadow-[#050A30]/30"
+                            : "border-black/5 bg-white text-[#050A30] hover:border-[#1A4289]/40 hover:bg-[#f7f8fb]"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-[#1A4289]">
+                          <MethodBadge method={endpoint.method} />
+                          <span>{endpoint.path}</span>
+                        </div>
+                        <p
+                          className={`mt-1 text-sm font-semibold ${
+                            isActive ? "text-white" : "text-[#050A30]"
+                          }`}
+                        >
+                          {endpoint.name}
+                        </p>
+                        <p
+                          className={`text-xs ${
+                            isActive ? "text-white/80" : "text-black/60"
+                          }`}
+                        >
+                          {endpoint.summary}
+                        </p>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            </div>
+          ))}
         </aside>
 
         <section className="flex flex-1 flex-col gap-6">

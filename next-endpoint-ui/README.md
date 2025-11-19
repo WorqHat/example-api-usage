@@ -27,6 +27,7 @@ type EndpointDefinition = {
   name: string;               // display name
   method: "GET" | "POST" | ...;
   path: string;               // relative path, e.g. "/db/insert"
+  category: "system" | "database" | "workflows" | "storage";
   summary: string;            // short description
   requestApiCode: string;     // shown under “Test via API”
   requestSdkCode: string;     // shown under “Test via SDK”
@@ -49,6 +50,7 @@ Example entry:
   "name": "Flows: Trigger JSON",
   "method": "POST",
   "path": "/flows/trigger-json",
+  "category": "workflows",
   "summary": "Kick off a workflow run by posting JSON input.",
   "requestApiCode": "const res = await fetch(\"https://api.worqhat.com/flows/trigger-json\", {...});",
   "requestSdkCode": "const run = await client.flows.triggerJson({ ... });",

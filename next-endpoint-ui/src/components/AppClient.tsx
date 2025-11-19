@@ -3,8 +3,6 @@
 import { useCallback, useState } from "react";
 import type { EndpointDefinition } from "@/types/endpoints";
 import EndpointExplorer from "@/components/EndpointExplorer";
-import SiteHeader from "@/components/SiteHeader";
-import SiteFooter from "@/components/SiteFooter";
 import WelcomeModal from "@/components/WelcomeModal";
 
 type AppClientProps = {
@@ -31,18 +29,16 @@ export default function AppClient({ endpoints }: AppClientProps) {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <SiteHeader />
-      <main className="flex-1 overflow-y-auto">
+    <>
+      <div className="overflow-y-auto">
         <EndpointExplorer endpoints={endpoints} userEmail={userEmail ?? ""} />
-      </main>
-      <SiteFooter />
+      </div>
       <WelcomeModal
         open={isModalOpen}
         defaultEmail={userEmail ?? ""}
         onSubmit={handleEmailSubmit}
       />
-    </div>
+    </>
   );
 }
 

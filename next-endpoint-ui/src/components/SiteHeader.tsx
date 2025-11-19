@@ -31,7 +31,8 @@ export default function SiteHeader() {
 
         <nav className="flex items-center gap-1">
           {navTabs.map((tab) => {
-            const isActive = pathname === tab.href;
+            const isActive =
+              pathname === tab.href || (pathname === "/" && tab.href === "/api-reference");
             return (
               <Link
                 key={tab.href}

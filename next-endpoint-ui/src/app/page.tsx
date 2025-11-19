@@ -1,11 +1,5 @@
-import AppClient from "@/components/AppClient";
-import { getEndpoints } from "@/lib/endpoints";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  const endpoints = getEndpoints();
-  return (
-    <div className="min-h-screen bg-black text-white">
-      <AppClient endpoints={endpoints} />
-    </div>
-  );
+  redirect("/api-reference");
 }

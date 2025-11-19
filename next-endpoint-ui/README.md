@@ -13,13 +13,6 @@ npm run dev
 # http://localhost:3000
 ```
 
-Optional environment variables (`.env.local`):
-
-```
-WORQHAT_API_KEY=sk_live_xxx
-WORQHAT_API_BASE_URL=https://api.worqhat.com  # default
-```
-
 Without `WORQHAT_API_KEY`, the UI still renders but `/api/run` will fall back to any `mockResponse` defined per endpoint (purely informational).
 
 ---

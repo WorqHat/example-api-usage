@@ -16,9 +16,6 @@ export default function SiteHeader() {
             className="h-12 w-auto"
           />
           <div>
-            <p className="text-xs uppercase tracking-[0.4em] text-[#FDCEB0]/70">
-              WorqHat
-            </p>
             <h1 className="text-2xl font-semibold text-white">
               WorqHat API Playground
             </h1>
@@ -31,11 +28,11 @@ export default function SiteHeader() {
           <span className="text-xs uppercase tracking-[0.35em] text-white/50">
             Build your own app
           </span>
-          <a
+          <a  
             className="rounded-full bg-[#FDCEB0] px-5 py-2 text-sm font-semibold text-[#050A30] shadow-lg shadow-[#FDCEB0]/30 transition hover:translate-y-0.5 hover:bg-[#ffddb3]"
             href="https://worqhat.com"
             target="_blank"
-            rel="noreferrer"
+            rel="noreferrer noopener"
           >
             Start building
           </a>

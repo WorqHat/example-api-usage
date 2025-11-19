@@ -203,7 +203,7 @@ export default function EndpointExplorer({
                       >
                         <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-[#1A4289]">
                           <MethodBadge method={endpoint.method} />
-                          <span>{endpoint.path}</span>
+                          <span>{formatPathForDisplay(endpoint.path)}</span>
                         </div>
                         <p
                           className={`mt-1 text-sm font-semibold ${
@@ -235,7 +235,7 @@ export default function EndpointExplorer({
                 <div className="flex items-center gap-3">
                   <MethodBadge method={selectedEndpoint.method} size="lg" />
                   <span className="text-lg font-semibold text-[#050A30]">
-                    {selectedEndpoint.path}
+                    {formatPathForDisplay(selectedEndpoint.path)}
                   </span>
                 </div>
                 <p className="mt-1 text-sm text-black/60">
@@ -397,5 +397,11 @@ function LoadingStatus() {
       </span>
     </span>
   );
+}
+
+function formatPathForDisplay(path: string): string {
+  // UUID pattern: 8-4-4-4-12 hex digits
+  const uuidPattern = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+  return path.replace(uuidPattern, "flow-id");
 }
 

@@ -105,6 +105,10 @@ export default function EndpointExplorer({ endpoints }: ExplorerProps) {
 
   const responseBadge = getResponseBadge(responseState.status);
   const formattedResponse = formatPayload(responseState.body);
+  const isLoading = responseState.status === "loading";
+  const responseContent = isLoading
+    ? `Requesting ${selectedEndpoint.name} from WorqHat...`
+    : formattedResponse;
   const lastUpdated =
     responseState.timestamp &&
     new Date(responseState.timestamp).toLocaleTimeString();
@@ -222,21 +226,33 @@ export default function EndpointExplorer({ endpoints }: ExplorerProps) {
               <div className="flex-1 rounded-2xl border border-black/10 bg-black/5 p-4">
                 <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.25em] text-black/50">
                   <span>Status</span>
-                  <span className="text-black">
-                    {responseState.statusCode ?? "—"}{" "}
-                    {responseState.statusText ?? ""}
-                  </span>
+                  {isLoading ? (
+                    <LoadingStatus />
+                  ) : (
+                    <span className="text-black">
+                      {responseState.statusCode ?? "—"}{" "}
+                      {responseState.statusText ?? ""}
+                    </span>
+                  )}
                 </div>
                 <div className="mt-2 text-xs text-black/60">
-                  Source: {responseState.source ?? "—"}
+                  Source:{" "}
+                  {isLoading
+                    ? "Contacting WorqHat..."
+                    : responseState.source ?? "—"}
                 </div>
                 <div className="mt-1 text-xs text-black/60">
-                  Updated: {lastUpdated ?? "—"}
+                  Updated: {isLoading ? "—" : lastUpdated ?? "—"}
                 </div>
               </div>
               <div className="flex-1 rounded-2xl border border-dashed border-black/15 bg-black/90 p-4 text-xs text-white/80">
-                <pre className="max-h-72 overflow-auto whitespace-pre-wrap leading-6 text-[#FDCEB0]">
-                  {formattedResponse}
+                <pre
+                  className={`max-h-72 overflow-auto whitespace-pre-wrap leading-6 text-[#FDCEB0] ${
+                    isLoading ? "animate-pulse text-[#FDCEB0]/70" : ""
+                  }`}
+                  aria-live="polite"
+                >
+                  {responseContent}
                 </pre>
               </div>
             </div>
@@ -302,5 +318,16 @@ function formatPayload(payload: unknown): string {
   } catch {
     return String(payload);
   }
+}
+
+function LoadingStatus() {
+  return (
+    <span className="flex items-center gap-2 text-black" aria-live="polite">
+      <span className="h-2 w-2 animate-pulse rounded-full bg-[#1A4289]" />
+      <span className="text-xs font-semibold uppercase tracking-[0.25em] text-[#1A4289]">
+        Fetching
+      </span>
+    </span>
+  );
 }
 

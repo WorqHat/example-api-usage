@@ -56,7 +56,7 @@
     }
   },
   {
-    "id": "flows-trigger-json-2",
+    "id": "flows-trigger-json-1",
     "name": "Trigger Workflow with JSON",
     "method": "POST",
     "path": "/flows/trigger/86a34e0f-60a9-4219-af5b-47aa7aa7c05b",

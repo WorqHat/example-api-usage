@@ -3,11 +3,12 @@ import { getEndpointById } from "@/lib/endpoints";
 
 type RunRequest = {
   endpointId: string;
+  userEmail?: string | null;
 };
 
 export async function POST(request: Request) {
   try {
-    const { endpointId }: RunRequest = await request.json();
+    const { endpointId, userEmail }: RunRequest = await request.json();
 
     if (!endpointId) {
       return NextResponse.json(
@@ -48,6 +49,10 @@ export async function POST(request: Request) {
       Authorization: `Bearer ${apiKey}`,
     };
 
+    if (userEmail) {
+      headers["X-Requester-Email"] = userEmail;
+    }
+
     if (endpoint.samplePayload) {
       headers["Content-Type"] = "application/json";
     }
@@ -77,6 +82,7 @@ export async function POST(request: Request) {
         status: upstreamResponse.status,
         statusText: upstreamResponse.statusText,
         data: parsedPayload,
+        context: userEmail ? { userEmail } : undefined,
       },
       { status: upstreamResponse.status }
     );

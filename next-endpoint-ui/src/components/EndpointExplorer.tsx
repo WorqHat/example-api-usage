@@ -8,6 +8,7 @@ import type {
 
 type ExplorerProps = {
   endpoints: EndpointDefinition[];
+  userEmail?: string;
 };
 
 type TabId = "api" | "sdk";
@@ -55,7 +56,10 @@ type ResponseState = {
   timestamp?: string;
 };
 
-export default function EndpointExplorer({ endpoints }: ExplorerProps) {
+export default function EndpointExplorer({
+  endpoints,
+  userEmail,
+}: ExplorerProps) {
   const [selectedId, setSelectedId] = useState(endpoints[0]?.id ?? "");
   const [activeTab, setActiveTab] = useState<TabId>("api");
   const [responseState, setResponseState] = useState<ResponseState>({
@@ -95,7 +99,10 @@ export default function EndpointExplorer({ endpoints }: ExplorerProps) {
         const response = await fetch("/api/run", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ endpointId: selectedEndpoint.id }),
+          body: JSON.stringify({
+            endpointId: selectedEndpoint.id,
+            userEmail: userEmail ?? null,
+          }),
         });
 
         const payload = await response.json();
@@ -132,7 +139,7 @@ export default function EndpointExplorer({ endpoints }: ExplorerProps) {
     return () => {
       cancelled = true;
     };
-  }, [selectedEndpoint]);
+  }, [selectedEndpoint, userEmail]);
 
   if (!endpoints.length) {
     return (

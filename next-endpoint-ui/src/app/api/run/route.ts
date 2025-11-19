@@ -57,12 +57,14 @@ export async function POST(request: Request) {
       headers["Content-Type"] = "application/json";
     }
 
+    const bodyPayload = endpoint.samplePayload
+      ? preparePayload(endpoint.samplePayload, endpoint.useUserEmail, userEmail)
+      : undefined;
+
     const upstreamResponse = await fetch(url, {
       method: endpoint.method,
       headers,
-      body: endpoint.samplePayload
-        ? JSON.stringify(endpoint.samplePayload)
-        : undefined,
+      body: bodyPayload ? JSON.stringify(bodyPayload) : undefined,
       cache: "no-store",
     });
 
@@ -98,5 +100,20 @@ export async function POST(request: Request) {
       { status: 500 }
     );
   }
+}
+
+function preparePayload(
+  basePayload: Record<string, unknown>,
+  useUserEmail: boolean | undefined,
+  userEmail: string | null | undefined
+) {
+  if (!useUserEmail) {
+    return basePayload;
+  }
+
+  return {
+    ...basePayload,
+    email: userEmail ?? "support@worqhat.com",
+  };
 }
 

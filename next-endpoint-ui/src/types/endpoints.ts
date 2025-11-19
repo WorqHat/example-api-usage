@@ -17,5 +17,6 @@ export type EndpointDefinition = {
   requestSdkCode: string;
   samplePayload?: Record<string, unknown> | null;
   mockResponse?: unknown;
+  useUserEmail?: boolean;
 };
 

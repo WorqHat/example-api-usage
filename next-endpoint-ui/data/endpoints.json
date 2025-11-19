@@ -62,10 +62,11 @@
     "path": "/flows/trigger/86a34e0f-60a9-4219-af5b-47aa7aa7c05b",
     "summary": "Triggering Workflows with JSON Data",
     "category": "workflows",
-    "requestApiCode": "const response = await fetch(\"https://api.worqhat.com/flows/trigger/86a34e0f-60a9-4219-af5b-47aa7aa7c05b\", {\n  method: \"POST\",\n  headers: {\n    \"Content-Type\": \"application/json\",\n    Authorization: `Bearer ${process.env.WORQHAT_API_KEY}`\n  },\n  body: JSON.stringify({\n    email: \"value1\"\n  })\n});\nconst data = await response.json();\nconsole.log(data);",
-    "requestSdkCode": "import Worqhat from \"worqhat\";\n\nconst client = new Worqhat({ apiKey: process.env.WORQHAT_API_KEY! });\nconst result = await client.flows.triggerWithPayload(\n  \"86a34e0f-60a9-4219-af5b-47aa7aa7c05b\",\n  { body: { email: \"value1\" } } as any\n);\nconsole.log(result);",
+    "useUserEmail": true,
+    "requestApiCode": "const storedEmail = window.localStorage.getItem(\"wh-playground-email\");\nconst email = storedEmail ?? \"support@worqhat.com\";\nconst response = await fetch(\"https://api.worqhat.com/flows/trigger/86a34e0f-60a9-4219-af5b-47aa7aa7c05b\", {\n  method: \"POST\",\n  headers: {\n    \"Content-Type\": \"application/json\",\n    Authorization: `Bearer ${process.env.WORQHAT_API_KEY}`\n  },\n  body: JSON.stringify({\n    email\n  })\n});\nconst data = await response.json();\nconsole.log(data);",
+    "requestSdkCode": "import Worqhat from \"worqhat\";\n\nconst client = new Worqhat({ apiKey: process.env.WORQHAT_API_KEY! });\nconst storedEmail = window.localStorage.getItem(\"wh-playground-email\");\nconst email = storedEmail ?? \"support@worqhat.com\";\nconst result = await client.flows.triggerWithPayload(\n  \"86a34e0f-60a9-4219-af5b-47aa7aa7c05b\",\n  { body: { email } } as any\n);\nconsole.log(result);",
     "samplePayload": {
-      "email": "value1"
+      "email": "support@worqhat.com"
     },
     "mockResponse": {
       "success": true,

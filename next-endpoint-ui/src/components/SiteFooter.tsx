@@ -18,7 +18,7 @@ export default function SiteFooter() {
           <a
             href="https://worqhat.com"
             target="_blank"
-            rel="noreferrer"
+            rel="noreferrer noopener"
             className="rounded-full border border-[#1A4289] px-5 py-2 text-sm font-semibold text-[#1A4289] transition hover:bg-[#1A4289] hover:text-white"
           >
             Explore Docs

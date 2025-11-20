@@ -1,0 +1,81 @@
+# Database Operations
+
+WorqHat provides powerful database operations through simple API endpoints.
+
+## Insert Records
+
+Insert single or multiple records into a table:
+
+```javascript
+const response = await fetch('https://api.worqhat.com/db/insert', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${API_KEY}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    table: 'users',
+    data: {
+      name: 'John Doe',
+      email: 'john@example.com'
+    }
+  })
+});
+```
+
+## Query Records
+
+Query records using SQL or natural language:
+
+```javascript
+const response = await fetch('https://api.worqhat.com/db/query', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${API_KEY}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    table: 'users',
+    query: 'SELECT * FROM users WHERE email = ?',
+    params: ['john@example.com']
+  })
+});
+```
+
+## Update Records
+
+Update existing records:
+
+```javascript
+const response = await fetch('https://api.worqhat.com/db/update', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${API_KEY}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    table: 'users',
+    where: { id: 1 },
+    data: { name: 'Jane Doe' }
+  })
+});
+```
+
+## Delete Records
+
+Delete records from a table:
+
+```javascript
+const response = await fetch('https://api.worqhat.com/db/delete', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${API_KEY}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    table: 'users',
+    where: { id: 1 }
+  })
+});
+```
+

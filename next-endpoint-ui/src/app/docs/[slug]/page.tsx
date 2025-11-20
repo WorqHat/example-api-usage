@@ -9,17 +9,51 @@ type DocsPageProps = {
   params: Promise<{ slug: string }>;
 };
 
+function generateId(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 const components = {
   code: MDXCodeBlock,
-  h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h1 className="mb-6 text-4xl font-bold text-white" {...props} />
-  ),
-  h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h2 className="mb-4 mt-8 text-2xl font-semibold text-white" {...props} />
-  ),
-  h3: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-    <h3 className="mb-3 mt-6 text-xl font-semibold text-white" {...props} />
-  ),
+  h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
+    const id = typeof children === "string" ? generateId(children) : "";
+    return (
+      <h1
+        id={id}
+        className="mb-6 scroll-mt-6 text-4xl font-bold text-white"
+        {...props}
+      >
+        {children}
+      </h1>
+    );
+  },
+  h2: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
+    const id = typeof children === "string" ? generateId(children) : "";
+    return (
+      <h2
+        id={id}
+        className="mb-4 mt-8 scroll-mt-6 text-2xl font-semibold text-white"
+        {...props}
+      >
+        {children}
+      </h2>
+    );
+  },
+  h3: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
+    const id = typeof children === "string" ? generateId(children) : "";
+    return (
+      <h3
+        id={id}
+        className="mb-3 mt-6 scroll-mt-6 text-xl font-semibold text-white"
+        {...props}
+      >
+        {children}
+      </h3>
+    );
+  },
   p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
     <p className="mb-4 leading-7 text-white/80" {...props} />
   ),
@@ -57,7 +91,7 @@ export default async function DocsSlugPage({ params }: DocsPageProps) {
 
   return (
     <PageLayout>
-      <DocsLayout>
+      <DocsLayout content={content}>
         <MDXRemote source={content} components={components} />
       </DocsLayout>
     </PageLayout>

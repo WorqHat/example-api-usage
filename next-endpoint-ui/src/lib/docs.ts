@@ -7,6 +7,7 @@ export type DocItem = {
   href: string;
 };
 
+// Client-safe: can be imported in client components
 export const docSections: DocItem[] = [
   { id: "getting-started", title: "Getting Started", href: "/docs/getting-started" },
   { id: "authentication", title: "Authentication", href: "/docs/authentication" },
@@ -14,6 +15,7 @@ export const docSections: DocItem[] = [
   { id: "workflows", title: "Workflows", href: "/docs/workflows" },
 ];
 
+// Server-only: uses Node.js fs module
 export function getDocContent(docId: string): string | null {
   try {
     const filePath = path.join(
@@ -29,6 +31,7 @@ export function getDocContent(docId: string): string | null {
   }
 }
 
+// Client-safe: only uses the docSections array
 export function getDocById(docId: string): DocItem | undefined {
   return docSections.find((doc) => doc.id === docId);
 }

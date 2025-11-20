@@ -71,9 +71,18 @@ export default function DocsTOC({ content }: DocsTOCProps) {
 
   return (
     <aside className="hidden xl:block w-64 flex-shrink-0 border-l border-white/10 bg-black/50 p-6">
-      <div className="sticky top-6">
-        <div className="mb-4 text-xs font-semibold uppercase tracking-wider text-white/60">
-          On this page
+      <div className="sticky top-24">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="text-xs font-semibold uppercase tracking-wider text-white/60">
+            On this page
+          </div>
+          <button className="text-white/40 hover:text-white/60">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <rect x="2" y="4" width="12" height="1.5" rx="0.75" fill="currentColor" />
+              <rect x="2" y="7.25" width="12" height="1.5" rx="0.75" fill="currentColor" />
+              <rect x="2" y="10.5" width="12" height="1.5" rx="0.75" fill="currentColor" />
+            </svg>
+          </button>
         </div>
         <nav className="space-y-1">
           {tocItems.map((item) => {

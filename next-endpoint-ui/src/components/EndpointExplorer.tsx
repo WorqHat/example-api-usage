@@ -166,7 +166,7 @@ export default function EndpointExplorer({
   return (
     <div className="bg-gradient-to-b from-black via-[#050A30] to-black px-4 py-8 text-white md:px-8">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 text-[#050A30] lg:flex-row">
-        <aside className="w-full space-y-4 rounded-3xl border border-black/10 bg-white p-5 shadow-2xl shadow-black/20 lg:max-w-xs">
+        <aside className="sticky top-16 h-[calc(100vh-4rem)] w-full space-y-4 overflow-y-auto rounded-3xl border border-black/10 bg-white p-5 shadow-2xl shadow-black/20 lg:max-w-xs [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-black/50">
             <span>Endpoints</span>
             <span className="rounded-full bg-black/5 px-3 py-1 text-[10px] text-black/60">

@@ -51,7 +51,8 @@ export default function CookbookPage() {
 
   return (
     <PageLayout>
-      <div className="mx-auto max-w-7xl px-6 py-12">
+      <div className="bg-gradient-to-b from-black via-[#050A30] to-black">
+        <div className="mx-auto max-w-7xl px-6 py-12">
         <h1 className="mb-12 text-5xl font-bold text-white">Topics</h1>
         <div className="mb-16 grid grid-cols-2 gap-4 md:grid-cols-3">
           {topics.map((topic) => (
@@ -102,6 +103,7 @@ export default function CookbookPage() {
             </div>
           ))}
         </div>
+      </div>
       </div>
     </PageLayout>
   );

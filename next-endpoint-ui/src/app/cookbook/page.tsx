@@ -2,16 +2,17 @@ import PageLayout from "@/components/PageLayout";
 import Link from "next/link";
 import { getAllCookbookItems } from "@/lib/cookbook";
 import AvatarImage from "@/components/AvatarImage";
+import TopicCard from "@/components/TopicCard";
 
 export default async function CookbookPage() {
   const cookbookItems = getAllCookbookItems();
   const topics = [
-    { label: "Agents", gradient: "from-pink-500 to-orange-500" },
-    { label: "Multimodal", gradient: "from-blue-400 to-pink-400" },
-    { label: "Text", gradient: "from-green-500 to-emerald-600" },
-    { label: "Guardrails", gradient: "from-purple-500 to-purple-700" },
-    { label: "Optimization", gradient: "bg-orange-500" },
-    { label: "Workflows", gradient: "bg-blue-500" },
+    { label: "Agents", image: "/topics/agents.jpg" },
+    { label: "Multimodal", image: "/topics/multimodal.jpg" },
+    { label: "Text", image: "/topics/text.jpg" },
+    { label: "Guardrails", image: "/topics/guardrails.jpg" },
+    { label: "Optimization", image: "/topics/optimization.jpg" },
+    { label: "Workflows", image: "/topics/workflows.jpg" },
   ];
 
   const tagColors: Record<string, string> = {
@@ -40,18 +41,13 @@ export default async function CookbookPage() {
         {/* Content */}
         <div className="relative mx-auto max-w-7xl px-6 py-12">
           <h1 className="mb-12 text-5xl font-bold text-white">Topics</h1>
-          <div className="mb-16 grid grid-cols-2 gap-4 md:grid-cols-3">
+          <div className="mb-16 grid grid-cols-2 gap-3 md:grid-cols-3">
             {topics.map((topic) => (
-              <div
+              <TopicCard
                 key={topic.label}
-                className={`aspect-[4/3] rounded-lg ${
-                  topic.gradient.includes("from")
-                    ? `bg-gradient-to-br ${topic.gradient}`
-                    : topic.gradient
-                } flex items-center justify-center p-6 transition-transform hover:scale-105`}
-              >
-                <span className="text-2xl font-bold text-white">{topic.label}</span>
-              </div>
+                label={topic.label}
+                image={topic.image}
+              />
             ))}
           </div>
 

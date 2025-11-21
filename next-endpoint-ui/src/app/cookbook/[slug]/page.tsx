@@ -18,6 +18,19 @@ function generateId(text: string): string {
 
 const components = {
   code: MDXCodeBlock,
+  pre: ({ children, ...props }: React.HTMLAttributes<HTMLPreElement>) => {
+    // MDXRemote wraps code blocks in pre tags, but our MDXCodeBlock handles everything
+    // So we just pass through the children
+    if (children && typeof children === 'object' && 'props' in children) {
+      return <>{children}</>;
+    }
+    // Fallback for plain pre tags
+    return (
+      <pre className="mb-4 overflow-x-auto rounded-lg bg-black/90 border border-white/10 p-4 text-white/80" {...props}>
+        {children}
+      </pre>
+    );
+  },
   h1: ({ children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => {
     const id = typeof children === "string" ? generateId(children) : "";
     return (

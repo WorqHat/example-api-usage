@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type {
-  EndpointCategory,
-  EndpointDefinition,
-} from "@/types/endpoints";
+import type { EndpointCategory, EndpointDefinition } from "@/types/endpoints";
 
 type ExplorerProps = {
   endpoints: EndpointDefinition[];
@@ -84,8 +81,8 @@ export default function EndpointExplorer({
 
   const codeSnippet =
     activeTab === "api"
-      ? selectedEndpoint.requestApiCode
-      : selectedEndpoint.requestSdkCode;
+      ? selectedEndpoint?.requestApiCode ?? ""
+      : selectedEndpoint?.requestSdkCode ?? "";
 
   useEffect(() => {
     if (!selectedEndpoint) return;
@@ -164,28 +161,17 @@ export default function EndpointExplorer({
     new Date(responseState.timestamp).toLocaleTimeString();
 
   return (
-    <div className="bg-gradient-to-b from-black via-[#050A30] to-black px-4 py-8 text-white md:px-8">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 text-[#050A30] lg:flex-row lg:items-start">
-        <aside className="sticky top-16 h-[calc(100vh-4rem)] w-full space-y-4 overflow-y-auto rounded-3xl border border-black/10 bg-white p-6 shadow-2xl shadow-black/20 lg:max-w-xs [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-black/50">
-            <span>Endpoints</span>
-            <span className="rounded-full bg-black/5 px-3 py-1 text-[10px] text-black/60">
-              {endpoints.length} total
-            </span>
-          </div>
+    <div className="flex min-h-screen text-white">
+      <aside className="sticky top-16 h-[calc(100vh-1rem)] w-full overflow-y-auto border-r border-white/10 bg-black/50 pt-4 px-6 pb-6 lg:max-w-[280px] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <nav className="space-y-6">
           {groupedSections.map((section) => (
-            <div
-              key={section.id}
-              className="rounded-2xl border border-black/5 bg-white/60 p-4"
-            >
-              <div className="flex items-center justify-between text-xs uppercase tracking-[0.25em] text-black/45">
-                <span>{section.label}</span>
-                <span className="text-black/50">{section.endpoints.length}</span>
+            <div key={section.id}>
+              <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/40">
+                {section.label}
               </div>
-              <p className="mt-1 text-xs text-black/50">{section.description}</p>
-              <div className="mt-3 space-y-3">
+              <div className="space-y-1">
                 {section.endpoints.length === 0 ? (
-                  <div className="rounded-xl border border-dashed border-black/10 bg-white/70 px-4 py-3 text-xs text-black/50">
+                  <div className="rounded-md px-3 py-2 text-sm text-white/40">
                     Coming soon
                   </div>
                 ) : (
@@ -195,28 +181,20 @@ export default function EndpointExplorer({
                       <button
                         key={endpoint.id}
                         onClick={() => setSelectedId(endpoint.id)}
-                        className={`w-full rounded-2xl border px-4 py-3 text-left transition ${
+                        className={`w-full rounded-md px-3 py-2 text-left text-sm transition-colors ${
                           isActive
-                            ? "border-[#050A30] bg-[#050A30] text-white shadow-lg shadow-[#050A30]/30"
-                            : "border-black/5 bg-white text-[#050A30] hover:border-[#1A4289]/40 hover:bg-[#f7f8fb]"
+                            ? "bg-white/10 text-white"
+                            : "text-white/60 hover:bg-white/5 hover:text-white/80"
                         }`}
                       >
-                        <div className="flex items-center gap-2 text-xs uppercase tracking-wide text-[#1A4289]">
+                        <div className="flex items-center gap-2">
                           <MethodBadge method={endpoint.method} />
-                          <span>{formatPathForDisplay(endpoint.path)}</span>
+                          <span className="text-xs">
+                            {formatPathForDisplay(endpoint.path)}
+                          </span>
                         </div>
-                        <p
-                          className={`mt-1 text-sm font-semibold ${
-                            isActive ? "text-white" : "text-[#050A30]"
-                          }`}
-                        >
-                          {endpoint.name}
-                        </p>
-                        <p
-                          className={`text-xs ${
-                            isActive ? "text-white/80" : "text-black/60"
-                          }`}
-                        >
+                        <p className="mt-1 font-semibold">{endpoint.name}</p>
+                        <p className="mt-0.5 text-xs text-white/50">
                           {endpoint.summary}
                         </p>
                       </button>
@@ -226,107 +204,107 @@ export default function EndpointExplorer({
               </div>
             </div>
           ))}
-        </aside>
-
-        <section className="flex flex-1 flex-col gap-6 lg:mt-6">
-          <article className="rounded-3xl border border-black/10 bg-white p-6 shadow-2xl shadow-black/20">
-            <header className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 pb-4">
-              <div>
-                <div className="flex items-center gap-3">
-                  <MethodBadge method={selectedEndpoint.method} size="lg" />
-                  <span className="text-lg font-semibold text-[#050A30]">
-                    {formatPathForDisplay(selectedEndpoint.path)}
-                  </span>
-                </div>
-                <p className="mt-1 text-sm text-black/60">
-                  {selectedEndpoint.summary}
-                </p>
+        </nav>
+      </aside>
+      <main className="flex-1 overflow-y-auto p-8 text-white">
+        <div className="mx-auto max-w-4xl">
+          <div className="mb-8">
+            <div className="mb-4">
+              <div className="flex items-center gap-3 mb-2">
+                <MethodBadge method={selectedEndpoint.method} size="lg" />
+                <span className="text-2xl font-semibold text-white">
+                  {formatPathForDisplay(selectedEndpoint.path)}
+                </span>
               </div>
-              <span className="rounded-full border border-[#1A4289]/30 bg-[#1A4289]/10 px-4 py-1 text-xs uppercase tracking-wide text-[#1A4289]">
-                Request
-              </span>
-            </header>
-
-            <nav className="mt-4 flex gap-3">
-              {tabs.map((tab) => {
-                const isActive = tab.id === activeTab;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`rounded-2xl px-5 py-2 text-sm font-semibold transition ${
-                      isActive
-                        ? "bg-black text-white shadow-md shadow-black/30"
-                        : "border border-black/10 text-black/70 hover:border-black/40 hover:text-black"
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                );
-              })}
-            </nav>
-
-            <div className="mt-4 rounded-2xl border border-black/10 bg-black p-4">
-              <pre className="whitespace-pre-wrap text-sm leading-6 text-[#FDCEB0]">
-                {codeSnippet}
-              </pre>
+              <p className="text-sm text-white/60">
+                {selectedEndpoint.summary}
+              </p>
             </div>
-          </article>
+          </div>
 
-          <article className="flex flex-1 flex-col rounded-3xl border border-black/10 bg-white p-6 shadow-2xl shadow-black/20">
-            <header className="flex items-center justify-between border-b border-black/10 pb-4">
-              <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-black/50">
-                  Live Response
-                </p>
-                <p className="text-xs text-black/60">
-                  Automatically refreshed whenever you choose a different
-                  endpoint.
-                </p>
-              </div>
-              <span
-                className={`rounded-full px-4 py-1 text-xs font-semibold ${responseBadge.className}`}
-              >
-                {responseBadge.label}
-              </span>
-            </header>
-            <div className="mt-4 flex flex-col gap-3 text-sm text-black/70 md:flex-row">
-              <div className="flex-1 rounded-2xl border border-black/10 bg-black/5 p-4">
-                <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.25em] text-black/50">
-                  <span>Status</span>
-                  {isLoading ? (
-                    <LoadingStatus />
-                  ) : (
-                    <span className="text-black">
-                      {responseState.statusCode ?? "—"}{" "}
-                      {responseState.statusText ?? ""}
-                    </span>
-                  )}
-                </div>
-                <div className="mt-2 text-xs text-black/60">
-                  Source:{" "}
-                  {isLoading
-                    ? "Contacting WorqHat..."
-                    : responseState.source ?? "—"}
-                </div>
-                <div className="mt-1 text-xs text-black/60">
-                  Updated: {isLoading ? "—" : lastUpdated ?? "—"}
-                </div>
-              </div>
-              <div className="flex-1 rounded-2xl border border-dashed border-black/15 bg-black/90 p-4 text-xs text-white/80">
-                <pre
-                  className={`max-h-72 overflow-auto whitespace-pre-wrap leading-6 text-[#FDCEB0] ${
-                    isLoading ? "animate-pulse text-[#FDCEB0]/70" : ""
-                  }`}
-                  aria-live="polite"
-                >
-                  {responseContent}
+          <div className="space-y-6">
+            <article className="rounded-lg border border-white/10 bg-black/40 p-6">
+              <nav className="mb-4 flex gap-3">
+                {tabs.map((tab) => {
+                  const isActive = tab.id === activeTab;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`rounded-md px-4 py-2 text-sm font-semibold transition ${
+                        isActive
+                          ? "bg-white/10 text-white"
+                          : "text-white/60 hover:bg-white/5 hover:text-white/80"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </nav>
+
+              <div className="rounded-lg border border-white/10 bg-black p-4">
+                <pre className="whitespace-pre-wrap text-sm leading-6 text-[#FDCEB0]">
+                  {codeSnippet}
                 </pre>
               </div>
-            </div>
-          </article>
-        </section>
-      </div>
+            </article>
+
+            <article className="rounded-lg border border-white/10 bg-black/40 p-6">
+              <header className="mb-4 flex items-center justify-between border-b border-white/10 pb-4">
+                <div>
+                  <p className="text-sm font-semibold text-white">
+                    Live Response
+                  </p>
+                  <p className="mt-1 text-xs text-white/60">
+                    Automatically refreshed whenever you choose a different
+                    endpoint.
+                  </p>
+                </div>
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-semibold ${responseBadge.className}`}
+                >
+                  {responseBadge.label}
+                </span>
+              </header>
+              <div className="flex flex-col gap-4 text-sm md:flex-row">
+                <div className="flex-1 rounded-lg border border-white/10 bg-black/40 p-4">
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-white/60">
+                    <span>Status</span>
+                    {isLoading ? (
+                      <LoadingStatus />
+                    ) : (
+                      <span className="text-white">
+                        {responseState.statusCode ?? "—"}{" "}
+                        {responseState.statusText ?? ""}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-2 text-xs text-white/60">
+                    Source:{" "}
+                    {isLoading
+                      ? "Contacting WorqHat..."
+                      : responseState.source ?? "—"}
+                  </div>
+                  <div className="mt-1 text-xs text-white/60">
+                    Updated: {isLoading ? "—" : lastUpdated ?? "—"}
+                  </div>
+                </div>
+                <div className="flex-1 rounded-lg border border-dashed border-white/20 bg-black/90 p-4 text-xs">
+                  <pre
+                    className={`max-h-72 overflow-auto whitespace-pre-wrap leading-6 text-[#FDCEB0] ${
+                      isLoading ? "animate-pulse text-[#FDCEB0]/70" : ""
+                    }`}
+                    aria-live="polite"
+                  >
+                    {responseContent}
+                  </pre>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
@@ -341,8 +319,8 @@ function MethodBadge({ method, size = "sm" }: BadgeProps) {
     "rounded-full bg-[#FDCEB0]/20 text-[#FDCEB0] font-semibold tracking-wide";
   const sizing =
     size === "lg"
-      ? "px-4 py-1 text-xs"
-      : "px-3 py-0.5 text-[10px] uppercase tracking-[0.2em]";
+      ? "px-3 py-1 text-xs"
+      : "px-2 py-0.5 text-[10px] uppercase tracking-[0.2em]";
 
   return <span className={`${baseClass} ${sizing}`}>{method}</span>;
 }
@@ -390,7 +368,7 @@ function formatPayload(payload: unknown): string {
 
 function LoadingStatus() {
   return (
-    <span className="flex items-center gap-2 text-black" aria-live="polite">
+    <span className="flex items-center gap-2 text-white" aria-live="polite">
       <span className="h-2 w-2 animate-pulse rounded-full bg-[#1A4289]" />
       <span className="text-xs font-semibold uppercase tracking-[0.25em] text-[#1A4289]">
         Fetching
@@ -401,7 +379,7 @@ function LoadingStatus() {
 
 function formatPathForDisplay(path: string): string {
   // UUID pattern: 8-4-4-4-12 hex digits
-  const uuidPattern = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
+  const uuidPattern =
+    /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
   return path.replace(uuidPattern, "flow-id");
 }
-

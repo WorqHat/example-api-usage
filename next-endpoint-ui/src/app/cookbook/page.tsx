@@ -1,7 +1,7 @@
 import PageLayout from "@/components/PageLayout";
-import Image from "next/image";
 import Link from "next/link";
 import { getAllCookbookItems } from "@/lib/cookbook";
+import AvatarImage from "@/components/AvatarImage";
 
 export default async function CookbookPage() {
   const cookbookItems = getAllCookbookItems();
@@ -55,7 +55,6 @@ export default async function CookbookPage() {
             ))}
           </div>
 
-          <h2 className="mb-8 text-5xl font-bold text-white">WorqHat</h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {cookbookItems.map((item) => (
               <Link
@@ -75,17 +74,13 @@ export default async function CookbookPage() {
                           key={i}
                           className="relative h-8 w-8 rounded-full border-2 border-black overflow-hidden"
                         >
-                          <Image
+                          <AvatarImage
                             src={avatarPath}
                             alt={author.name}
+                            username={author.username}
                             width={32}
                             height={32}
                             className="object-cover"
-                            onError={(e) => {
-                              // Fallback to DiceBear if local image fails
-                              const target = e.target as HTMLImageElement;
-                              target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${author.username}`;
-                            }}
                           />
                         </div>
                       );

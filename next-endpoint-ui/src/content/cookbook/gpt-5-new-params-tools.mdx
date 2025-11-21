@@ -5,10 +5,8 @@ tags:
   - FUNCTIONS
   - REASONING
 authors:
-  - name: "Emma"
-    username: "emma"
-  - name: "David"
-    username: "david"
+  - name: "Samarth Madduru"
+    username: "samarth"
 ---
 
 # GPT-5 New Params and Tools
@@ -47,15 +45,15 @@ Improved streaming support for real-time responses.
 
 Here's how to use the new parameters:
 
-\`\`\`javascript
+```javascript
 const response = await openai.chat.completions.create({
-  model: "gpt-5",
+  model: "gpt-5.1-preview",
   messages: [{ role: "user", content: "Hello!" }],
   temperature: 0.7,
   top_p: 0.9,
   max_tokens: 500,
 });
-\`\`\`
+```
 
 ## Best Practices
 

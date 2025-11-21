@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import DocsTOC from "@/components/DocsTOC";
 import CopyPageButton from "@/components/CopyPageButton";
-import Image from "next/image";
+import AvatarImage from "@/components/AvatarImage";
 import type { Author, CookbookItem } from "@/lib/cookbook-client";
 
 type CookbookLayoutProps = {
@@ -80,17 +80,13 @@ export default function CookbookLayout({
                                 key={i}
                                 className="relative h-6 w-6 rounded-full border-2 border-black overflow-hidden"
                               >
-                                <Image
+                                <AvatarImage
                                   src={avatarPath}
                                   alt={author.name}
+                                  username={author.username}
                                   width={24}
                                   height={24}
                                   className="object-cover"
-                                  onError={(e) => {
-                                    // Fallback to DiceBear if local image fails
-                                    const target = e.target as HTMLImageElement;
-                                    target.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${author.username}`;
-                                  }}
                                 />
                               </div>
                             );

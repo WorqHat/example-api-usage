@@ -21,29 +21,45 @@ export default function DocsLayout({
 }: DocsLayoutProps) {
   const pathname = usePathname();
 
+  // Group docs by segment
+  const groupedDocs = docSections.reduce((acc, doc) => {
+    const seg = doc.segment || "Other";
+    if (!acc[seg]) {
+      acc[seg] = [];
+    }
+    acc[seg].push(doc);
+    return acc;
+  }, {} as Record<string, typeof docSections>);
+
   return (
     <div className="flex min-h-screen bg-gradient-to-b from-black via-[#050A30] to-black text-white">
       <aside className="sticky top-16 h-[calc(100vh-4rem)] w-full overflow-y-auto border-r border-white/10 bg-black/50 p-6 lg:max-w-[280px] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-        <div className="mb-6 text-xs font-semibold uppercase tracking-wider text-white/60">
-          Documentation
-        </div>
-        <nav className="space-y-1">
-          {docSections.map((section) => {
-            const isActive = pathname === section.href;
-            return (
-              <Link
-                key={section.id}
-                href={section.href}
-                className={`block rounded-md px-3 py-2 text-sm transition-colors ${
-                  isActive
-                    ? "bg-white/10 text-white"
-                    : "text-white/60 hover:bg-white/5 hover:text-white/80"
-                }`}
-              >
-                {section.title}
-              </Link>
-            );
-          })}
+        <nav className="space-y-6">
+          {Object.entries(groupedDocs).map(([sectionName, docs]) => (
+            <div key={sectionName}>
+              <div className="mb-3 text-xs font-semibold uppercase tracking-wider text-white/40">
+                {sectionName}
+              </div>
+              <div className="space-y-1">
+                {docs.map((doc) => {
+                  const isActive = pathname === doc.href;
+                  return (
+                    <Link
+                      key={doc.id}
+                      href={doc.href}
+                      className={`block rounded-md px-3 py-2 text-sm transition-colors ${
+                        isActive
+                          ? "bg-white/10 text-white"
+                          : "text-white/60 hover:bg-white/5 hover:text-white/80"
+                      }`}
+                    >
+                      {doc.title}
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </nav>
       </aside>
       <main className="flex-1 overflow-y-auto p-8 text-white [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">

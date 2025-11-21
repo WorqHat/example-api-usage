@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { siOpenai, siClaude } from "simple-icons";
 
 type CopyPageButtonProps = {
   content: string;
@@ -146,7 +147,19 @@ export default function CopyPageButton({ content }: CopyPageButtonProps) {
             onClick={handleOpenInChatGPT}
             className="flex w-full items-start gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-white/10"
           >
-            <div className="mt-0.5 h-4 w-4 rounded bg-white/10" />
+            <div className="mt-0.5 flex h-4 w-4 items-center justify-center">
+              <svg
+                role="img"
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill={`#${siOpenai.hex}`}
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <title>{siOpenai.title}</title>
+                <path d={siOpenai.path} />
+              </svg>
+            </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-white">Open in ChatGPT</span>
@@ -162,7 +175,19 @@ export default function CopyPageButton({ content }: CopyPageButtonProps) {
             onClick={handleOpenInClaude}
             className="flex w-full items-start gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-white/10"
           >
-            <div className="mt-0.5 h-4 w-4 rounded bg-white/10" />
+            <div className="mt-0.5 flex h-4 w-4 items-center justify-center">
+              <svg
+                role="img"
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill={`#${siClaude.hex}`}
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <title>{siClaude.title}</title>
+                <path d={siClaude.path} />
+              </svg>
+            </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-semibold text-white">Open in Claude</span>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { EndpointCategory, EndpointDefinition } from "@/types/endpoints";
 
 type ExplorerProps = {
@@ -59,9 +59,20 @@ export default function EndpointExplorer({
 }: ExplorerProps) {
   const [selectedId, setSelectedId] = useState(endpoints[0]?.id ?? "");
   const [activeTab, setActiveTab] = useState<TabId>("api");
-  const [responseState, setResponseState] = useState<ResponseState>({
-    status: "idle",
-  });
+  const prevEndpointIdRef = useRef<string | null>(null);
+  
+  // Initialize response state with sample data
+  const initialResponseState = useMemo(() => {
+    const endpoint = endpoints.find((e) => e.id === selectedId);
+    return {
+      status: "idle" as const,
+      source: "sample" as const,
+      body: endpoint?.mockResponse ?? null,
+    };
+  }, [endpoints, selectedId]);
+  
+  const [responseState, setResponseState] = useState<ResponseState>(initialResponseState);
+  const [hasRunOnce, setHasRunOnce] = useState(false);
 
   const selectedEndpoint = useMemo(
     () => endpoints.find((endpoint) => endpoint.id === selectedId),
@@ -84,59 +95,65 @@ export default function EndpointExplorer({
       ? selectedEndpoint?.requestApiCode ?? ""
       : selectedEndpoint?.requestSdkCode ?? "";
 
+  // Reset to sample response when endpoint changes
   useEffect(() => {
     if (!selectedEndpoint) return;
-
-    let cancelled = false;
-
-    const runTest = async () => {
-      setResponseState({ status: "loading" });
-
-      try {
-        const response = await fetch("/api/run", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            endpointId: selectedEndpoint.id,
-            userEmail: userEmail ?? null,
-          }),
-        });
-
-        const payload = await response.json();
-
-        if (cancelled) return;
-
+    
+    const currentId = selectedEndpoint.id;
+    if (prevEndpointIdRef.current !== currentId) {
+      prevEndpointIdRef.current = currentId;
+      // Use setTimeout to avoid synchronous setState in effect
+      setTimeout(() => {
         setResponseState({
-          status: response.ok ? "success" : "error",
-          statusCode: payload.status ?? response.status,
-          statusText: payload.statusText ?? response.statusText,
-          source: payload.source ?? "live",
-          body: payload.data ?? payload.error ?? payload,
-          timestamp: new Date().toISOString(),
+          status: "idle",
+          source: "sample",
+          body: selectedEndpoint.mockResponse ?? null,
         });
-      } catch (error) {
-        if (cancelled) return;
+        setHasRunOnce(false);
+      }, 0);
+    }
+  }, [selectedEndpoint]);
 
-        setResponseState({
-          status: "error",
-          source: "client",
-          body: {
-            message:
-              error instanceof Error
-                ? error.message
-                : "Unknown client-side error",
-          },
-          timestamp: new Date().toISOString(),
-        });
-      }
-    };
+  const handleRunRequest = async () => {
+    if (!selectedEndpoint) return;
 
-    runTest();
+    setResponseState({ status: "loading" });
+    setHasRunOnce(true);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [selectedEndpoint, userEmail]);
+    try {
+      const response = await fetch("/api/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          endpointId: selectedEndpoint.id,
+          userEmail: userEmail ?? null,
+        }),
+      });
+
+      const payload = await response.json();
+
+      setResponseState({
+        status: response.ok ? "success" : "error",
+        statusCode: payload.status ?? response.status,
+        statusText: payload.statusText ?? response.statusText,
+        source: payload.source ?? "live",
+        body: payload.data ?? payload.error ?? payload,
+        timestamp: new Date().toISOString(),
+      });
+    } catch (error) {
+      setResponseState({
+        status: "error",
+        source: "client",
+        body: {
+          message:
+            error instanceof Error
+              ? error.message
+              : "Unknown client-side error",
+        },
+        timestamp: new Date().toISOString(),
+      });
+    }
+  };
 
   if (!endpoints.length) {
     return (
@@ -155,7 +172,7 @@ export default function EndpointExplorer({
   const isLoading = responseState.status === "loading";
   const responseContent = isLoading
     ? `Requesting ${selectedEndpoint.name} from WorqHat...`
-    : formattedResponse;
+    : formattedResponse || "No response data available.";
   const lastUpdated =
     responseState.timestamp &&
     new Date(responseState.timestamp).toLocaleTimeString();
@@ -254,18 +271,32 @@ export default function EndpointExplorer({
               <header className="mb-4 flex items-center justify-between border-b border-white/10 pb-4">
                 <div>
                   <p className="text-sm font-semibold text-white">
-                    Live Response
+                    Response
                   </p>
                   <p className="mt-1 text-xs text-white/60">
-                    Automatically refreshed whenever you choose a different
-                    endpoint.
+                    {hasRunOnce
+                      ? "Click Run to fetch the latest response."
+                      : "Sample response shown. Click Run to fetch live data."}
                   </p>
                 </div>
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-semibold ${responseBadge.className}`}
-                >
-                  {responseBadge.label}
-                </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={handleRunRequest}
+                    disabled={isLoading}
+                    className={`rounded-md px-4 py-2 text-sm font-semibold transition ${
+                      isLoading
+                        ? "cursor-not-allowed bg-white/5 text-white/40"
+                        : "bg-[#1A4289] text-white hover:bg-[#1A4289]/80"
+                    }`}
+                  >
+                    {isLoading ? "Running..." : "Run"}
+                  </button>
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-semibold ${responseBadge.className}`}
+                  >
+                    {responseBadge.label}
+                  </span>
+                </div>
               </header>
               <div className="flex flex-col gap-4 text-sm md:flex-row">
                 <div className="flex-1 rounded-lg border border-white/10 bg-black/40 p-4">
@@ -284,6 +315,8 @@ export default function EndpointExplorer({
                     Source:{" "}
                     {isLoading
                       ? "Contacting WorqHat..."
+                      : responseState.source === "sample"
+                      ? "Sample"
                       : responseState.source ?? "—"}
                   </div>
                   <div className="mt-1 text-xs text-white/60">
@@ -344,7 +377,7 @@ function getResponseBadge(status: ResponseState["status"]) {
       };
     default:
       return {
-        label: "Idle",
+        label: "Sample",
         className: "bg-white/10 text-white/70",
       };
   }

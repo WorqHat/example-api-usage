@@ -71,26 +71,21 @@ export default function CookbookLayout({
                     {authors.length > 0 && (
                       <div className="flex items-center gap-2">
                         <div className="flex -space-x-2">
-                          {authors.map((author, i) => {
-                            const avatarPath = author.avatar.startsWith("/") 
-                              ? author.avatar 
-                              : `/avatars/${author.username}.jpg`;
-                            return (
-                              <div
-                                key={i}
-                                className="relative h-6 w-6 rounded-full border-2 border-black overflow-hidden"
-                              >
-                                <AvatarImage
-                                  src={avatarPath}
-                                  alt={author.name}
-                                  username={author.username}
-                                  width={24}
-                                  height={24}
-                                  className="object-cover"
-                                />
-                              </div>
-                            );
-                          })}
+                          {authors.map((author, i) => (
+                            <div
+                              key={i}
+                              className="relative h-6 w-6 rounded-full border-2 border-black overflow-hidden"
+                            >
+                              <AvatarImage
+                                src={author.avatar}
+                                alt={author.name}
+                                username={author.username}
+                                width={24}
+                                height={24}
+                                className="object-cover"
+                              />
+                            </div>
+                          ))}
                         </div>
                         <span className="text-white/60">
                           {authors[0]?.name}

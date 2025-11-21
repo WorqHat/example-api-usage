@@ -66,13 +66,12 @@ export default async function CookbookPage() {
                   <span className="text-xs text-white/60">{item.date}</span>
                   <div className="flex -space-x-2">
                     {item.authors.map((author, i) => {
-                      const avatarPath = author.avatar.startsWith("/") 
-                        ? author.avatar 
-                        : `/avatars/${author.username}.jpg`;
+                      // Ensure we're using the correct avatar path
+                      const avatarPath = author.avatar || `/avatars/${author.username}.jpg`;
                       return (
                         <div
                           key={i}
-                          className="relative h-8 w-8 rounded-full border-2 border-black overflow-hidden"
+                          className="relative h-8 w-8 rounded-full border-2 border-black overflow-hidden bg-white/10"
                         >
                           <AvatarImage
                             src={avatarPath}

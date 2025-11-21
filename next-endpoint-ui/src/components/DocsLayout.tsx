@@ -32,7 +32,7 @@ export default function DocsLayout({
   }, {} as Record<string, typeof docSections>);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-b from-black via-[#050A30] to-black text-white">
+    <div className="flex min-h-screen text-white">
       <aside className="sticky top-16 h-[calc(100vh-4rem)] w-full overflow-y-auto border-r border-white/10 bg-black/50 p-6 lg:max-w-[280px] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         <nav className="space-y-6">
           {Object.entries(groupedDocs).map(([sectionName, docs]) => (

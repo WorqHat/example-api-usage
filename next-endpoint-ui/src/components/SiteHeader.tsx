@@ -10,6 +10,7 @@ const navTabs = [
   { label: "Docs", href: "/docs" },
   { label: "API reference", href: "/api-reference" },
   { label: "Cookbook", href: "/cookbook" },
+  { label: "Changelog", href: "/changelog" },
 ];
 
 export default function SiteHeader() {

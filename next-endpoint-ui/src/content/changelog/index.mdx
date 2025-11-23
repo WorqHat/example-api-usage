@@ -1,7 +1,17 @@
 import { SparkleIcon } from '@/components/SparkleIcon'
+import { generateRssFeed } from '@/lib/generateRssFeed'
 import { Badge } from '@/components/Badge'
 import Image from 'next/image'
 import { ExternalLink } from 'lucide-react'
+
+export async function getStaticProps() {
+  if (process.env.NODE_ENV === 'production') {
+    await generateRssFeed()
+  }
+  return { props: {} }
+}
+
+---
 
 <Image
   src="https://assets.worqhat.com/announcements/wizard-cli-announcement.png"
@@ -51,13 +61,13 @@ Say hello to WorqHat Wizard — the easiest way to add WorqHat to your project.
 - Optional database helpers if you choose
 
 <p className="mt-6 text-sm text-gray-600 dark:text-gray-400">
-  Experimental preview. We'd love your feedback — email <strong>sagnik [at] worqhat [dot] com</strong>.
+  Experimental preview. We’d love your feedback — email <strong>sagnik [at] worqhat [dot] com</strong>.
 </p>
 
 ---
 
 <Image
-  src="https://assets.worqhat.com/announcements/ai-mailbox.png"
+  src="/content/ai-mailbox.png"
   alt="WorqHat Mailbox"
   width={500}
   height={300}
@@ -100,7 +110,606 @@ You told us outgoing and incoming emails in workflows were hard to track, contex
 </div>
 
 - Shared view across your workspace with role‑based access.
-- Privacy‑first: only your org's mail is stored; nothing is shared.
+- Privacy‑first: only your org’s mail is stored; nothing is shared.
+
+---
+
+<Image
+  src="/content/newer-sdk.png"
+  alt="Newer SDKs"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## APIs That Flow. SDKs That Slap.{{ date: '2025-08-04T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  All‑new API architecture, now live and caffeinated
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="api" />
+</div>
+
+We just shipped our biggest backend upgrade yet. It's smoother, faster, and built for the way you actually build.
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <h3 className="text-lg font-semibold">/flows is your new home base</h3>
+</div>
+
+- Chain LLM calls with memory.
+- Mix in external APIs without the headache.
+- Build complex logic without losing track.
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">SDKs to get you moving</p>
+</div>
+
+- Ready today: Python, TypeScript, and Go
+- Rolling out next: Rust, Java, and friends
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">What’s coming next</p>
+</div>
+
+- Video tutorials and a migration guide drop next week
+
+<p className="mt-6 text-sm text-gray-600 dark:text-gray-400">
+  This is the biggest backend shift since Olive joined the team. Need a hand migrating? We’ll walk you through it. With memes.
+</p>
+
+---
+
+<Image
+  src="/content/hi-july.png"
+  alt="Cover"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## v1.7.0 July Updates: Billing Overhaul, Anthropic Partnership, and More!{{ date: '2025-07-01T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  New billing, new partners, and a sprinkle of cat chaos
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="app" />
+</div>
+
+We're halfway through 2025, and the updates keep coming! Here's what's new at WorqHat this month:
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <h3 className="text-lg font-semibold">Usage-Based Billing is Here</h3>
+</div>
+
+- **No More Credit Top-Ups**:
+  - Billing is now usage-based—set your own limits and access everything with one plan.
+  - No more running out of credits mid-idea. Just subscribe and build!
+  - Enhanced security for accurate metering.
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">WorqHat x Anthropic Partnership</p>
+</div>
+
+- **A New Era for LLM Workflows**:
+  - Announcing our partnership with Anthropic!
+  - API access to WorqHat's LLM models will be sunset soon—now you can chain as many LLM calls (WorqHat AI, Anthropic) as you want in your workflows.
+  - SDKs are on the roadmap—let us know if you want them sooner!
+  - Free Anthropic credits coming soon. Stay tuned!
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Tiny but Mighty Fixes</p>
+</div>
+
+- **File API Triggers** now properly recognize files.
+- If billing hiccups, workflows still run (with limited resources).
+
+
+---
+
+<Image
+  src="/content/WorqDB-announcement.png"
+  alt="Cover"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## v1.6.0 WorqHat Database (WorqDB) is now generally available{{ date: '2025-05-19T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  Introducing WorqDB, a database service built for Speed, Security and Zero Data Sharing
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="app" />
+</div>
+
+We're excited to announce that WorqHat Database (WorqDB) is now generally available to all customers. With WorqDB, you can spend less time on setup and more time on building powerful applications.
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Quick to get started and powerful to scale</p>
+</div>
+
+- **Spreadsheet Interface with Database Power**:
+  - Build your schema with a few clicks
+  - Import data from external sources easily
+  - No setup required—instantly available
+
+- **Fully-Managed Clickhouse/PostgreSQL**:
+  - Enterprise-grade performance
+  - Secure and scalable data storage
+  - Zero maintenance overhead
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">How It Works</p>
+</div>
+
+- **Intuitive Database Management**:
+  - Configure using natural language
+  - Filter, view, and edit data like a spreadsheet
+  - Write SQL when you need advanced queries
+
+- **External Connectivity**:
+  - Connect to your database from anywhere
+  - Standard connection strings provided
+  - Integrate with your broader data ecosystem
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Free Tier Available</p>
+</div>
+
+- **Generous Free Storage**:
+  - 1GB of data storage free for one year
+  - No limits on rows or columns
+  - Enterprise customers can contact us for custom options
+
+<div className="mt-8 inline-flex items-center gap-x-2">
+  <p className="text-lg font-semibold">Coming Soon</p>
+</div>
+
+- **Advanced Analytics**:
+  - Run detailed queries with natural language
+  - Generate exportable charts and visualizations
+  - Derive insights without complex query writing
+
+- **AI-Powered Data Processing**:
+  - Use WorqDB as a data source for language queries
+  - Powerful integrations with WorqHat Workflows
+  - AI-driven data analysis and processing
+
+---
+
+<Image
+  src="/content/ai-models.png"
+  alt="Cover"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## v1.5.0 External AI Models Integration: Use o4-mini, GPT-4.1 Mini, Claude 3.7 Sonnet & More!{{ date: '2025-05-07T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  You asked — we listened. Your favorite AI models are now available for you to use in WorqHat Workflows!
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="app" />
+</div>
+
+We're thrilled to announce a game-changing upgrade to WorqHat Workflows: native support for top-tier AI models from OpenAI and Anthropic — now available for you to build smarter, more intuitive applications effortlessly.
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Now Available in Workflows</p>
+</div>
+
+- **OpenAI o4-mini**:
+
+  - Lightweight, fast, and production-ready
+  - Perfect for everyday AI tasks
+
+- **OpenAI GPT-4.1 Mini**:
+
+  - More contextual reasoning, faster responses
+  - Ideal for smart automations and assistants
+
+- **Claude 3.5 Sonnet**:
+
+  - Reliable, friendly, high-quality generation
+  - Great for conversational agents
+
+- **Claude 3.7 Sonnet**:
+  - Enhanced reasoning and creativity
+  - Best for advanced logic and UX experiences
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Why This Matters</p>
+</div>
+
+- No third-party setup or APIs required
+- Choose the AI model that fits your workflow
+- Instant plug-and-play with drag-and-drop simplicity
+- Build faster, smarter, and more flexibly
+
+This update is part of our ongoing mission to empower creators with **powerful tools, without complexity**. Whether you're automating support, building chatbots, or analyzing data, you now have **the best models at your fingertips — in one visual interface**.
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Transparent Billing</p>
+</div>
+
+- **Built Directly Into Workflows**:
+  - Zero configuration required — models are ready to use immediately
+  - Fully integrated with our existing workflow canvas and components
+
+- **Partner Billing at Cost**:
+  - Pay only for what you use with direct pass-through pricing
+  - No markup or hidden fees — billed at exactly the same rates as going direct
+  - Usage tracking and cost management tools included
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Other Minor Fixes</p>
+</div>
+
+- **REST API Trigger Improvements**:
+  - Added array support for more flexible data handling
+  - Enhanced payload validation and error reporting
+
+- **Dashboard & Member Management**:
+  - Fixed UI issues in the main dashboard interface
+  - Resolved member invite flow bugs and improved email delivery
+  - Streamlined team onboarding process
+
+<div className="mt-8 inline-flex items-center gap-x-2">
+  <p className="text-lg font-semibold">Coming Soon</p>
+</div>
+
+- **Custom Model Routing**:
+
+  - Automatically pick best model per task
+  - Combine Claude & GPT in the same flow
+
+- **Pricing Optimizations**:
+  - Auto-switch models to save costs
+  - Transparent usage tracking built-in
+---
+
+<Image
+  src="/content/messaging-integration.png"
+  alt="Cover"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## v1.4.0 Supercharge Your Workflows: WhatsApp and Twilio SMS Integration{{ date: '2025-04-18T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  Connect with your users directly through powerful messaging integrations and
+  prepare for advanced data analysis
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="app" />
+</div>
+
+We're excited to announce powerful new additions to our Interactive Workflow Canvas, designed to connect you with your users and unlock deeper insights from your data.
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">WhatsApp Integration</p>
+</div>
+
+- **Inbound Triggers**:
+- Trigger workflows directly from incoming WhatsApp messages
+- Automate responses, initiate processes, and create interactive experiences based on user input
+
+- **Outbound Messages**:
+- Send targeted WhatsApp messages to users within the 24-hour conversational window
+- Deliver updates, reminders, personalized offers, and more, directly where your audience is most engaged
+- Support for both template and raw messages
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Twilio SMS Integration</p>
+</div>
+
+- Expand your reach with our new Twilio SMS integration
+- Seamlessly send SMS messages directly from your workflows
+- Provide another powerful channel for communication and automation
+- Support for templated messages
+
+<div className="mt-8 inline-flex items-center gap-x-2">
+  <p className="text-lg font-semibold">Coming Soon</p>
+</div>
+
+- **Advanced Data Analysis**:
+- Unlock powerful insights from large datasets
+- High-end data analysis across large and big data tables
+- APIs to access and process large-scale data
+- Built on top of some of the best Large Scale Databases
+- Build highly scalable applications with the easiest configurations
+
+<div className="mt-8">
+  This update empowers you to build even more engaging and data-driven
+  applications. We're committed to providing you with the tools you need to
+  simplify complex processes and drive results.
+</div>
+
+---
+
+<Image
+  src="/content/workflows.png"
+  alt="Cover"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## v1.3.0 Interactive Canvas for Code, Queries, and AI{{ date: '2025-02-21T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  Build your Complex Backends, connect to third-party services and APIs, and
+  ship it all in a single click.
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="app" />
+</div>
+
+Introducing our Interactive Workflows Canvas for Code, Queries, and AI - a game-changing feature that empowers you to build complex backends, connect to third-party services and APIs, and deploy with unprecedented ease.
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Key Features</p>
+</div>
+
+- **Versatile Workflow Automation**:
+
+  - Trigger workflows via cron schedules, API calls, webhooks, or incoming emails
+  - Perfect for users of all technical levels
+
+- **Advanced Data Management**:
+
+  - Store and analyze data with our highly scalable Analytical database
+  - Connect to numerous third-party services with built-in connectors
+  - Support for any REST API and custom authentication methods
+  - Secure access through VPC tunneling
+
+- **Flexible Process Design**:
+
+  - Code directly in Python or Javascript
+  - Utilize built-in patterns for filtering, branching, and looping
+
+- **Swift Deployment and Reliable Execution**:
+  - Deploy workflows in seconds
+  - Ensure completion of alerts, notifications, escalations, updates, and processes
+  - Individual container processing for enhanced data safety and resource allocation
+
+<div className="mt-8 inline-flex items-center gap-x-2">
+  <p className="text-lg font-semibold">Coming Soon</p>
+</div>
+
+- **AI-Powered Assistance**:
+
+  - Transform prompts into automation in seconds
+  - AI copilot for code generation, editing, and fixing
+
+- **Real-time Collaboration**:
+  - Work simultaneously with team members
+  - Track live edits and changes
+  - Experience instant updates across all collaborators
+
+This update marks a significant leap forward in our mission to simplify complex backend processes and enhance team productivity. Stay tuned for more exciting features on the horizon as we continue to evolve and make it easier for users to build and deploy their applications!
+
+---
+
+<Image
+  src="/content/usage-logs.png"
+  alt="Cover"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## v1.2.0 Newer Dashboards and upto 30x Faster{{ date: '2025-01-26T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  Major dashboard overhaul with significant performance improvements and
+  enhanced token security
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="app" />
+</div>
+
+We're excited to introduce a complete overhaul of our dashboard UI, focusing on creating a more seamless user experience. This update brings substantial backend improvements that dramatically increase performance across all operations, along with enhanced security features and improved activity tracking.
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Improvements</p>
+</div>
+
+- Completely redesigned dashboard interface for improved user experience and workflow efficiency
+- Backend optimizations delivering up to <strong>30X faster</strong> performance across core functionalities
+- Enhanced API logging system with comprehensive usage activity tracking
+- Upgraded authentication token format with new security features:
+  - Introduced company-specific prefix 'wh\_' for improved token identification
+  - Implemented underscore separators for better token readability and selection
+  - Enhanced token structure to prevent accidental duplications with random strings
+- Improved system monitoring and performance tracking capabilities
+- Streamlined user interface elements for more intuitive navigation
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-red-400" />
+  <p className="text-lg font-semibold">Bug Fixes</p>
+</div>
+
+- Resolved authentication issues causing improper login processes
+- Fixed multi-user context handling to prevent session conflicts
+- Corrected team member invitation system for smoother collaboration
+- Addressed token validation issues in concurrent user sessions
+
+<div className="mt-4 border-l-4 border-yellow-400 bg-yellow-50 p-4 dark:border-yellow-500 dark:bg-yellow-900/30">
+  <div className="flex">
+    <div className="ml-3">
+      <div className="text-sm text-yellow-700 dark:text-yellow-200">
+        The new API Key/token format will be automatically applied to all new
+        tokens. Existing tokens will continue to work as expected.
+      </div>
+    </div>
+  </div>
+</div>
+
+---
+
+<Image
+  src="https://assets.worqhat.com/announcements/new-auth-process-1080.gif"
+  alt="Cover"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## v1.1.3 Upgraded User Joining Experience{{ date: '2024-12-16T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  Completely redesigned authentication process with enhanced speed and device
+  compatibility
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="app" />
+</div>
+
+We've completely reimagined our user authentication experience to bring more life and personality to the process. The new design not only looks more engaging but also delivers significant performance improvements across all devices, especially on Safari browsers and devices with limited resources.
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Improvements</p>
+</div>
+
+- Redesigned signup flow with a fresh, engaging interface that brings more personality to the experience
+- <strong>60X faster</strong> signup process with seamless integration between new
+  signups and existing workspace logins
+- <strong>35X faster</strong> workspace access for returning users with optimized
+  authentication flow
+- Achieved <strong>10-15X better</strong> memory efficiency across all browsers, with significant improvements in Safari support
+- Optimized performance for slower devices and networks with substantially reduced resource consumption
+- Streamlined workspace switching and account management with session sharing and enhanced navigation <span style={{ color: '#FFA500', fontSize: '0.9em', marginLeft: '0.2em' }}>(In Internal Testing)</span>
+
+<p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+  These improvements will be gradually rolled out to all users over the next
+  week to ensure a smooth transition.
+</p>
+
+---
+
+<Image
+  src="/content/cover2.png"
+  alt="Cover"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## v2.1.2 Enhanced Multimodal Support {{ date: '2024-12-04T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  Unlock powerful content analysis with advanced file processing capabilities
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="playground" />
+</div>
+
+Introducing enhanced multimodal support, enabling improved analysis of diverse content types including files, documents, and datasets. Process up to 20 files simultaneously, including PDFs, CSVs, images, and videos, directly within the workspace.
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Improvements</p>
+</div>
+
+- Enhanced file format support with seamless processing of PDFs, CSVs, high-resolution images, and video content
+- Powerful batch processing capabilities allowing simultaneous analysis of up to 20 files
+- Improved workspace integration with built-in file preview and interactive rendering capabilities
+
+<div className="inline-flex items-center gap-x-2">
+  <ExternalLink className="h-5 w-5 text-sky-400" />
+  <a
+    href="https://chat.worqhat.com"
+    className="text-lg font-semibold text-blue-600 hover:underline"
+  >
+    Try It Here
+  </a>
+</div>
+
+---
+
+<Image
+  src="/content/cover1.png"
+  alt="Cover"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## v2.1.1 - Introducing the All New WorqBot {{ date: '2024-12-01T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  Crafted for Next gen innovators and teams across the industry segments
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="playground" />
+</div>
+
+After months of dedicated development and your valuable feedback, we're thrilled to unveil a completely reimagined WorqBot experience. This major update brings a sleek new interface, enhanced precision, and smarter interactions that transform how you work with AI. We've focused on creating a more intuitive experience with improved response accuracy and longer contextual understanding. Every aspect of WorqBot has been refined based on your suggestions, from the modern UI design to the way it processes and responds to your requests.
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Improvements</p>
+</div>
+
+- **Streamlined Interface**: A cleaner, more intuitive UI that reduces visual clutter while improving navigation and readability.
+
+- **AiCon V4 Integration**: Powered by our most advanced AI models - AiCon V4 Large & Nano, delivering exceptional performance in coding, reasoning, and creative tasks.
+
+- **Enhanced Multi-modal Support**: Expanded capabilities for handling diverse content types, with improved analysis for files, documents, and datasets. <span style={{ color: '#FFA500', fontSize: '0.9em', marginLeft: '0.2em' }}>(To Be Announced Soon)</span>
+
+- **Global Accessibility**: Now serving users across 150+ countries and territories. While optimized for English, the platform supports multilingual interactions.
+
+- **Smarter Responses**: Integrated citations and web search references to provide more accurate, verifiable information.
+
+- **Advanced Development Tools**: Significant improvements to document processing, image generation, and code-related features including completion and generation. <span style={{ color: '#FFA500', fontSize: '0.9em', marginLeft: '0.2em' }}>(To Be Announced Soon)</span>
+
+- **Seamless Collaboration**: New sharing features that enable team members to work together effectively, keeping everyone aligned and productive. <span style={{ color: '#FFA500', fontSize: '0.9em', marginLeft: '0.2em' }}>(To Be Announced Soon)</span>
+
+<div className="inline-flex items-center gap-x-2">
+  <ExternalLink className="h-5 w-5 text-sky-400" />
+  <a
+    href="https://chat.worqhat.com"
+    className="text-lg font-semibold text-blue-600 hover:underline"
+  >
+    Try It Here
+  </a>
+</div>
 
 ---
 
@@ -124,4 +733,3 @@ more efficiently, helping you stay up-to-date with our latest developments.
 - Introduced automated RSS feed generation for instant update notifications
 - Streamlined announcement workflow enabling faster and more frequent updates
 - Enhanced mobile responsiveness with adaptive layout and improved typography
-

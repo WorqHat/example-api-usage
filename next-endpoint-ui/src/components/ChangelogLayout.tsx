@@ -4,7 +4,6 @@ import { useId } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import SiteHeader from "./SiteHeader";
-import SiteFooter from "./SiteFooter";
 import { ChangelogIntro, ChangelogIntroFooter } from "./ChangelogIntro";
 import { StarField } from "./StarField";
 import { FormattedDate } from "./FormattedDate";
@@ -111,10 +110,11 @@ export default function ChangelogLayout({ children }: ChangelogLayoutProps) {
         <div className="flex gap-1"></div>
         <div className="relative flex-auto">
           <Timeline />
-          <main className="space-y-20 py-20 sm:space-y-32 sm:py-32">{children}</main>
+          <main className="space-y-20 py-20 sm:space-y-32 sm:py-32 pb-0">
+            {children}
+          </main>
         </div>
       </div>
-      <SiteFooter />
     </div>
   );
 }

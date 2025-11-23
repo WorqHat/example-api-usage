@@ -197,12 +197,19 @@ export function Article({
 }
 
 export function ChangelogImage(props: React.ComponentProps<typeof Image>) {
-  const { alt = "", sizes = "(min-width: 1280px) 36rem, (min-width: 1024px) 45vw, (min-width: 640px) 32rem, 95vw", ...restProps } = props;
+  const { 
+    alt = "", 
+    sizes = "(min-width: 1280px) 36rem, (min-width: 1024px) 45vw, (min-width: 640px) 32rem, 95vw", 
+    className = "", 
+    ...restProps 
+  } = props;
+  
   return (
-    <div className="relative mt-8 overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-900 [&+*]:mt-8">
+    <div className="relative my-8 overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-900">
       <Image
         alt={alt}
         sizes={sizes}
+        className={`w-full h-auto ${className}`.trim()}
         {...restProps}
       />
       <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10 dark:ring-white/10" />

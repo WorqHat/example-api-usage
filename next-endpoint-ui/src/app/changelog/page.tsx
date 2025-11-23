@@ -56,9 +56,15 @@ const mdxComponents = {
       </h3>
     );
   },
-  p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
-    <p className="mb-4 leading-7 text-white/80" {...props} />
-  ),
+  p: ({ children, className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => {
+    // If className already exists (from explicit JSX in MDX), use it as-is
+    // Otherwise, apply our default styling
+    const finalClassName = className 
+      ? className 
+      : 'mb-4 leading-7 text-white/80';
+    
+    return <p className={finalClassName} {...props}>{children}</p>;
+  },
   a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a
       className="text-sky-400 no-underline hover:underline"

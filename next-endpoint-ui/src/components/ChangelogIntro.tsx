@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRightIcon } from "@radix-ui/react-icons";
 import { BookOpen, Rss } from "lucide-react";
 
 function ArrowIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -54,7 +53,7 @@ export function ChangelogIntro() {
           API Docs
         </Link>
         <Link
-          href="https://worqhat.substack.com/"
+          href="https://blog.worqhat.com/"
           className="inline-flex items-center gap-2 rounded-lg border border-white/20 bg-white/5 px-4 py-2 text-sm text-white transition-colors hover:bg-white/10"
         >
           <Rss className="h-4 w-4" />
@@ -70,7 +69,7 @@ export function ChangelogIntroFooter() {
     <p className="inline-flex items-center gap-x-2 text-[0.8125rem] leading-6 text-gray-500">
       Brought to you by{" "}
       <Link
-        href="https://twitter.com/worqhat"
+        href="https://x.com/worqhat"
         className="group inline-flex items-center gap-x-1 rounded-md px-2 py-1 transition-colors hover:bg-gray-800/90"
       >
         <svg

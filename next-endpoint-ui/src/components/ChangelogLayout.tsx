@@ -80,9 +80,18 @@ function FixedSidebar({ main, footer }: { main: React.ReactNode; footer: React.R
           <div className="pb-16 pt-20 sm:pb-20 sm:pt-32 lg:py-20">
             {/* Background image container */}
             <div className="absolute inset-0 -z-10 h-full w-full overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#050A30] via-black to-[#050A30]" />
-              <div className="absolute inset-0 bg-black/70" />
+              <Image
+                src="/bg-image.webp"
+                alt="People looking at the future"
+                fill
+                priority
+                className="absolute h-full w-full object-cover object-center opacity-90"
+                sizes="100vw"
+                quality={100}
+              />
             </div>
+            {/* Darkening overlay */}
+            <div className="absolute inset-0 -z-5 bg-black/70" />
             <div className="relative px-6">
               <StarField />
               {main}

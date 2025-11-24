@@ -1,0 +1,204 @@
+---
+title: "SmartMocks Mail Automation Workflow"
+date: "Nov 2025"
+tags:
+  - CAMPUS OPS
+  - EDTECH
+  - OPERATIONS
+  - COMMUNICATIONS
+authors:
+  - name: "Ayush Kulshreshtha"
+    username: "ayush"
+description: "A unified WorqHat workflow that automates all outbound emails for SmartMocks, handling sign ups, assignments, assignment edits, and interviews with deterministic routing and clean personalization."
+ogImage: "https://assets.worqhat.com/cookbook/smartmocks-mail-automation.png"
+videoUrl: ""
+videoPoster: ""
+videoDescription: ""
+---
+
+# SmartMocks Mail Automation Workflow
+
+As SmartMocks scaled from hundreds to tens of thousands of users, manual email operations became error-prone and unsustainable.
+
+Every student action triggered a communication requirement:
+
+- new sign up
+- assignment allocated (Assign)
+- assignment updated (Edit-Assign)
+- interview scheduled/completed
+
+The manual process created delays, inconsistencies, and delivery mismatches.
+
+A single WorqHat workflow now automates all outbound mails with deterministic routing and clean personalization.
+
+## Previous State
+
+Manual communication workflow (fragmented):
+
+- Individual team members sending mails from templates
+- Spreadsheet-driven recipient tracking
+- Frequent misfires ("wrong user", "missed mail", "duplicate mail")
+- High operational overhead at scale
+- No audit trail or single source of truth
+
+Errors multiplied as SmartMocks crossed 5,000 → 10,000 → 50,000 users.
+
+## Target State
+
+A unified WorqHat workflow handles all outbound emails programmatically:
+
+- REST API Trigger integrates directly with SmartMocks backend
+- Conditional routing identifies the correct mail type
+- Personalized templates render dynamically
+- Loop-based mail dispatch ensures multi-recipient accuracy
+- A single Return node logs the final delivery state
+
+Zero spreadsheets. Zero manual intervention. Zero misrouted mails.
+
+## Workflow Architecture (4 Nodes)
+
+### 1. REST API Trigger
+
+**Purpose:** Expose the workflow as an API callable from SmartMocks services.
+
+**Inputs:**
+
+- emails
+- subject
+- mailbody
+- case (sign up / Assign / Edit-Assign / Interview)
+
+**Behavior:**
+
+SmartMocks backend hits this endpoint for every user lifecycle event.
+
+### 2. Switch Case
+
+**Purpose:** Route execution based on the user's event type.
+
+**Cases:**
+
+- sign up → Welcome email
+- Assign → Assignment allocation email
+- Edit-Assign → Assignment update email
+- Interview → Interview notification email
+
+**Output:**
+
+Branch-specific personalization context.
+
+### 3. Mail Node / Loop Mail Node
+
+**Purpose:** Generate and send the correct email template.
+
+**Modes:**
+
+- Single Mail Node → for 1:1 events (sign up, Interview)
+- Mail Node inside Loop → for bulk assignment batches
+
+**Settings:**
+
+- **Sender Email:** Configured sender email address
+- **Sender Name:** Configured sender display name
+- **Recipient Address:** From REST API (`emails` field)
+- **CC:** Optional CC recipients
+- **BCC:** Optional BCC recipients
+- **Subject:** From REST API (`subject` field)
+- **Body:** From REST API (`mailbody` field)
+
+**Delivery:**
+
+Uses WorqHat's integrated mail provider or SMTP configuration.
+
+### 4. Return State
+
+**Purpose:** Provide a structured response back to SmartMocks.
+
+**Outputs:**
+
+- status → success / failure
+- mailType → which branch executed
+- messageId → reference for audits
+
+Also used for internal monitoring and logging.
+
+## Detailed Node Configuration
+
+### REST API Trigger
+
+- **Method:** POST
+- **Auth:** API Key (recommended)
+- **Schema validation:** enabled
+- **Retry:** 2 attempts with backoff
+- **Input Fields:**
+  - `emails` - Recipient email address(es)
+  - `subject` - Email subject line
+  - `mailbody` - Email body content
+  - `case` - Event type (sign up / Assign / Edit-Assign / Interview)
+
+### Switch Case
+
+**Cases:**
+
+- "sign up"
+- "Assign"
+- "Edit-Assign"
+- "Interview"
+
+**Fallback:** unknown_event_error
+
+### Mail Node
+
+- **SMTP Provider:** WorqHat Mail / custom SMTP
+- **Sender Email:** Configured sender email address
+- **Sender Name:** Configured sender display name
+- **Recipient Address:** From REST API (`emails` field)
+- **CC:** Optional CC recipients
+- **BCC:** Optional BCC recipients
+- **Subject:** From REST API (`subject` field)
+- **Body:** From REST API (`mailbody` field)
+- **Loop Mode:** enabled for bulk dispatch
+- **Tracking:** open + delivery
+
+### Return Node
+
+**Response fields:**
+
+```json
+{
+  "status": "success",
+  "eventHandled": "{{case}}",
+  "recipient": "{{emails}}"
+}
+```
+
+## Outcomes
+
+- Eliminated misrouted mails across large batches
+- Zero manual operations for 50,000+ users
+- Real-time communication for every student action
+- Predictable automation replacing spreadsheets and human checks
+- Unified delivery logic maintainable by ops teams without engineering tickets
+
+## Recommended Extensions
+
+You can upgrade this workflow in under 10 minutes:
+
+- Add Slack/WhatsApp notifications for internal teams
+- Add escalation logic for failed deliveries
+- Write failed mail logs into WorqHat DB
+- Add HTML to PDF to attach scorecards
+- Add Text Gen to generate personalized feedback text
+
+## Next Steps
+
+Use this pattern to automate any user communication pipeline:
+
+- onboarding
+- notifications
+- batch result releases
+- transactional updates
+
+Consistent. Reliable. Fully auditable.
+
+👉 **Build this workflow in WorqHat and eliminate your manual mail ops forever.**

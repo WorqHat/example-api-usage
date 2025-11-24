@@ -20,6 +20,9 @@ export default async function CookbookPage() {
     FINANCE: "bg-cyan-400 text-black",
     OPERATIONS: "bg-indigo-400 text-white",
     ANALYTICS: "bg-orange-300 text-black",
+    "CAMPUS OPS": "bg-purple-400 text-white",
+    EDTECH: "bg-blue-400 text-white",
+    COMMUNICATIONS: "bg-pink-400 text-white",
   };
 
   return (

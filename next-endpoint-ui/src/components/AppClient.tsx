@@ -37,6 +37,7 @@ export default function AppClient({ endpoints }: AppClientProps) {
         open={isModalOpen}
         defaultEmail={userEmail ?? ""}
         onSubmit={handleEmailSubmit}
+        onClose={() => setIsModalOpen(false)}
       />
     </>
   );

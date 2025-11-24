@@ -6,28 +6,36 @@ type WelcomeModalProps = {
   open: boolean;
   defaultEmail?: string;
   onSubmit: (email: string) => void;
+  onClose?: () => void;
 };
 
 export default function WelcomeModal({
   open,
   defaultEmail = "",
   onSubmit,
+  onClose,
 }: WelcomeModalProps) {
   if (!open) {
     return null;
   }
 
   return (
-    <ModalContent key={defaultEmail} defaultEmail={defaultEmail} onSubmit={onSubmit} />
+    <ModalContent
+      key={defaultEmail}
+      defaultEmail={defaultEmail}
+      onSubmit={onSubmit}
+      onClose={onClose}
+    />
   );
 }
 
 type ModalContentProps = {
   defaultEmail: string;
   onSubmit: (email: string) => void;
+  onClose?: () => void;
 };
 
-function ModalContent({ defaultEmail, onSubmit }: ModalContentProps) {
+function ModalContent({ defaultEmail, onSubmit, onClose }: ModalContentProps) {
   const [email, setEmail] = useState(defaultEmail);
   const [error, setError] = useState<string | null>(null);
 
@@ -43,9 +51,23 @@ function ModalContent({ defaultEmail, onSubmit }: ModalContentProps) {
     onSubmit(email);
   };
 
+  const handleOverlayClick = () => {
+    onClose?.();
+  };
+
+  const handleContentClick = (event: React.MouseEvent) => {
+    event.stopPropagation();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-[#050A30] p-6 text-white shadow-2xl">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm"
+      onMouseDown={handleOverlayClick}
+    >
+      <div
+        className="w-full max-w-md rounded-3xl border border-white/10 bg-[#050A30] p-6 text-white shadow-2xl"
+        onMouseDown={handleContentClick}
+      >
         <p className="text-xs uppercase tracking-[0.4em] text-[#FDCEB0]/70">
           Welcome
         </p>

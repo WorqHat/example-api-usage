@@ -1,0 +1,31 @@
+# Authentication
+
+All WorqHat API requests require authentication using an API key.
+
+## API Keys
+
+Your API key is a secret token that identifies you to the WorqHat API. Keep it secure and never share it publicly.
+
+### Getting Your API Key
+
+1. Log in to your WorqHat account
+2. Navigate to Settings > API Keys
+3. Create a new API key or copy an existing one
+
+## Using Your API Key
+
+Include your API key in the `Authorization` header of every request:
+
+```javascript
+headers: {
+  'Authorization': `Bearer ${YOUR_API_KEY}`
+}
+```
+
+## Security Best Practices
+
+- Never commit API keys to version control
+- Use environment variables to store keys
+- Rotate keys regularly
+- Use different keys for different environments
+

@@ -1,7 +1,5 @@
-import EndpointExplorer from "@/components/EndpointExplorer";
-import { getEndpoints } from "@/lib/endpoints";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  const endpoints = getEndpoints();
-  return <EndpointExplorer endpoints={endpoints} />;
+  redirect("/docs");
 }

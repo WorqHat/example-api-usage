@@ -1,0 +1,64 @@
+---
+title: "GPT-5 New Params and Tools"
+date: "Aug 7, 2025"
+tags:
+  - FUNCTIONS
+  - REASONING
+authors:
+  - name: "Samarth Madduru"
+    username: "samarth"
+---
+
+# GPT-5 New Params and Tools
+
+GPT-5 introduces several new parameters and tools that enhance model control and functionality.
+
+## New Parameters
+
+### Temperature
+
+Control the randomness of outputs. Lower values make the model more deterministic.
+
+### Top-p (Nucleus Sampling)
+
+Limit sampling to tokens with cumulative probability up to the specified value.
+
+### Max Tokens
+
+Set the maximum number of tokens in the response.
+
+## New Tools
+
+### Function Calling
+
+Enhanced function calling capabilities allow for more reliable tool usage.
+
+### Structured Outputs
+
+Request structured JSON outputs with schema validation.
+
+### Streaming
+
+Improved streaming support for real-time responses.
+
+## Usage Examples
+
+Here's how to use the new parameters:
+
+```javascript
+const response = await openai.chat.completions.create({
+  model: "gpt-5.1-preview",
+  messages: [{ role: "user", content: "Hello!" }],
+  temperature: 0.7,
+  top_p: 0.9,
+  max_tokens: 500,
+});
+```
+
+## Best Practices
+
+- Use temperature between 0.7 and 0.9 for creative tasks
+- Use lower temperature (0.2-0.5) for factual or deterministic outputs
+- Set appropriate max_tokens to control response length
+- Use top_p for more focused sampling
+

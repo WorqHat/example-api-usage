@@ -1,36 +1,91 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## WorqHat Endpoint Playground
 
-## Getting Started
+Next.js + App Router UI that reads request definitions from JSON and runs live WorqHat API calls. Requests are hard-coded (from JSON), responses are always fetched in real time—no mock data unless you omit your API key.
 
-First, run the development server:
+---
+
+## 1. Running locally
 
 ```bash
+cd next-endpoint-ui
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Without `WORQHAT_API_KEY`, the UI still renders but `/api/run` will fall back to any `mockResponse` defined per endpoint (purely informational).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 2. Adding or editing endpoints
 
-## Learn More
+All request metadata lives in `data/endpoints.json`. Each entry matches the `EndpointDefinition` type:
 
-To learn more about Next.js, take a look at the following resources:
+```ts
+type EndpointDefinition = {
+  id: string;                 // unique identifier, used as key
+  name: string;               // display name
+  method: "GET" | "POST" | ...;
+  path: string;               // relative path, e.g. "/db/insert"
+  category: "system" | "database" | "workflows" | "storage";
+  useUserEmail?: boolean;     // if true, injects stored email (fallback to support@worqhat.com)
+  summary: string;            // short description
+  requestApiCode: string;     // shown under “Test via API”
+  requestSdkCode: string;     // shown under “Test via SDK”
+  samplePayload?: object;     // body sent when hitting the real API (optional)
+  mockResponse?: unknown;     // optional fallback when no API key is configured
+};
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Step-by-step
+1. Open `data/endpoints.json`.
+2. Append a new object with the fields above. Keep JSON valid (double quotes, commas).
+3. If the endpoint requires a body, set `samplePayload` exactly like you’d POST it.
+4. Provide `requestApiCode` / `requestSdkCode` strings—these show up verbatim inside the code panel tabs.
+5. (Optional) `mockResponse` is only used when no API key is set; omit it if you don’t want any fallback.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Example entry:
+```json
+{
+  "id": "flows-trigger-json",
+  "name": "Flows: Trigger JSON",
+  "method": "POST",
+  "path": "/flows/trigger-json",
+  "category": "workflows",
+  "useUserEmail": true,
+  "summary": "Kick off a workflow run by posting JSON input.",
+  "requestApiCode": "const res = await fetch(\"https://api.worqhat.com/flows/trigger-json\", {...});",
+  "requestSdkCode": "const run = await client.flows.triggerJson({ ... });",
+  "samplePayload": {
+    "flowId": "example-flow-id",
+    "input": { "firstName": "Ada" }
+  }
+}
+```
 
-## Deploy on Vercel
+> **Note:** `requestApiCode` / `requestSdkCode` are informational only. The actual live HTTP call uses `method`, `path`, and `samplePayload`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 3. Live responses
+
+- `src/app/api/run/route.ts` handles all “Test” executions.
+- When you click/ switch endpoints, the frontend calls `/api/run` with the endpoint `id`.
+- The server route:
+  1. Looks up the entry in `endpoints.json`.
+  2. Builds the URL: `{WORQHAT_API_BASE_URL}{path}`.
+  3. Sends a real HTTP request using `method` and `samplePayload`.
+  4. Streams the JSON/text response back to the UI.
+- Therefore responses are **never** hard-coded. They always reflect the live WorqHat API (unless you removed the API key; then you’ll see `mockResponse` so the UI isn’t empty).
+
+---
+
+## 4. Extending behavior
+
+| Task | File(s) |
+| ---- | ------- |
+| Update branding/layout | `src/components/*`, `src/app/globals.css` |
+| Change endpoint schema | `src/types/endpoints.ts` |
+| Adjust fetch logic | `src/app/api/run/route.ts` |
+
+Feel free to edit the JSON structure if you need more fields—just update the `EndpointDefinition` type and UI components accordingly.

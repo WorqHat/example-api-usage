@@ -1,0 +1,34 @@
+# Getting Started
+
+Welcome to WorqHat! This guide will help you get started with the WorqHat API.
+
+## Prerequisites
+
+Before you begin, make sure you have:
+
+- A WorqHat API key
+- Node.js 18+ or Python 3.8+ installed
+- Basic knowledge of REST APIs
+
+## Quick Start
+
+1. **Get your API key** from the WorqHat dashboard
+2. **Set up your environment** with the API key
+3. **Make your first request** using our API
+
+## Example Request
+
+```javascript
+const response = await fetch('https://api.worqhat.com/health', {
+  headers: {
+    'Authorization': `Bearer ${process.env.WORQHAT_API_KEY}`
+  }
+});
+```
+
+## Next Steps
+
+- Read the [Authentication guide](/docs/authentication)
+- Explore the [API Reference](/api-reference)
+- Check out the [Cookbook](/cookbook) for examples
+

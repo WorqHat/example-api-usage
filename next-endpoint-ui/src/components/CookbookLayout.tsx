@@ -15,12 +15,16 @@ type CookbookLayoutProps = {
   tags?: string[];
   authors?: Author[];
   cookbookItems: CookbookItem[];
+  videoUrl?: string;
+  videoPoster?: string;
+  videoDescription?: string;
 };
 
 const tagColors: Record<string, string> = {
-  REASONING: "bg-yellow-400 text-black",
-  RESPONSES: "bg-lime-400 text-black",
-  FUNCTIONS: "bg-purple-500 text-white",
+  ECOMMERCE: "bg-emerald-400 text-black",
+  FINANCE: "bg-cyan-400 text-black",
+  OPERATIONS: "bg-indigo-400 text-white",
+  ANALYTICS: "bg-orange-300 text-black",
 };
 
 export default function CookbookLayout({
@@ -31,6 +35,9 @@ export default function CookbookLayout({
   tags = [],
   authors = [],
   cookbookItems,
+  videoUrl,
+  videoPoster,
+  videoDescription,
 }: CookbookLayoutProps) {
   const pathname = usePathname();
 
@@ -155,9 +162,44 @@ export default function CookbookLayout({
             </section>
           )}
 
-          <div className="prose prose-invert max-w-none prose-headings:text-white prose-h1:text-4xl prose-h1:font-bold prose-h1:scroll-mt-6 prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-8 prose-h2:mb-4 prose-h2:scroll-mt-6 prose-h3:scroll-mt-6 prose-p:text-white/80 prose-p:leading-7 prose-a:text-[#1A4289] prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-[#FDCEB0] prose-code:bg-black/40 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-black/90 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-lg prose-pre:p-4">
-            {children}
-          </div>
+          <section className="mb-10">
+            <div className="prose prose-invert max-w-none prose-headings:text-white prose-h1:text-4xl prose-h1:font-bold prose-h1:scroll-mt-6 prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-8 prose-h2:mb-4 prose-h2:scroll-mt-6 prose-h3:scroll-mt-6 prose-p:text-white/80 prose-p:leading-7 prose-a:text-[#1A4289] prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-[#FDCEB0] prose-code:bg-black/40 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-black/90 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-lg prose-pre:p-4">
+              {children}
+            </div>
+            {videoUrl && (
+              <div className="mt-10 rounded-3xl border border-white/10 bg-black/40 p-6">
+                <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+                  Workflow overview
+                </p>
+                <h3 className="mt-4 text-lg font-semibold text-white">
+                  Watch the walkthrough
+                </h3>
+                {videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be") ? (
+                  <div className="mt-4 aspect-video w-full overflow-hidden rounded-2xl border border-white/10">
+                    <iframe
+                      src={videoUrl.replace("watch?v=", "embed/")}
+                      title={`${title} walkthrough`}
+                      className="h-full w-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ) : (
+                  <video
+                    className="mt-4 w-full rounded-2xl border border-white/10"
+                    controls
+                    poster={videoPoster || "https://assets.worqhat.com/cookbook/default-poster.png"}
+                  >
+                    <source src={videoUrl} type="video/mp4" />
+                    Your browser does not support the video tag.
+                  </video>
+                )}
+                {videoDescription && (
+                  <p className="mt-3 text-sm text-white/70">{videoDescription}</p>
+                )}
+              </div>
+            )}
+          </section>
         </div>
       </main>
       <DocsTOC content={content} />

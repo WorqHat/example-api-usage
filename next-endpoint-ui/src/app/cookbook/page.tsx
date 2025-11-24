@@ -16,31 +16,57 @@ export default async function CookbookPage() {
   ];
 
   const tagColors: Record<string, string> = {
-    REASONING: "bg-yellow-400 text-black",
-    RESPONSES: "bg-lime-400 text-black",
-    FUNCTIONS: "bg-purple-500 text-white",
+    ECOMMERCE: "bg-emerald-400 text-black",
+    FINANCE: "bg-cyan-400 text-black",
+    OPERATIONS: "bg-indigo-400 text-white",
+    ANALYTICS: "bg-orange-300 text-black",
   };
 
   return (
     <PageLayout>
       <div className="relative min-h-screen">
+        
         {/* Patterned Background */}
-        <div 
-          className="absolute inset-0 opacity-10"
-          style={{
-            backgroundImage: `
-              repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.05) 10px, rgba(255,255,255,0.05) 20px),
-              repeating-linear-gradient(-45deg, transparent, transparent 10px, rgba(255,255,255,0.03) 10px, rgba(255,255,255,0.03) 20px)
-            `,
-          }}
-        />
+        <div className="cookbook-pattern absolute inset-0" />
         
         {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black via-[#050A30] to-black" />
+        <div className="absolute inset-0 bg-linear-to-b from-black via-[#050A30] to-black" />
         
         {/* Content */}
         <div className="relative mx-auto max-w-7xl px-6 py-12">
-          <h1 className="mb-12 text-5xl font-bold text-white">Topics</h1>
+                    {/* Video explainer segment */}
+          <section className="mb-16 grid gap-6 rounded-3xl border border-white/10 bg-black/40 p-8 md:grid-cols-5">
+            <div className="md:col-span-3">
+              <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+                Workflow overview
+              </p>
+              <h2 className="mt-4 text-3xl font-semibold text-white">
+                Why teams build on WorqHat
+              </h2>
+              <p className="mt-4 text-sm leading-6 text-white/70">
+                WorqHat combines no-code apps, visual workflows, first-class databases, and AI so that business
+                teams can launch operational tools without waiting on engineering. This overview highlights how
+                platforms built on WorqHat unify data, automate repetitive tasks, and keep leadership informed.
+              </p>
+              <ul className="mt-4 space-y-2 text-sm text-white/60">
+                <li>• Connect apps, workflows, databases, and docs in one workspace</li>
+                <li>• Automate approvals, notifications, and reporting with visual logic</li>
+                <li>• Layer AI summarization and insights over trusted operational data</li>
+              </ul>
+            </div>
+            <div className="md:col-span-2">
+              <div className="aspect-video w-full overflow-hidden rounded-2xl border border-white/10">
+                <iframe
+                  src="https://www.youtube.com/embed/sKtk8Zvq-dM"
+                  title="Daily Revenue Briefing Workflow"
+                  className="h-full w-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </section>
+
           <div className="mb-16 grid grid-cols-2 gap-3 md:grid-cols-3">
             {topics.map((topic) => (
               <TopicCard

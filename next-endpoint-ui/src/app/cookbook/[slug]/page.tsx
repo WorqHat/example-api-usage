@@ -204,6 +204,9 @@ export default async function CookbookSlugPage({ params }: CookbookPageProps) {
         tags={data.tags || []}
         authors={authors}
         cookbookItems={allItems}
+        videoUrl={data.videoUrl}
+        videoPoster={data.videoPoster}
+        videoDescription={data.videoDescription}
       >
         <MDXRemote source={content} components={components} />
       </CookbookLayout>

@@ -23,6 +23,9 @@ export type CookbookFrontmatter = {
   tags: string[];
   description?: string;
   ogImage?: string;
+  videoUrl?: string;
+  videoPoster?: string;
+  videoDescription?: string;
   authors: Array<{
     name: string;
     username: string;

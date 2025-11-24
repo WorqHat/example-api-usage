@@ -51,6 +51,54 @@ export default async function CookbookPage() {
             ))}
           </div>
 
+          {/* Starter template section */}
+          <section className="mb-16 grid gap-6 rounded-3xl border border-white/10 bg-black/50 p-8 md:grid-cols-2">
+            <div>
+              <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+                Featured workflow
+              </p>
+              <h2 className="mt-4 text-3xl font-semibold text-white">
+                Daily Revenue Briefing Template
+              </h2>
+              <p className="mt-4 text-sm leading-6 text-white/70">
+                Automate the 09:00 executive revenue email end-to-end. This template includes
+                the time-based trigger, data query, Text Gen analysis, graph rendering, and final delivery nodes already wired up in WorqHat.
+              </p>
+              <ul className="mt-4 space-y-2 text-sm text-white/60">
+                <li>• Structured JSON metrics for charts and KPIs</li>
+                <li>• Inline graphs and executive summary</li>
+                <li>• Action items generated from live performance</li>
+              </ul>
+              <div className="mt-6 flex flex-wrap gap-2">
+                {["WORKFLOWS", "AUTOMATION", "ANALYTICS"].map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-white"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-black/40 p-6">
+              <div>
+                <p className="text-sm text-white/60">Ready-made WorqHat workflow</p>
+                <p className="mt-2 text-lg font-semibold text-white">Deploy in minutes:</p>
+                <ol className="mt-3 space-y-2 text-sm text-white/70 marker:text-white/60">
+                  <li>1. Duplicate the workflow template</li>
+                  <li>2. Point queries to your sales datasource</li>
+                  <li>3. Update recipients and brand copy</li>
+                </ol>
+              </div>
+              <Link
+                href="/cookbook/gpt-5-1-prompting-guide"
+                className="mt-6 inline-flex items-center justify-center rounded-2xl bg-[#FDCEB0] px-4 py-3 text-sm font-semibold text-[#050A30] transition hover:bg-[#ffdcb6]"
+              >
+                Get started with this template
+              </Link>
+            </div>
+          </section>
+
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {cookbookItems.map((item) => (
               <Link

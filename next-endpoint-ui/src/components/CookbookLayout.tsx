@@ -114,6 +114,47 @@ export default function CookbookLayout({
               </div>
             </div>
           )}
+
+          {title && (
+            <section className="mb-10 grid gap-6 rounded-3xl border border-white/10 bg-black/50 p-6 md:grid-cols-5">
+              <div className="md:col-span-3">
+                <p className="text-xs uppercase tracking-[0.4em] text-white/60">
+                  Ready-made WorqHat template
+                </p>
+                <h2 className="mt-4 text-2xl font-semibold text-white">
+                  Launch “{title}” as a workflow
+                </h2>
+                <p className="mt-3 text-sm leading-6 text-white/70">
+                  Duplicate this recipe inside WorqHat to get the outlined triggers, nodes, and delivery
+                  logic preconfigured. Update credentials, recipients, and copy, then ship it to production.
+                </p>
+                <ul className="mt-4 space-y-2 text-sm text-white/60">
+                  <li>• All workflow nodes referenced in this guide</li>
+                  <li>• Structured JSON outputs for dashboards and mailers</li>
+                  <li>• Inline documentation for faster handoffs</li>
+                </ul>
+              </div>
+              <div className="flex flex-col justify-between rounded-2xl border border-white/10 bg-black/40 p-5 md:col-span-2">
+                <div>
+                  <p className="text-sm text-white/60">Get started checklist</p>
+                  <ol className="mt-3 space-y-2 text-sm text-white/70">
+                    <li>1. Duplicate the workflow template.</li>
+                    <li>2. Connect your datasource and credentials.</li>
+                    <li>3. Customize content and recipients.</li>
+                  </ol>
+                </div>
+                <Link
+                  href="https://worqhat.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mt-6 inline-flex items-center justify-center rounded-2xl bg-[#FDCEB0] px-4 py-3 text-sm font-semibold text-[#050A30] transition hover:bg-[#ffdcb6]"
+                >
+                  Launch this template
+                </Link>
+              </div>
+            </section>
+          )}
+
           <div className="prose prose-invert max-w-none prose-headings:text-white prose-h1:text-4xl prose-h1:font-bold prose-h1:scroll-mt-6 prose-h2:text-2xl prose-h2:font-semibold prose-h2:mt-8 prose-h2:mb-4 prose-h2:scroll-mt-6 prose-h3:scroll-mt-6 prose-p:text-white/80 prose-p:leading-7 prose-a:text-[#1A4289] prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-[#FDCEB0] prose-code:bg-black/40 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-black/90 prose-pre:border prose-pre:border-white/10 prose-pre:rounded-lg prose-pre:p-4">
             {children}
           </div>

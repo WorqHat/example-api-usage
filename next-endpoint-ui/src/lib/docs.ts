@@ -1,20 +1,10 @@
 import fs from "fs";
 import path from "path";
+import type { DocItem } from "./docs-client";
+import { docSections } from "./docs-client";
 
-export type DocItem = {
-  id: string;
-  title: string;
-  href: string;
-  segment?: string;
-};
-
-// Client-safe: can be imported in client components
-export const docSections: DocItem[] = [
-  { id: "getting-started", title: "Getting Started", href: "/docs/getting-started", segment: "Get started" },
-  { id: "authentication", title: "Authentication", href: "/docs/authentication", segment: "Get started" },
-  { id: "database", title: "Database Operations", href: "/docs/database", segment: "Core concepts" },
-  { id: "workflows", title: "Workflows", href: "/docs/workflows", segment: "Core concepts" },
-];
+// Re-export type for convenience
+export type { DocItem } from "./docs-client";
 
 // Server-only: uses Node.js fs module
 export function getDocContent(docId: string): string | null {

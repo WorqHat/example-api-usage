@@ -90,11 +90,6 @@ export default function EndpointExplorer({
     [endpoints]
   );
 
-  const codeSnippet =
-    activeTab === "api"
-      ? selectedEndpoint?.requestApiCode ?? ""
-      : selectedEndpoint?.requestSdkCode ?? "";
-
   // Reset to sample response when endpoint changes
   useEffect(() => {
     if (!selectedEndpoint) return;
@@ -166,6 +161,11 @@ export default function EndpointExplorer({
   if (!selectedEndpoint) {
     return null;
   }
+
+  const codeSnippet =
+    activeTab === "api"
+      ? selectedEndpoint.requestApiCode ?? ""
+      : selectedEndpoint.requestSdkCode ?? "";
 
   const responseBadge = getResponseBadge(responseState.status);
   const formattedResponse = formatPayload(responseState.body);

@@ -13,3 +13,4 @@ export const docSections: DocItem[] = [
   { id: "database", title: "Database Operations", href: "/docs/database", segment: "Core concepts" },
   { id: "workflows", title: "Workflows", href: "/docs/workflows", segment: "Core concepts" },
 ];
+

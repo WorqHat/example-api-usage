@@ -4,10 +4,17 @@ import { getCookbookContent, getAllCookbookItems, getAvatarPathForAuthor } from 
 import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
 import MDXCodeBlock from "@/components/MDXCodeBlock";
+import type { Metadata } from "next";
 
 type CookbookPageProps = {
   params: Promise<{ slug: string }>;
 };
+
+const DEFAULT_ICON = "https://assets.worqhat.com/logos/worqhat-icon.png";
+const DEFAULT_OG_IMAGE = "https://assets.worqhat.com/logos/worqhat-logo-dark.png";
+const DEFAULT_DESCRIPTION =
+  "Explore WorqHat cookbook recipes showcasing advanced workflows, SDK patterns, and production-ready automations.";
+const SITE_NAME = "WorqHat Cookbook";
 
 function generateId(text: string): string {
   return text
@@ -86,6 +93,76 @@ const components = {
     <li className="mb-2" {...props} />
   ),
 };
+
+function extractDescription(markdown: string, fallback: string = DEFAULT_DESCRIPTION) {
+  const stripped = markdown
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/[#>*_~\-]+/g, "")
+    .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!stripped) return fallback;
+  return stripped.length > 160 ? `${stripped.slice(0, 157)}...` : stripped;
+}
+
+export async function generateMetadata({ params }: CookbookPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const result = getCookbookContent(slug);
+
+  if (!result) {
+    return {
+      title: `${SITE_NAME}`,
+      description: DEFAULT_DESCRIPTION,
+      icons: {
+        icon: DEFAULT_ICON,
+        shortcut: DEFAULT_ICON,
+        apple: DEFAULT_ICON,
+      },
+      openGraph: {
+        title: SITE_NAME,
+        description: DEFAULT_DESCRIPTION,
+        images: [DEFAULT_OG_IMAGE],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: SITE_NAME,
+        description: DEFAULT_DESCRIPTION,
+        images: [DEFAULT_OG_IMAGE],
+      },
+    };
+  }
+
+  const { content, data } = result;
+  const title = data.title ? `${data.title} | ${SITE_NAME}` : SITE_NAME;
+  const description = data.description || extractDescription(content);
+  const ogImage = data.ogImage || DEFAULT_OG_IMAGE;
+
+  return {
+    title,
+    description,
+    icons: {
+      icon: DEFAULT_ICON,
+      shortcut: DEFAULT_ICON,
+      apple: DEFAULT_ICON,
+    },
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      publishedTime: data.date || undefined,
+      images: [ogImage],
+      siteName: SITE_NAME,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}
 
 export async function generateStaticParams() {
   const items = getAllCookbookItems();

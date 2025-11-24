@@ -21,6 +21,8 @@ export type CookbookFrontmatter = {
   title: string;
   date: string;
   tags: string[];
+  description?: string;
+  ogImage?: string;
   authors: Array<{
     name: string;
     username: string;

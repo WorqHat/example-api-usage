@@ -1,72 +1,91 @@
 ---
-title: "GPT-5.1 Prompting Guide"
-date: "Nov 13, 2025"
+title: "Daily Revenue Briefing Workflow"
+date: "Oct 26, 2025"
 tags:
-  - REASONING
-  - RESPONSES
+  - WORKFLOWS
+  - AUTOMATION
+  - ANALYTICS
 authors:
   - name: "Samarth Madduru"
     username: "samarth"
+description: "Formal blueprint for a WorqHat workflow that automates the 9:00 AM revenue report from ingestion to executive briefing."
+ogImage: "https://assets.worqhat.com/cookbook/daily-revenue-briefing.png"
 ---
 
-# Introduction
+# Overview
 
-GPT-5.1 is our new flagship model, designed for agentic and coding tasks. It balances intelligence and speed, with a new reasoning mode, improved calibration to prompt difficulty, and enhanced steerability in personality, tone, and output formatting.
+A North American commerce team replaced a fragile manual reporting ritual with a formal WorqHat workflow that assembles a complete revenue briefing by 09:00 each morning. The process now issues a precise summary, KPI table, and inline visualizations without CSV handoffs or spreadsheet remediation.
 
-This guide focuses on prompt patterns to maximize performance in real deployments, based on internal testing and collaborations. It serves as a starting point for iterative prompting.
+## Previous State
 
-## Migrating to GPT-5.1
+- 08:00 – Manual export from the sales platform  
+- 08:20 – Ad hoc spreadsheet manipulation and charting  
+- 08:45 – Copy/paste into a slide deck  
+- 09:05 – “Good enough” email to leadership  
+- 12:00 – Follow‑up thread to fix inconsistencies  
 
-When migrating from GPT-4 or earlier models, consider the following:
+The workflow consumed senior operators, introduced version drift, and failed to earn trust in the numbers delivered at stand‑up.
 
-- **Improved instruction following**: GPT-5.1 better understands complex, multi-step instructions
-- **Enhanced reasoning**: The new reasoning mode provides more structured thinking
-- **Better calibration**: The model adjusts its response complexity based on prompt difficulty
+## Target State
 
-## Agentic steerability
+A five-node WorqHat workflow replaced the ritual with a deterministic, auditable pipeline:
 
-GPT-5.1 offers enhanced control over agent behavior through improved prompt engineering:
+1. **Time-Based Runs** – Executes daily at 09:00 with no human intervention.  
+2. **Query Data** – Issues a parameterized SQL query against the production sales cluster (yesterday’s transactions).  
+3. **Text Gen (Detailed Analysis)** – Converts the result set into a formal executive summary and normalized JSON payload of metrics.  
+4. **Create Graphs** – Renders visual assets (bar, line, stacked, dual-axis) directly from the JSON metrics.  
+5. **Send Mail** – Distributes the final briefing (summary, KPI table, inline charts, action recommendations) to the leadership alias.  
 
-- **Personality control**: More consistent personality traits across conversations
-- **Tone management**: Better adherence to specified tone and style
-- **Output formatting**: Improved structure and formatting control
+## Detailed Node Configuration
 
-## Optimizing intelligence and instruction-following
+### 1. Time-Based Runs
+- **Trigger:** 09:00 America/New_York, Monday–Friday  
+- **Retry:** 2 attempts with exponential backoff  
 
-To get the best results from GPT-5.1:
+### 2. Query Data
+- **Source:** `prod.sales.transactions`  
+- **Filters:** `transaction_date = current_date - interval '1 day'`  
+- **Output:** Structured rows (amount, product, channel, timestamp, refunds)  
 
-1. **Be explicit**: Clearly state your requirements and constraints
-2. **Use examples**: Provide few-shot examples when possible
-3. **Structure prompts**: Break complex tasks into clear steps
-4. **Iterate**: Refine prompts based on model responses
+### 3. Text Gen (Detailed Analysis)
+- **Prompt:** “Summarize trends, produce JSON with revenue, transactions, AOV, conversion, refunds, category deltas, anomalies, and action cues.”  
+- **Outputs:**  
+  - Executive summary paragraphs  
+  - JSON metrics for downstream visualization  
 
-## Maximizing coding performance from planning to execution
+### 4. Create Graphs
+- **Visuals:**  
+  - Revenue by category (bar)  
+  - Day-over-day revenue trend (line)  
+  - Conversion vs. AOV (dual-axis)  
+  - Refunds vs. net revenue (stacked bar)  
+- **Rendering:** Server-side PNG, embedded as CID attachments  
 
-For coding tasks, GPT-5.1 excels at:
+### 5. Send Mail
+- **Subject:** `Daily Revenue Briefing — {{yesterday_date}}`  
+- **Body Sections:** Executive summary, KPI table, inline charts, “Actions Today” list  
+- **Delivery Time:** 09:00 ± 1 minute  
 
-- **Planning**: Breaking down complex problems into manageable steps
-- **Implementation**: Writing clean, efficient code
-- **Debugging**: Identifying and fixing issues
-- **Documentation**: Generating clear code comments and docs
+## Outcomes
 
-## New tool types in GPT-5.1
+- **10+ hours/week saved** by the operations team  
+- **Leadership alignment** before the morning stand‑up (briefing arrives at 09:00 sharp)  
+- **Single source of truth** thanks to direct database pulls  
+- **Continuous monitoring** due to anomaly callouts in the generated summary  
 
-GPT-5.1 introduces several new tool types:
+## Recommended Actions
 
-- **Enhanced function calling**: More reliable function execution
-- **Better tool selection**: Improved understanding of when to use which tools
-- **Multi-tool coordination**: Better handling of complex multi-tool workflows
+1. Configure the five-node pipeline in WorqHat using your production datasource.  
+2. Parameterize the Text Gen prompt with organizational tone and required KPIs.  
+3. Validate the JSON schema once, then wire Create Graphs and Send Mail directly to it.  
+4. Extend the workflow with escalation logic (e.g., notify finance when refunds exceed thresholds).  
 
-## How to metaprompt effectively
+## Next Steps
 
-Metaprompting involves creating prompts that guide the model to generate better prompts:
+Use this pattern to formalize any recurring business briefing:
 
-1. **Define the task clearly**: Start with a clear problem statement
-2. **Specify constraints**: List any limitations or requirements
-3. **Provide context**: Include relevant background information
-4. **Request structure**: Ask for specific output formats
+- Replace CSV-driven morning rituals with deterministic WorqHat workflows.  
+- Maintain structured JSON outputs to power both prose and visuals.  
+- Keep ownership within business operations—no engineering tickets required.  
 
-## What's next
-
-As GPT-5.1 continues to evolve, we'll update this guide with new patterns and best practices. Stay tuned for more advanced techniques and real-world examples.
-
+👉 **Build this workflow in WorqHat and reclaim your morning.**

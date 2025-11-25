@@ -15,3 +15,4 @@ export default function CardGroup({ children, cols = 2 }: CardGroupProps) {
   );
 }
 
+

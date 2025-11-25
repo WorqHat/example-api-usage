@@ -11,3 +11,4 @@ export default function WorkflowIndexPage() {
   redirect(sections[0].href);
 }
 
+

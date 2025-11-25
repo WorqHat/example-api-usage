@@ -16,6 +16,40 @@ function generateId(text: string): string {
     .replace(/^-|-$/g, "");
 }
 
+const blockLevelTags = new Set([
+  "p",
+  "div",
+  "section",
+  "article",
+  "header",
+  "footer",
+  "aside",
+  "main",
+  "ul",
+  "ol",
+  "li",
+  "table",
+  "thead",
+  "tbody",
+  "tfoot",
+  "tr",
+  "td",
+  "th",
+  "pre",
+  "code",
+  "blockquote",
+  "figure",
+  "figcaption",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "Image",
+  "img",
+]);
+
 const mdxComponents = {
   code: MDXCodeBlock,
   img: ChangelogImage,
@@ -60,15 +94,18 @@ const mdxComponents = {
   },
   p: ({ children, className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => {
     const childArray = React.Children.toArray(children);
-    const hasParagraphChild = childArray.some(
-      (child) => React.isValidElement(child) && child.type === "p"
+    const containsBlockChild = childArray.some(
+      (child) =>
+        React.isValidElement(child) &&
+        (child.type === React.Fragment ||
+          (typeof child.type === "string" && blockLevelTags.has(child.type)))
     );
 
-    if (hasParagraphChild) {
+    if (containsBlockChild) {
       return (
-        <>
-          {childArray}
-        </>
+        <div className={className || "space-y-4"} {...props}>
+          {children}
+        </div>
       );
     }
 

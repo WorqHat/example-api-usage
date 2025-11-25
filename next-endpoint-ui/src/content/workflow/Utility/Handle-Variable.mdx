@@ -1,0 +1,101 @@
+
+**Category:** Data Management
+**Type:** Variable Node
+**Overview:**
+The Handle Variable node helps you store and manage values (like numbers, text, or data) that you want to use in different parts of your workflow. It makes your workflow smarter by allowing you to remember and reuse information without writing code.
+
+---
+
+## Description
+
+The Handle Variable node is like a small memory box inside your workflow. You can give the box a name and put some information inside it — for example, a number, a message, or a file name. Later, you can open that box (using the variable name) in another node to use the same information again.
+
+For example, you can create a variable named `price` and give it the value `500`. Then, in another node (like a calculator or message node), you can use `{{price}}` to get that same value without typing it again.
+
+---
+
+## Input Parameters
+
+**Variable Name:**
+Enter the name you want to give to your variable. This is how you will refer to it later in the workflow.
+Example: `price`, `username`, `total`.
+
+**Variable Value:**
+Enter the value you want to store inside the variable. It can be a number, text, or any data.
+Example: `500`, `"Jelly"`, `"Report.pdf"`.
+
+**Node Description:**
+(Optional) A short note describing what this variable is used for.
+
+---
+
+## Output Parameters
+
+This node stores your variable so it can be used by the next nodes in your workflow. The output simply confirms that the variable and its value are saved successfully.
+
+---
+
+## Output Type
+
+The result is saved in JSON format, showing the variable name and its value.
+Example:
+
+```json
+{
+  "price": 500
+}
+```
+
+---
+
+## Example (Easy to Understand)
+
+Let’s say you are building a small workflow for sending a thank-you message after a user uploads a file.
+
+1. Use the **Handle Variable** node to store the uploaded file name:
+
+   * Variable Name: `filename`
+   * Variable Value: `report.pdf`
+
+2. In the next message node, you can write:
+   `"Thank you for uploading {{filename}}!"`
+
+When the workflow runs, it will automatically replace `{{filename}}` with `report.pdf` and send the message:
+**“Thank you for uploading report.pdf!”**
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. Drag the Handle Variable node into your workflow.
+2. Click on it to open settings.
+3. Type the variable name (for example, `price` or `filename`).
+4. Enter the value you want to store.
+5. Optionally, write a short description.
+6. Save changes and connect this node to other nodes that need the variable.
+7. Use the variable later by typing `{{variable_name}}` in other nodes.
+
+---
+
+## Best Practices
+
+* Use clear and meaningful names like `totalAmount` or `customerName`.
+* Keep your data type consistent (don’t mix numbers and text for the same variable).
+* Add this node near the start of your workflow to initialize values.
+* Avoid using the same variable name in different parts unless you really want to update it.
+
+---
+
+## Common Errors
+
+**Variable not found:**
+Make sure the Handle Variable node is executed before any node that uses it.
+
+**Invalid value format:**
+If entering a JSON value, make sure it follows proper structure (for example, `{ "id": 1 }`).
+
+**Overwriting values:**
+If you use the same variable name in multiple nodes, the most recent value will replace the old one.
+
+---
+

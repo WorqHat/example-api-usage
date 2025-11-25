@@ -1,0 +1,375 @@
+---
+title: 'Upload File'
+description: 'Upload a file to S3 storage'
+---
+
+Uploads a file to S3 storage and returns the file ID and metadata. You can optionally specify a custom path within your organization's storage bucket.
+
+```endpoint
+POST https://api.worqhat.com/storage/upload
+```
+
+## What Does This Endpoint Do?
+
+This endpoint allows you to upload files to WorqHat's secure S3 storage. Think of it like uploading a file to Google Drive or Dropbox - you send a file and get back a unique ID and download URL that you can use later.
+
+## When to Use Upload File
+
+You'll find this endpoint useful when you need to:
+
+- **Store user documents**: Upload PDFs, images, or other files from your users
+- **Backup application data**: Save important files to secure cloud storage
+- **Share files**: Upload files that need to be accessible via URLs
+- **Store media assets**: Upload images, videos, or audio files for your application
+- **Archive data**: Store files for long-term retention
+- **Process files**: Upload files for AI processing or analysis
+
+## How It Works
+
+1. You send a **file** (binary data) to the endpoint
+2. You can optionally specify a **custom path** to organize your files
+3. The API stores the file in S3 and returns metadata including a unique ID
+4. You can use the returned ID to fetch or delete the file later
+
+## Code Examples
+
+### Example 1: Basic File Upload
+
+This example shows how to upload a file with an auto-generated path.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function uploadDocument() {
+      try {
+        // Create FormData for file upload
+        const formData = new FormData();
+        const fileInput = document.querySelector('input[type="file"]');
+        formData.append('file', fileInput.files[0]);
+        
+        // Call the uploadFile method
+        const response = await client.storage.uploadFile({
+          file: fileInput.files[0],
+          path: 'documents/' // Optional custom path
+        });
+        
+        // Handle the successful response
+        console.log('File uploaded successfully!');
+        console.log('File ID:', response.file.id);
+        console.log('Download URL:', response.file.url);
+        console.log('File size:', response.file.size, 'bytes');
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error uploading file:', error.message);
+      }
+    }
+    
+    // Call the function
+    uploadDocument();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Upload a file
+    try:
+        with open('document.pdf', 'rb') as file:
+            response = client.storage.upload_file(
+                file=file,
+                path='documents/'  # Optional custom path
+            )
+        
+        # Handle the successful response
+        print("File uploaded successfully!")
+        print(f"File ID: {response.file.id}")
+        print(f"Download URL: {response.file.url}")
+        print(f"File size: {response.file.size} bytes")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error uploading file: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+      "io"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Open the file
+      file, err := os.Open("document.pdf")
+      if err != nil {
+        fmt.Printf("Error opening file: %s\n", err.Error())
+        return
+      }
+      defer file.Close()
+      
+      // Upload the file
+      response, err := client.Storage.UploadFile(context.TODO(), worqhat.StorageUploadFileParams{
+        File: file,                    // The file to upload
+        Path: "documents/",           // Optional custom path
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error uploading file: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Println("File uploaded successfully!")
+      fmt.Printf("File ID: %s\n", response.File.ID)
+      fmt.Printf("Download URL: %s\n", response.File.URL)
+      fmt.Printf("File size: %d bytes\n", response.File.Size)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Upload a file
+    curl -X POST "https://api.worqhat.com/storage/upload" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -F "file=@/path/to/document.pdf" \
+      -F "path=documents/"
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: Upload with Custom Path
+
+This example shows how to upload a file to a specific organized path.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function uploadInvoice() {
+      try {
+        // Upload invoice to organized path
+        const response = await client.storage.uploadFile({
+          file: invoiceFile,
+          path: 'invoices/2025/january/' // Organized path structure
+        });
+        
+        // Handle the successful response
+        console.log(`Invoice uploaded to: ${response.file.path}`);
+        console.log('File ID:', response.file.id);
+        return response;
+      } catch (error) {
+        console.error('Error uploading invoice:', error.message);
+      }
+    }
+    
+    uploadInvoice();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Upload invoice to organized path
+    try:
+        with open('invoice_001.pdf', 'rb') as file:
+            response = client.storage.upload_file(
+                file=file,
+                path='invoices/2025/january/'  # Organized path structure
+            )
+        
+        # Handle the successful response
+        print(f"Invoice uploaded to: {response.file.path}")
+        print(f"File ID: {response.file.id}")
+    except Exception as e:
+        print(f"Error uploading invoice: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Open the invoice file
+      file, err := os.Open("invoice_001.pdf")
+      if err != nil {
+        fmt.Printf("Error opening file: %s\n", err.Error())
+        return
+      }
+      defer file.Close()
+      
+      // Upload invoice to organized path
+      response, err := client.Storage.UploadFile(context.TODO(), worqhat.StorageUploadFileParams{
+        File: file,                           // The file to upload
+        Path: "invoices/2025/january/",      // Organized path structure
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error uploading invoice: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Invoice uploaded to: %s\n", response.File.Path)
+      fmt.Printf("File ID: %s\n", response.File.ID)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Upload invoice to organized path
+    curl -X POST "https://api.worqhat.com/storage/upload" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -F "file=@/path/to/invoice_001.pdf" \
+      -F "path=invoices/2025/january/"
+    ```
+  </Tab>
+</Tabs>
+
+## Request Body Explained
+
+<ParamField body="file" type="binary" required>
+  The file to upload. This should be the actual file data (binary content). Maximum file size is 50MB.
+  
+  Supported file types include: PDF, images (JPG, PNG, GIF), documents (DOC, DOCX), spreadsheets (XLS, XLSX), and more.
+</ParamField>
+
+<ParamField body="path" type="string" optional>
+  Optional custom path within your organization's storage. This helps organize your files into folders.
+  
+  Examples: `"documents/"`, `"invoices/2025/"`, `"user-uploads/images/"`
+  
+  If not provided, the file will be stored in the root of your organization's storage.
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if the upload was successful, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="file" type="object">
+  An object containing all the file metadata and information.
+</ResponseField>
+
+<ResponseField name="file.id" type="string">
+  Unique identifier for the uploaded file. Use this ID to fetch or delete the file later.
+</ResponseField>
+
+<ResponseField name="file.filename" type="string">
+  The original name of the uploaded file.
+</ResponseField>
+
+<ResponseField name="file.path" type="string">
+  The full path where the file is stored in your organization's storage.
+</ResponseField>
+
+<ResponseField name="file.size" type="integer">
+  The size of the uploaded file in bytes.
+</ResponseField>
+
+<ResponseField name="file.contentType" type="string">
+  The MIME type of the uploaded file (e.g., "application/pdf", "image/jpeg").
+</ResponseField>
+
+<ResponseField name="file.uploadedAt" type="string">
+  The timestamp when the file was uploaded (ISO 8601 format).
+</ResponseField>
+
+<ResponseField name="file.url" type="string">
+  Direct URL to access the uploaded file. This URL is publicly accessible.
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "file": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "filename": "invoice_2025.pdf",
+    "path": "org_123/documents/invoices/invoice_2025.pdf",
+    "size": 245678,
+    "contentType": "application/pdf",
+    "uploadedAt": "2025-07-26T03:28:08.123Z",
+    "url": "https://storage.worqhat.com/org_123/documents/invoices/invoice_2025.pdf"
+  }
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "File too large" | File exceeds 50MB limit | Compress the file or split it into smaller parts |
+| "Invalid file type" | File type is not supported | Use a supported file format |
+| "Missing file" | No file was provided in the request | Include a file in your request |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+| "Storage quota exceeded" | Organization has reached storage limit | Contact support or upgrade your plan |
+
+## Tips for Successful Uploads
+
+- **Use organized paths** to keep your files well-structured
+- **Check file size** before uploading (50MB limit)
+- **Use appropriate file types** for your use case
+- **Save the file ID** for future reference and operations
+- **Consider file compression** for large files
+- **Use meaningful filenames** to make files easier to identify

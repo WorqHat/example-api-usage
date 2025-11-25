@@ -1,0 +1,692 @@
+---
+title: 'Auto-Cluster Records'
+description: 'Automatically group similar records using K-means clustering on vector embeddings'
+---
+
+Performs K-means clustering on vector embeddings to automatically group similar records. This endpoint supports auto-detection of optimal cluster count and AI-generated cluster labels, making it perfect for data analysis, content organization, and pattern discovery.
+
+```endpoint
+POST https://api.worqhat.com/db/cluster
+```
+
+## What Does This Endpoint Do?
+
+This endpoint uses advanced machine learning clustering algorithms to automatically group your records into meaningful clusters based on their semantic similarity. It can automatically determine the optimal number of clusters and generate AI-powered descriptions for each cluster.
+
+## When to Use Clustering
+
+You'll find this endpoint useful when you need to:
+
+- **Organize content automatically**: Group similar products, articles, or documents
+- **Discover data patterns**: Find natural groupings in your data that weren't obvious before
+- **Content categorization**: Automatically categorize large amounts of content
+- **Customer segmentation**: Group customers by behavior or preferences
+- **Data exploration**: Understand the structure and relationships in your data
+- **Reduce complexity**: Simplify large datasets by grouping similar items
+
+## How It Works
+
+1. You specify a **table** to cluster
+2. The system retrieves **vector embeddings** for all records
+3. It performs **K-means clustering** to group similar records
+4. **Optimal cluster count** is automatically determined (or you can specify it)
+5. **AI-generated labels** describe what each cluster represents
+6. Results include **cluster information**, **sample records**, and **quality metrics**
+
+## Code Examples
+
+### Example 1: Basic Auto-Clustering
+
+This example shows how to automatically cluster products with optimal cluster detection.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function clusterProducts() {
+      try {
+        // Call the cluster method
+        const response = await client.db.cluster({
+          table: "products",
+          generate_labels: true,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Clustering complete!`);
+        console.log(`Optimal clusters: ${response.optimal_k}`);
+        console.log(`Silhouette score: ${response.silhouette_score}`);
+        console.log(`Iterations: ${response.iterations}`);
+        
+        // Display each cluster
+        response.clusters.forEach((cluster, index) => {
+          console.log(`\nCluster ${index + 1}: ${cluster.label}`);
+          console.log(`Size: ${cluster.size} products`);
+          console.log(`Sample products:`, cluster.sample_records.map(r => r.name));
+        });
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error clustering products:', error.message);
+      }
+    }
+    
+    // Call the function
+    clusterProducts();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Cluster products
+    try:
+        response = client.db.cluster(
+            table="products",
+            generate_labels=True,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print("Clustering complete!")
+        print(f"Optimal clusters: {response.optimal_k}")
+        print(f"Silhouette score: {response.silhouette_score}")
+        print(f"Iterations: {response.iterations}")
+        
+        # Display each cluster
+        for i, cluster in enumerate(response.clusters):
+            print(f"\nCluster {i + 1}: {cluster.label}")
+            print(f"Size: {cluster.size} products")
+            sample_names = [r.name for r in cluster.sample_records]
+            print(f"Sample products: {sample_names}")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error clustering products: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Cluster products
+      response, err := client.DB.Cluster(context.TODO(), worqhat.DBClusterParams{
+        Table: "products",
+        GenerateLabels: true,
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error clustering products: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Println("Clustering complete!")
+      fmt.Printf("Optimal clusters: %d\n", response.OptimalK)
+      fmt.Printf("Silhouette score: %.3f\n", response.SilhouetteScore)
+      fmt.Printf("Iterations: %d\n", response.Iterations)
+      
+      // Display each cluster
+      for i, cluster := range response.Clusters {
+        fmt.Printf("\nCluster %d: %s\n", i+1, cluster.Label)
+        fmt.Printf("Size: %d products\n", cluster.Size)
+        
+        sampleNames := make([]string, len(cluster.SampleRecords))
+        for j, record := range cluster.SampleRecords {
+          sampleNames[j] = record["name"].(string)
+        }
+        fmt.Printf("Sample products: %v\n", sampleNames)
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Cluster products
+    curl -X POST "https://api.worqhat.com/db/cluster" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "products",
+        "generate_labels": true,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: Custom Cluster Count
+
+This example shows how to specify a specific number of clusters.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function clusterWithCustomCount() {
+      try {
+        // Cluster with specific number of clusters
+        const response = await client.db.cluster({
+          table: "articles",
+          num_clusters: 5,        // Specify exact number of clusters
+          generate_labels: true,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Clustering complete with ${response.optimal_k} clusters`);
+        console.log(`Silhouette score: ${response.silhouette_score}`);
+        
+        // Analyze cluster quality
+        response.clusters.forEach((cluster, index) => {
+          console.log(`\nCluster ${index + 1}: ${cluster.label}`);
+          console.log(`Size: ${cluster.size} articles`);
+          console.log(`Quality: ${cluster.size > 10 ? 'Good' : 'Small'}`);
+        });
+        return response;
+      } catch (error) {
+        console.error('Error clustering articles:', error.message);
+      }
+    }
+    
+    clusterWithCustomCount();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Cluster with specific number of clusters
+    try:
+        response = client.db.cluster(
+            table="articles",
+            num_clusters=5,        # Specify exact number of clusters
+            generate_labels=True,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Clustering complete with {response.optimal_k} clusters")
+        print(f"Silhouette score: {response.silhouette_score}")
+        
+        # Analyze cluster quality
+        for i, cluster in enumerate(response.clusters):
+            print(f"\nCluster {i + 1}: {cluster.label}")
+            print(f"Size: {cluster.size} articles")
+            quality = "Good" if cluster.size > 10 else "Small"
+            print(f"Quality: {quality}")
+    except Exception as e:
+        print(f"Error clustering articles: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Cluster with specific number of clusters
+      response, err := client.DB.Cluster(context.TODO(), worqhat.DBClusterParams{
+        Table: "articles",
+        NumClusters: 5,        // Specify exact number of clusters
+        GenerateLabels: true,
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error clustering articles: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Clustering complete with %d clusters\n", response.OptimalK)
+      fmt.Printf("Silhouette score: %.3f\n", response.SilhouetteScore)
+      
+      // Analyze cluster quality
+      for i, cluster := range response.Clusters {
+        fmt.Printf("\nCluster %d: %s\n", i+1, cluster.Label)
+        fmt.Printf("Size: %d articles\n", cluster.Size)
+        quality := "Good"
+        if cluster.Size <= 10 {
+          quality = "Small"
+        }
+        fmt.Printf("Quality: %s\n", quality)
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Cluster with specific number of clusters
+    curl -X POST "https://api.worqhat.com/db/cluster" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "articles",
+        "num_clusters": 5,
+        "generate_labels": true,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 3: Customer Segmentation
+
+This example shows how to use clustering for customer segmentation analysis.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function segmentCustomers() {
+      try {
+        // Segment customers with auto-detection
+        const response = await client.db.cluster({
+          table: "customers",
+          min_clusters: 3,       // Minimum clusters for customer segments
+          max_clusters: 8,      // Maximum clusters to consider
+          generate_labels: true,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Customer segmentation complete!`);
+        console.log(`Optimal segments: ${response.optimal_k}`);
+        console.log(`Clustering quality: ${response.silhouette_score > 0.7 ? 'Excellent' : 'Good'}`);
+        
+        // Analyze each customer segment
+        response.clusters.forEach((cluster, index) => {
+          console.log(`\nSegment ${index + 1}: ${cluster.label}`);
+          console.log(`Customer count: ${cluster.size}`);
+          console.log(`Percentage: ${((cluster.size / response.clusters.reduce((sum, c) => sum + c.size, 0)) * 100).toFixed(1)}%`);
+          
+          // Show sample customers
+          console.log(`Sample customers:`, cluster.sample_records.map(c => c.name));
+        });
+        return response;
+      } catch (error) {
+        console.error('Error segmenting customers:', error.message);
+      }
+    }
+    
+    segmentCustomers();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Segment customers with auto-detection
+    try:
+        response = client.db.cluster(
+            table="customers",
+            min_clusters=3,       # Minimum clusters for customer segments
+            max_clusters=8,      # Maximum clusters to consider
+            generate_labels=True,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print("Customer segmentation complete!")
+        print(f"Optimal segments: {response.optimal_k}")
+        quality = "Excellent" if response.silhouette_score > 0.7 else "Good"
+        print(f"Clustering quality: {quality}")
+        
+        # Analyze each customer segment
+        total_customers = sum(cluster.size for cluster in response.clusters)
+        for i, cluster in enumerate(response.clusters):
+            print(f"\nSegment {i + 1}: {cluster.label}")
+            print(f"Customer count: {cluster.size}")
+            percentage = (cluster.size / total_customers) * 100
+            print(f"Percentage: {percentage:.1f}%")
+            
+            # Show sample customers
+            sample_names = [c.name for c in cluster.sample_records]
+            print(f"Sample customers: {sample_names}")
+    except Exception as e:
+        print(f"Error segmenting customers: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Segment customers with auto-detection
+      response, err := client.DB.Cluster(context.TODO(), worqhat.DBClusterParams{
+        Table: "customers",
+        MinClusters: 3,       // Minimum clusters for customer segments
+        MaxClusters: 8,      // Maximum clusters to consider
+        GenerateLabels: true,
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error segmenting customers: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Println("Customer segmentation complete!")
+      fmt.Printf("Optimal segments: %d\n", response.OptimalK)
+      quality := "Good"
+      if response.SilhouetteScore > 0.7 {
+        quality = "Excellent"
+      }
+      fmt.Printf("Clustering quality: %s\n", quality)
+      
+      // Analyze each customer segment
+      totalCustomers := 0
+      for _, cluster := range response.Clusters {
+        totalCustomers += cluster.Size
+      }
+      
+      for i, cluster := range response.Clusters {
+        fmt.Printf("\nSegment %d: %s\n", i+1, cluster.Label)
+        fmt.Printf("Customer count: %d\n", cluster.Size)
+        percentage := float64(cluster.Size) / float64(totalCustomers) * 100
+        fmt.Printf("Percentage: %.1f%%\n", percentage)
+        
+        // Show sample customers
+        sampleNames := make([]string, len(cluster.SampleRecords))
+        for j, record := range cluster.SampleRecords {
+          sampleNames[j] = record["name"].(string)
+        }
+        fmt.Printf("Sample customers: %v\n", sampleNames)
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Segment customers with auto-detection
+    curl -X POST "https://api.worqhat.com/db/cluster" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "customers",
+        "min_clusters": 3,
+        "max_clusters": 8,
+        "generate_labels": true,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+## Request Body Explained
+
+<ParamField body="table" type="string" required>
+  Table to cluster.
+  
+  Example: "products"
+</ParamField>
+
+<ParamField body="num_clusters" type="number" optional>
+  Specific number of clusters to create. Range: 2-20. If not provided, optimal number is auto-detected.
+  
+  Example: 5
+</ParamField>
+
+<ParamField body="min_clusters" type="number" optional>
+  Minimum clusters for auto-detection. Range: 2-10, default: 2.
+</ParamField>
+
+<ParamField body="max_clusters" type="number" optional>
+  Maximum clusters for auto-detection. Range: 2-20, default: 10.
+</ParamField>
+
+<ParamField body="generate_labels" type="boolean" optional>
+  Whether to generate AI labels for clusters. Default: true.
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if clustering was successful, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="clusters" type="array">
+  Array of clusters, each containing:
+  - `id`: Cluster ID number
+  - `label`: AI-generated description of the cluster
+  - `size`: Number of records in the cluster
+  - `sample_records`: 3-5 representative records from the cluster
+  - `centroid`: Cluster center embedding (first 10 dimensions)
+</ResponseField>
+
+<ResponseField name="optimal_k" type="number">
+  Determined optimal number of clusters.
+</ResponseField>
+
+<ResponseField name="silhouette_score" type="number">
+  Clustering quality metric (0-1). Higher scores indicate better clustering.
+</ResponseField>
+
+<ResponseField name="iterations" type="number">
+  Number of K-means iterations performed.
+</ResponseField>
+
+<ResponseField name="executionTime" type="number">
+  Clustering execution time in milliseconds.
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "clusters": [
+    {
+      "id": 0,
+      "label": "Cluster focused on: electronics, gadgets, technology",
+      "size": 45,
+      "sample_records": [
+        {
+          "id": "prod_123",
+          "name": "Smart Phone",
+          "category": "electronics",
+          "price": 699.99
+        },
+        {
+          "id": "prod_456",
+          "name": "Laptop Computer",
+          "category": "electronics",
+          "price": 1299.99
+        }
+      ],
+      "centroid": [0.123, -0.456, 0.789, -0.321, 0.654, 0.987, -0.234, 0.567, -0.890, 0.123]
+    },
+    {
+      "id": 1,
+      "label": "Cluster focused on: clothing, fashion, apparel",
+      "size": 32,
+      "sample_records": [
+        {
+          "id": "prod_789",
+          "name": "Designer Shirt",
+          "category": "clothing",
+          "price": 89.99
+        },
+        {
+          "id": "prod_012",
+          "name": "Fashion Jeans",
+          "category": "clothing",
+          "price": 79.99
+        }
+      ],
+      "centroid": [-0.234, 0.567, -0.890, 0.123, -0.456, 0.789, -0.321, 0.654, 0.987, -0.234]
+    }
+  ],
+  "optimal_k": 5,
+  "silhouette_score": 0.75,
+  "iterations": 12,
+  "executionTime": 2341
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Table not found" | The specified table doesn't exist | Check your table name for typos |
+| "No embeddings found" | The table doesn't have vector embeddings | Ensure your table has been processed for embeddings |
+| "Insufficient data" | Not enough records for meaningful clustering | Ensure you have at least 20+ records in the table |
+| "Invalid cluster range" | Min/max cluster values are invalid | Ensure min_clusters ≤ max_clusters and both are ≥ 2 |
+| "Clustering failed" | Algorithm couldn't converge | Try different cluster counts or check data quality |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+
+## Tips for Better Clustering
+
+- **Start with auto-detection**: Let the system find the optimal number of clusters first
+- **Review silhouette scores**: Higher scores (0.7+) indicate good clustering quality
+- **Examine cluster labels**: AI-generated labels help understand what each cluster represents
+- **Check cluster sizes**: Balanced cluster sizes are generally better than very uneven ones
+- **Use sample records**: Review sample records to validate cluster quality
+- **Iterate and refine**: Try different parameters if initial results aren't satisfactory
+
+## Clustering Quality Metrics
+
+### Silhouette Score Interpretation
+- **0.7-1.0**: Excellent clustering, well-separated clusters
+- **0.5-0.7**: Good clustering, reasonably well-separated
+- **0.3-0.5**: Fair clustering, some overlap between clusters
+- **0.0-0.3**: Poor clustering, significant overlap
+- **Negative**: Very poor clustering, clusters may be worse than random
+
+### Cluster Size Guidelines
+- **Balanced clusters**: Similar sizes are generally better
+- **Minimum size**: Clusters with < 5 records may not be meaningful
+- **Maximum size**: Very large clusters (> 50% of data) may need further subdivision
+
+## Use Cases
+
+### Content Organization
+```javascript
+// Automatically organize articles by topic
+const articleClusters = await client.db.cluster({
+  table: "articles",
+  generate_labels: true
+});
+```
+
+### Customer Segmentation
+```javascript
+// Segment customers by behavior patterns
+const customerSegments = await client.db.cluster({
+  table: "customers",
+  min_clusters: 3,
+  max_clusters: 8
+});
+```
+
+### Product Categorization
+```javascript
+// Automatically categorize products
+const productCategories = await client.db.cluster({
+  table: "products",
+  num_clusters: 6,
+  generate_labels: true
+});
+```
+
+### Data Exploration
+```javascript
+// Discover patterns in complex datasets
+const dataPatterns = await client.db.cluster({
+  table: "complex_data",
+  min_clusters: 2,
+  max_clusters: 15
+});
+```

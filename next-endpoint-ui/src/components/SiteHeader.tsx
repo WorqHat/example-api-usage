@@ -8,6 +8,7 @@ const LOGO_URL = "https://assets.worqhat.com/logos/worqhat-logo-dark.png";
 
 const navTabs = [
   { label: "Docs", href: "/docs" },
+  { label: "Workflow", href: "/workflow" },
   { label: "API reference", href: "/api-reference" },
   { label: "Cookbook", href: "/cookbook" },
   { label: "Changelog", href: "/changelog" },
@@ -33,7 +34,9 @@ export default function SiteHeader() {
         <nav className="flex items-center gap-1">
           {navTabs.map((tab) => {
             const isActive =
-              pathname === tab.href || (pathname === "/" && tab.href === "/api-reference");
+              pathname === tab.href ||
+              pathname.startsWith(`${tab.href}/`) ||
+              (pathname === "/" && tab.href === "/api-reference");
             return (
               <Link
                 key={tab.href}

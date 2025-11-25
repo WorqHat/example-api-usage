@@ -1,0 +1,214 @@
+
+**Category:** Database / Visualization
+**Type:** Chart / Graph Generation Node
+
+---
+
+## Overview
+
+The **Create Graphs** node lets you turn your database queries into visual charts — such as line graphs, bar graphs, pie charts, scatter plots, and area graphs — directly inside a no-code workflow.
+
+It’s designed for users who want to **visualize data without writing code**, for use in dashboards, reports, or automated email updates.
+
+---
+
+## Description
+
+This node connects to your database, runs a query (either a manual query or one written in plain language), and returns a visual chart representing your results. You can choose which table to query, what filters to apply, and what type of chart to generate.
+
+After execution, the node provides:
+
+* The queried data,
+* A link to the generated chart image (`chartUrl`), and
+* A success message and query ID for reference.
+
+This chart can then be displayed, downloaded, or passed to other nodes in your workflow.
+
+---
+
+## Input Parameters
+
+When configuring this node, you can specify:
+
+* **Node Description:** A short note about what this node does. Optional, but useful for readability.
+* **Select Query Type:** Choose how you want to query your data. You can use “Query Data” (structured query with fields and filters) or “Natural Language Query” (plain English).
+* **Table Name:** The name of the database table or collection you want to use (for example, `test3 (production)`).
+* **Query Fields:** Define which records to fetch. Each field can include a name, operator (like `=`, `>`, `<`), and a value or input variable. You can add multiple fields.
+* **Query Combination Type:** Choose how multiple conditions are combined, either `AND` or `OR`.
+* **Order By:** Choose the field you want to sort the results by (for example `name` or `created_at`).
+* **Order Direction:** Select whether to sort results ascending or descending.
+* **Limit:** Specify the maximum number of records to fetch.
+* **Start After / Offset:** Skip a number of records before starting to fetch data, useful for pagination.
+* **Chart Type:** Select the type of visualization — Line Graph, Bar Graph, Pie Chart, Scatter Plot, or Area Graph.
+* **xField:** The field to use for the X-axis (for line, bar, scatter, or area charts).
+* **yField:** The field to use for the Y-axis (usually a number or count).
+* **Group By:** Optional field to group records (useful for grouped or stacked charts).
+* **Aggregation:** Choose how to aggregate grouped values — sum, average, count, min, or max.
+
+If you choose **Natural Language Query**, you can simply describe what you want, like *“Show total active users per month”*, and the node will translate that into a query automatically.
+
+---
+
+## Output Parameters
+
+After the node runs successfully, it returns a JSON response containing:
+
+* **tableName:** The full name of the queried table or collection.
+* **queryId:** A unique identifier for this query execution.
+* **data:** The actual records returned from the query.
+* **message:** A summary of what the node did (for example, “Successfully fetched 1 record and generated chart”).
+* **status:** Shows whether the operation succeeded or failed (`success` or `error`).
+* **chartUrl:** The link to the generated chart image.
+* **image:** The same chart image URL (for convenience).
+
+---
+
+## Output Type
+
+The output is a **JSON object** that includes both the query results and metadata about the generated chart.
+This JSON can be used by other workflow nodes to display, share, or store the chart.
+
+---
+
+## Example Usage
+
+### Example 1 – Query Data with Line Graph
+
+**Input:**
+
+```json
+{
+  "selectQueryType": "Query Data",
+  "tableName": "test3 (production)",
+  "queryFields": [
+    { "field": "id", "operator": "=", "value": "5" }
+  ],
+  "queryCombinationType": "AND",
+  "chartType": "Line Graph",
+  "xField": "created_at",
+  "yField": "active"
+}
+```
+
+**Output:**
+
+```json
+{
+  "output": {
+    "tableName": "production:test3",
+    "queryId": "23c92010-a5c0-4bc2-9946-d7df4cc69265",
+    "data": [
+      {
+        "id": "5",
+        "created_at": "2023-05-12T11:00:00.000Z",
+        "name": "David Wilson",
+        "bio": "David Wilson is a project manager ...",
+        "active": "yes",
+        "email": "david.wilson@constructionco.net",
+        "status": null
+      }
+    ],
+    "message": "Successfully fetched 1 records and generated chart",
+    "status": "success",
+    "chartUrl": "https://worqhat-harshada.s3.ap-southeast-2.amazonaws.com/uploads/1761727716398-smh3fj.png?...",
+    "image": "https://worqhat-harshada.s3.ap-southeast-2.amazonaws.com/uploads/1761727716398-smh3fj.png?..."
+  }
+}
+```
+
+---
+
+### Example 2 – Natural Language Query with Bar Graph
+
+**Input:**
+
+```json
+{
+  "selectQueryType": "Natural Language Query",
+  "tableName": "test3 (production)",
+  "naturalLanguage": "Show total active users per month for the last 6 months",
+  "chartType": "Bar Graph",
+  "xField": "month",
+  "yField": "count",
+  "aggregation": "count",
+  "limit": 6
+}
+```
+
+**Output:**
+
+```json
+{
+  "output": {
+    "tableName": "production:test3",
+    "queryId": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+    "data": [
+      { "month": "2025-05", "count": 12 },
+      { "month": "2025-06", "count": 9 },
+      { "month": "2025-07", "count": 15 }
+    ],
+    "message": "Successfully fetched 3 records and generated chart",
+    "status": "success",
+    "chartUrl": "https://.../monthly-active-users.png",
+    "image": "https://.../monthly-active-users.png"
+  }
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. Add the **Create Graphs** node to your workflow.
+2. Open **Node Settings** and give it a short description (optional).
+3. Select the **Query Type** — “Query Data” or “Natural Language Query”.
+4. Choose the **Table Name** you want to query.
+5. If using Query Data, add one or more **Query Fields** and define conditions.
+6. Set the **Query Combination Type** to `AND` or `OR`.
+7. Choose **Order By**, **Direction**, and **Limit** if needed.
+8. Pick the **Chart Type** — line, bar, pie, scatter, or area.
+9. Set **xField** and **yField** for chart axes.
+10. Click **Save Changes**.
+11. Run your workflow. The node will generate and return the chart image URL in its output.
+12. You can then use the `chartUrl` in an email node, dashboard, or file node.
+
+---
+
+## Best Practices
+
+* Always apply a **limit** to avoid overly large datasets.
+* For time-based charts, make sure the **xField** is a date or timestamp.
+* Use numeric fields for **yField** so charts can render correctly.
+* Pie charts should have fewer categories for clear readability.
+* When grouping data, use an **aggregation** like `sum` or `count`.
+* Review outputs of natural-language queries before running in production.
+* Store the **chartUrl** or **queryId** for debugging or history tracking.
+
+---
+
+## Example Workflow Integration
+
+Here’s a common pattern:
+
+```
+Trigger → Create Graphs Node → Send Email or Dashboard Display
+```
+
+For example, you can schedule a trigger every week to:
+
+* Query total sales per region from your production database,
+* Generate a bar chart, and
+* Send that chart image in a weekly report email to your team.
+
+---
+
+## Common Errors
+
+* **No data returned:** Your query filters might be too strict. Try broadening them.
+* **Chart not generated:** The fields you chose for X or Y may not be valid numeric or date fields.
+* **Empty chart:** Only one data point was fetched. Increase your limit or use aggregation.
+* **Permission denied:** The selected table may not be accessible or doesn’t exist.
+* **Chart takes too long:** Limit your query or aggregate results to fewer records.
+
+---
+

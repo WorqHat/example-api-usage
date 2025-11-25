@@ -1,0 +1,246 @@
+**Category:** Trigger
+**Type:** Email-Based
+
+---
+
+## Overview
+
+The **Email Trigger Node** automatically starts a workflow whenever an incoming email is received at a unique, system-generated email address.
+
+This node is ideal for building workflows that respond to incoming messages such as support ticket systems, automated acknowledgment replies, spam filtering, attachment processing, or email-to-database automation.
+
+Once configured, any email sent to the unique workflow address will immediately trigger the workflow and make all email details (like sender, subject, message, and attachments) available to downstream nodes.
+
+---
+
+## Description
+
+When a workflow includes an **Email Trigger Node**, a **unique email address** is generated for it in the format:
+
+```
+workflow-[id]@inbox.worqhat.com
+```
+
+Any email sent to this address will start the workflow automatically.
+
+The node captures all details of the received email — including sender (`from`), subject, message body (HTML or text), attachments, spam and virus scores, and delivery information. These values are then made available to other nodes in the workflow.
+
+If your workflow does not yet have an email address, you can set the parameter `incomingEmail` to:
+
+```
+{{GENERATE_INCOMING_EMAIL}}
+```
+
+This tells the system to automatically create and assign a new incoming email address.
+
+---
+
+## Input Parameters
+
+**Note:**
+
+- Only `incomingEmail` needs to be configured manually; all other fields are automatically populated when an email is received.
+- You can access any of these parameters in downstream nodes using the syntax:
+
+  ```
+  {{emailTrigger.input.<parameterName>}}
+  ```
+
+The **Email Trigger** node receives and exposes several parameters that represent the details of incoming emails.
+
+- **incomingEmail**
+  The unique incoming email address assigned to this workflow.
+  Use `"{{GENERATE_INCOMING_EMAIL}}"` if you want the system to automatically create one.
+
+- **htmlMessage**
+  The full HTML version of the received email’s body content.
+
+- **textMessage**
+  The plain text version of the email message.
+
+- **subject**
+  The subject line of the received email.
+
+- **from**
+  The sender’s email address.
+
+- **to**
+  The recipient’s email address — usually the unique workflow email address.
+
+- **cc / bcc**
+  Lists of carbon copy (CC) and blind carbon copy (BCC) recipients, if included.
+
+- **inReplyTo**
+  The message ID of the email this one is replying to, if applicable.
+
+- **references**
+  A reference chain showing related messages in an email thread.
+
+- **attachmentFile**
+  The file ID of any attachment included in the email.
+
+- **attachmentFileName**
+  The name of the attached file.
+
+- **attachmentFileType**
+  The MIME type of the attached file (e.g., `"image/png"`, `"application/pdf"`).
+
+- **attachmentFileSize**
+  The size of the attachment, in bytes or a human-readable format.
+
+- **spamScore**
+  A numerical score estimating the likelihood that the email is spam.
+
+- **virusScore**
+  A numerical score estimating the likelihood that the email contains malicious content.
+
+- **deliveryTime**
+  The exact delivery timestamp of the email in ISO format.
+
+- **deliveryId**
+  A unique identifier assigned to the email delivery.
+
+- **deliveryStatus**
+  Indicates the delivery result, such as “delivered” or “failed.”
+
+---
+
+**Instructions:**
+
+- You **must** configure `incomingEmail` once per workflow.
+- All other fields are automatically populated when an email is received.
+- Access values within the workflow using:
+
+  ```
+  {{emailTrigger.input.subject}}
+  {{emailTrigger.input.from}}
+  {{emailTrigger.input.textMessage}}
+  {{emailTrigger.input.attachmentFile}}
+  ```
+
+---
+
+## Output Parameters
+
+This node has **no direct outputs**, as all received email data is available through input parameters.
+
+**Output Parameters:** N/A
+
+**Instructions:**
+Downstream nodes can directly use these input values to perform tasks such as AI summarization, classification, or attachment processing.
+
+---
+
+## Output Type
+
+**Output Type:** N/A
+This node does not generate any new data output; it only exposes received email content to the workflow.
+
+---
+
+## Example Usage
+
+### Example 1: Workflow with Generated Email Address
+
+```json
+{
+  "incomingEmail": "{{GENERATE_INCOMING_EMAIL}}"
+}
+```
+
+**Expected Behavior:**
+A unique email address (e.g., `workflow-123@inbox.worqhat.com`) is generated automatically.
+Any future email sent to this address will trigger the workflow and populate all message fields.
+
+---
+
+### Example 2: Workflow Using an Existing Email Address
+
+```json
+{
+  "incomingEmail": "workflow-123@inbox.worqhat.com"
+}
+```
+
+**Expected Behavior:**
+The workflow triggers when this address receives an email.
+All details — including sender, subject, and attachments — are captured and can be accessed using variables like:
+
+```
+{{emailTrigger.input.subject}}
+{{emailTrigger.input.from}}
+{{emailTrigger.input.htmlMessage}}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Email Trigger Node**
+   Drag and drop the **Email Trigger** node into your workflow as the first node.
+
+2. **Generate or Set Incoming Email**
+
+   - Set `incomingEmail` to `"{{GENERATE_INCOMING_EMAIL}}"` to let the system create a new unique address.
+   - If an address already exists, paste it in directly.
+
+3. **Save and Deploy the Workflow**
+   After saving, note the generated email address. Any incoming email to this address will now trigger the workflow.
+
+4. **Connect to Processing Nodes**
+   Link the node to others like **Text Generation**, **Content Moderation**, or **File Storage** to automate email handling.
+
+5. **Test the Workflow**
+   Send a test email to the generated address and confirm that the workflow triggers automatically.
+
+---
+
+## Best Practices
+
+- Always use the `{{GENERATE_INCOMING_EMAIL}}` placeholder for new workflows to ensure unique email creation.
+- Avoid sharing the generated workflow email publicly to prevent spam.
+- Use **Content Moderation** or **Spam Filtering** nodes for safer automation.
+- Utilize both `htmlMessage` and `textMessage` for flexible content extraction.
+- For attachments, use downstream nodes like **File Storage** or **Text Extraction** to process files.
+- Keep an eye on the `spamScore` and `virusScore` fields for automated security actions.
+
+---
+
+## Example Workflow Integration
+
+**Use Case:** Automatically summarize incoming support emails.
+
+**Workflow Steps:**
+
+1. **Email Trigger Node** – Captures new email messages.
+2. **Text Generation Node** – Summarizes the email body.
+3. **Slack Message Node** – Sends the summary to a support channel.
+
+**Connection Example:**
+
+```
+{{emailTrigger.input.textMessage}} → {{textGeneration.input.prompt}}
+{{textGeneration.output.content}} → {{slackMessage.input.message}}
+```
+
+---
+
+## Common Errors
+
+- **"Missing incomingEmail"**
+  **Cause:** `incomingEmail` parameter not set.
+  **Solution:** Add `"{{GENERATE_INCOMING_EMAIL}}"` to generate a new address or use an existing one.
+
+- **"Email address already in use"**
+  **Cause:** The same email address is assigned to multiple workflows.
+  **Solution:** Each workflow must have a unique email trigger address.
+
+- **"Empty email body"**
+  **Cause:** The received email had no body content.
+  **Solution:** Ensure you handle both `textMessage` and `htmlMessage` for flexibility.
+
+- **"Attachment not found"**
+  **Cause:** Email contained an attachment but it failed to upload or reference correctly.
+  **Solution:** Verify attachment settings and downstream node compatibility.
+
+---

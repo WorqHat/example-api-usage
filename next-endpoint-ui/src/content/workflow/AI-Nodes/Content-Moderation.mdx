@@ -1,0 +1,290 @@
+**Category:** AI
+**Type:** Analysis
+
+---
+
+## Overview
+
+The **Content Moderation** node automatically detects and flags inappropriate or unsafe content using AI.
+It can analyze both **text** and **image** inputs to determine whether they contain offensive, harmful, or restricted material before allowing the workflow to proceed.
+
+---
+
+## Description
+
+This node uses an AI moderation model to evaluate content for categories such as sexual content, harassment, hate speech, violence, and more.
+You can use it to ensure that user-generated content, uploaded files, or messages meet your platform’s safety and compliance requirements.
+
+It supports both **text moderation** and **image moderation**, making it suitable for chat systems, social media workflows, or content upload platforms.
+
+---
+
+## Input Parameters
+
+The **Content Moderation** node accepts flat key-value pairs that specify the content to analyze and the type of moderation to perform.
+
+- **attachments**
+  Comma-separated list of file IDs or variable references to the content that needs moderation.
+  This is used primarily for **image** or **multimedia** moderation.
+  Example:
+
+  ```
+  file1.jpg,file2.png
+  ```
+
+  or
+
+  ```
+  {{nodeId.output.image}}
+  ```
+
+- **moderationType**
+  Defines the type of moderation to perform.
+  Supported values:
+
+  - `"text-moderation"` – for analyzing written content such as messages or posts.
+  - `"image-moderation"` – for analyzing uploaded or generated images.
+
+- **moderationText**
+  The text string to be analyzed for moderation.
+  Use this parameter when reviewing written or user-generated text.
+  Example:
+
+  ```
+  This is a test message.
+  ```
+
+**Instructions:**
+Provide all parameters as flat key-value pairs.
+For multiple files, use comma-separated values such as:
+
+```
+file1.jpg,file2.jpg
+{{nodeId.output.file1}},{{nodeId.output.file2}}
+```
+
+Access input values dynamically within the workflow using:
+
+```
+{{nodeId.input.<key>}}
+```
+
+---
+
+## Output Parameters
+
+After execution, the **Content Moderation** node returns the AI’s analysis of the submitted content along with moderation details and confidence scores.
+
+- **flagged**
+  Indicates whether the content was flagged for any policy violations.
+  Returns `true` if one or more moderation categories were triggered.
+
+- **flaggedCategories**
+  A comma-separated list of the categories that were flagged during moderation.
+  Example: `"violence,hate,harassment"`
+
+- **processingTime**
+  The total time taken by the AI to analyze the content, returned in ISO timestamp format.
+  Example: `"2025-10-27T10:45:12Z"`
+
+- **processingId**
+  A unique identifier assigned to the moderation request.
+  Useful for tracking and debugging purposes.
+
+- **categories.sexual**
+  Confidence score (ranging from 0 to 1) representing the likelihood of **sexual or adult content** being present.
+
+- **categories.harassment**
+  Confidence score (0–1) indicating potential **harassment or bullying** language.
+
+- **categories.hate**
+  Confidence score (0–1) for **hate speech** or **discriminatory** expressions.
+
+- **categories.illicit**
+  Confidence score (0–1) showing the presence of **illegal, restricted, or drug-related content**.
+
+- **categories.self-harm**
+  Confidence score (0–1) for **self-harm, suicide, or unsafe behavior** mentions.
+
+- **categories.violence**
+  Confidence score (0–1) measuring the presence of **violent or graphic content**.
+
+---
+
+**Instructions:**
+You can access output results using:
+
+```
+{{nodeId.output.flagged}}               → true / false
+{{nodeId.output.flaggedCategories}}     → "violence, hate"
+{{nodeId.output.categories.sexual}}     → 0.05
+{{nodeId.output.processingTime}}        → "2025-10-27T10:30:45Z"
+```
+
+---
+
+## Output Type
+
+The output type must **always** be exactly:
+
+```
+"text-moderation/image-moderation"
+```
+
+This identifies the node as handling both text-based and image-based moderation tasks.
+
+---
+
+## Example Usage
+
+### Example 1: Text Moderation
+
+```json
+{
+  "moderationType": "text-moderation",
+  "moderationText": "I hate you!"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "output": {
+    "flagged": true,
+    "flaggedCategories": "harassment",
+    "categories": {
+      "harassment": true,
+      "harassment/threatening": false,
+      "sexual": false,
+      "hate": false,
+      "hate/threatening": false,
+      "illicit": false,
+      "illicit/violent": false,
+      "self-harm/intent": false,
+      "self-harm/instructions": false,
+      "self-harm": false,
+      "sexual/minors": false,
+      "violence": false,
+      "violence/graphic": false
+    },
+    "processingTime": "2025-10-27T10:30:45Z",
+    "processingId": "modr-3438"
+  }
+}
+```
+
+---
+
+### Example 2: Image Moderation
+
+```json
+{
+  "moderationType": "image-moderation",
+  "attachments": "file123.jpg"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "flagged": false,
+  "flaggedCategories": "",
+  "processingTime": "2025-10-27T10:46:55Z",
+  "categories.violence": 0.1,
+  "categories.sexual": 0.05
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Content Moderation Node**
+   Drag and drop the node into your workflow canvas.
+
+2. **Choose the Input Type**
+
+   - Use `moderationText` for moderating text messages or comments.
+   - Use `attachments` for moderating images or file uploads.
+
+3. **Set the Moderation Type**
+   Choose `"text-moderation"` or `"image-moderation"` as needed.
+   If left empty, the node will handle both automatically.
+
+4. **Connect Inputs**
+   Link the output from a previous node (like file upload or text generation) to the `attachments` or `moderationText` fields.
+
+5. **Access Outputs**
+   Use variable references to pass results to other nodes, such as conditional checks or notifications. Example:
+
+   ```
+   {{contentModeration.output.flagged}}
+   {{contentModeration.output.flaggedCategories}}
+   ```
+
+6. **Set Conditions (Optional)**
+   You can create conditional branches in your workflow to stop or flag content automatically if `flagged = true`.
+
+---
+
+## Best Practices
+
+- Always verify that uploaded files are properly connected before moderation.
+- For text moderation, keep inputs under 5,000 characters for optimal performance.
+- Combine both `moderationText` and `attachments` to analyze mixed media submissions.
+- Review flagged outputs manually for high-risk content before taking automated action.
+- Store `processingId` values for tracking or audit purposes.
+
+---
+
+## Example Workflow Integration
+
+**Use Case:** A user uploads an image with a comment.
+
+- The **File Upload Node** provides an image file reference.
+- The **Content Moderation Node** checks both the uploaded image and the user’s text comment.
+- If `flagged = true`, the workflow sends a warning message through a **Notification Node**.
+- If `flagged = false`, the workflow continues to publish the content.
+
+**Workflow Connection Example:**
+
+```
+{{fileUpload.output.fileUrl}}   →  {{contentModeration.input.attachments}}
+{{chatInput.output.text}}       →  {{contentModeration.input.moderationText}}
+{{contentModeration.output.flagged}} → Used in condition check
+```
+
+---
+
+## Common Errors
+
+Below are common issues that may occur while using the **Content Moderation** node, along with their causes and recommended solutions.
+
+- **"Missing attachments"**
+  **Cause:** No file or variable reference was provided for moderation.
+  **Solution:** Add a valid image or file reference in the `attachments` field.
+  Example:
+
+  ```
+  {{fileUpload.output.image}}
+  ```
+
+- **"Missing moderationText"**
+  **Cause:** The text moderation input field was left empty.
+  **Solution:** Provide a valid text string or connect text from a previous node for analysis.
+
+- **"Invalid moderationType"**
+  **Cause:** An incorrect or unsupported moderation type was entered.
+  **Solution:** Use only the supported values — `"text-moderation"` or `"image-moderation"`.
+
+- **"Empty output"**
+  **Cause:** The AI model returned no response or incomplete data.
+  **Solution:** Retry the workflow with a valid input or check if the AI moderation service is available.
+
+- **"File not accessible"**
+  **Cause:** The referenced image file could not be loaded or retrieved.
+  **Solution:** Verify that the file exists, has the correct permissions, and was properly generated or uploaded by a previous node.
+
+---

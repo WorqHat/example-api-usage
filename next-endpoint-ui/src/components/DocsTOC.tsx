@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 
+import { createSlugger } from "@/lib/slugger";
+
 type TOCItem = {
   id: string;
   text: string;
@@ -16,14 +18,12 @@ function extractTOCItems(content: string): TOCItem[] {
   const headingRegex = /^(#{1,3})\s+(.+)$/gm;
   const items: TOCItem[] = [];
   let match;
+  const slugger = createSlugger();
 
   while ((match = headingRegex.exec(content)) !== null) {
     const level = match[1].length;
     const text = match[2].trim();
-    const id = text
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
+    const id = slugger(text);
 
     items.push({ id, text, level });
   }

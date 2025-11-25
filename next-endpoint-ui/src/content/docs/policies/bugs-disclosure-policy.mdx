@@ -1,0 +1,57 @@
+---
+title: 'Bugs Disclosure Policy'
+---
+
+*Welcome to WorqHat's Bugs and Security Disclosure Policy.* At WorqHat, we believe that security is a critical aspect of our mission to make AI and software accessible to everyone, regardless of their programming knowledge. To ensure the highest level of security and privacy for our users and technology, we value the contributions of hackers acting in good faith to help us identify and address vulnerabilities. Our policy is designed to provide a framework for responsible vulnerability research and disclosure. In this policy, we outline our definition of good faith in finding and reporting vulnerabilities and what you can expect from us in return.
+
+## Rules of engagement
+To encourage vulnerability research and to avoid any confusion between good-faith hacking and malicious attack, your testing must conform to all the following standards:
+
+1. You are authorized to perform testing as long as you abide by the terms of all our policies.
+2. Play by the rules. This includes following this policy, as well as any other relevant agreements. If there is any inconsistency between this policy and any other relevant terms.
+3. Report any vulnerability you’ve discovered promptly.
+4. Avoid violating the privacy of others, disrupting our systems, destroying data, and/or harming user experience.
+5. Use only the support@worqhat.com email address to discuss vulnerability information with us.
+6. Keep the details of any discovered vulnerabilities confidential until they are authorized for release by the WorqHat security team. WorqHat aims to provide said authorization within 90 days of receipt of each report.
+7. Perform testing only on in-scope systems, and respect systems and activities which are out-of-scope.
+8. Do not access, modify, destroy, save, transmit, alter, transfer, use, or view data belonging to anyone other than yourself. If a vulnerability provides access to such data, including but not limited to Personally Identifiable Information (PII), Personal Healthcare Information (PHI), credit card data, or proprietary information such as source code, model weights, or cryptographic/application secrets, please cease testing, delete local information, and submit a report immediately.
+9. You should only interact with accounts and workspaces you own, unless otherwise authorized by WorqHat.
+10. Disclosure of vulnerabilities to WorqHat must be unconditional. WorqHat does not offer compensation for vulnerability information. Do not engage in extortion, threats, or other tactics designed to elicit a response under duress. WorqHat will not allow Safe Harbor for vulnerability disclosure conducted under threat of full disclosure, exposure of data, or withholding of vulnerability information.
+
+## Getting Started with Bugs Security Disclosure
+ <Card
+    title="Reach Out to team"
+    href="support@worqhat.com"
+  >
+    Send an email with a description of the vulnerability and steps to reproduce.
+  </Card>
+
+## The following services and applications are exhaustively in-scope:
+* Any Internet-facing infrastructure operated by WorqHat. Examples include: worqhat.com and its
+subdomains, including the worqhat.com public website, the app.worqhat.com the Workspace,
+the
+api.worqhat.com API service, and other subdomains of worqhat.com; worqhat.app and its subdomains;
+firewalls, proxies, networking devices, etc.
+* Any public cloud resource or infrastructure operated by WorqHat. Examples include: cloud storage
+accounts (e.g., AWS data blobs, AWS S3 buckets); cloud compute servers (e.g., Google Cloud
+Virtual Machines, AWS
+EC2 instances, Redis and Google Cloud Databases).
+
+## The following are non-exhaustively out-of-scope:
+
+<Card
+    title="Reach Out to team"
+    href="support@worqhat.com"
+  >
+    Send an email with a description of the vulnerability and steps to reproduce.
+  </Card>
+  
+* Attacks designed or likely to degrade, deny, or adversely impact services or user experience (e.g., denial of service, brute force, password spraying, spam, fuzzing unless otherwise approved by WorqHat’s security team).
+* Attacks designed or likely to destroy, corrupt, make unreadable data or information that does not belong to you.
+* Attacks designed or likely to validate stolen credentials, credential reuse, account takeover, hijacking, or other credential-based techniques.
+* Intentionally accessing data or information that does not belong to you beyond the minimum viable access necessary to demonstrate the vulnerability.
+* Performing physical, social engineering, phishing, or electronic access against OpenAI personnel, offices, wireless networks, or property.
+* Attacks performed on any system not explicitly mentioned above as in-scope.
+* Attacks related to email servers, email protocols, email security (e.g., SPF, DMARC, DKIM) or email spam.
+* Reports of insecure SSL/TLS ciphers, unless accompanied by a working proof-of-concept.
+* Reports of missing HTTP headers (e.g., lack of HSTS), unless accompanied by a working proof-of-concept.

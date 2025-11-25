@@ -1,0 +1,199 @@
+**Category:** Trigger
+**Type:** File-Based
+
+---
+
+## Overview
+
+The **File Upload Trigger** node starts a workflow automatically when one or more files are uploaded.
+It acts as the entry point for workflows that depend on user-submitted or system-uploaded files, enabling processes like file processing, document analysis, or image recognition to begin immediately after upload.
+
+---
+
+## Description
+
+This node listens for file uploads and triggers the workflow when a file (or multiple files) is received.
+The uploaded file can then be used as an input by downstream nodes for further processing such as text extraction, AI-based analysis, or storage operations.
+
+It is particularly useful for workflows that involve:
+
+* PDF or document uploads for analysis
+* Image uploads for recognition or classification
+* Audio or video uploads for transcription or processing
+
+Once a file is uploaded, the workflow automatically starts and passes the file data to the next connected nodes.
+
+---
+
+## Input Parameters
+
+The **File Upload Trigger** node accepts file uploads and optional metadata as input.
+
+* **file** *(file, required)*
+  The uploaded file that triggers the workflow.
+  Supports documents, images, audio, and video formats depending on your workflow setup.
+  This is a **mandatory parameter** — the workflow will not start without it.
+
+* **Any custom metadata key** *(string, optional)*
+  You can define additional key-value inputs for reference or tagging, such as:
+
+  * `userId` → to identify the uploader
+  * `category` → to classify the file
+  * `description` → to describe the uploaded content
+
+**Notes:**
+
+* Only the `file` parameter is required.
+* Extra parameters are optional and can be added for organizational or filtering purposes.
+* All parameters are provided as simple key-value pairs (no nested objects).
+
+---
+
+**Instructions:**
+
+* The `file` parameter is **mandatory** and must contain the uploaded file.
+* You can add other input parameters as additional metadata.
+* All extra parameters are simple key-value pairs and can be used in downstream nodes.
+* The node does **not** process files directly — it simply triggers the workflow.
+
+Access uploaded file data in downstream nodes using:
+
+```
+{{fileUploadTrigger.input.file}}
+```
+
+---
+
+## Output Parameters
+
+This node does not produce its own outputs.
+Instead, it passes the uploaded file and input details directly to downstream nodes for use.
+
+**Output Parameters:**
+N/A
+
+**Instructions:**
+You can access the uploaded file or metadata in any connected node using variable references:
+
+```
+{{fileUploadTrigger.input.file}}       → File reference or ID
+{{fileUploadTrigger.input.userId}}     → Custom metadata (if provided)
+```
+
+---
+
+## Output Type
+
+**Output Type:** N/A
+This node serves only as a workflow trigger and does not generate a separate output type.
+
+---
+
+## Example Usage
+
+### Example 1: Trigger on Document Upload
+
+```json
+{
+  "file": "invoice_2025.pdf",
+  "userId": "U001",
+  "category": "billing"
+}
+```
+
+**Expected Behavior:**
+The workflow starts as soon as `invoice_2025.pdf` is uploaded.
+Downstream nodes can access:
+
+```
+{{fileUploadTrigger.input.file}}       → "invoice_2025.pdf"
+{{fileUploadTrigger.input.userId}}     → "U001"
+{{fileUploadTrigger.input.category}}   → "billing"
+```
+
+---
+
+### Example 2: Trigger on Image Upload
+
+```json
+{
+  "file": "product_photo.jpg",
+  "description": "Product listing image"
+}
+```
+
+**Expected Behavior:**
+The workflow is triggered automatically when `product_photo.jpg` is uploaded.
+Subsequent nodes may use the file for image recognition, tagging, or analysis.
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the File Upload Trigger Node**
+   Drag and drop the **File Upload Trigger** node into your workflow as the first node.
+
+2. **Configure File Inputs**
+   Define which file types or sources will trigger the workflow (e.g., PDFs, images, or audio).
+
+3. **Add Optional Metadata**
+   Include optional key-value inputs such as `userId`, `department`, or `description` if needed for tracking.
+
+4. **Connect to Processing Nodes**
+   Link this trigger to other nodes like **Text Extraction**, **Image Analysis**, or **Content Moderation** to process the uploaded files automatically.
+
+5. **Test the Upload**
+   Upload a test file to confirm the workflow triggers and downstream nodes receive the file data.
+
+6. **Deploy or Activate the Workflow**
+   Once verified, save and activate your workflow so it runs automatically upon future uploads.
+
+---
+
+## Best Practices
+
+* Always ensure the `file` parameter is provided; workflows will not start without it.
+* Keep filenames descriptive for easier tracking in logs or outputs.
+* Validate file formats in downstream nodes if your workflow supports only specific types (e.g., PDFs or images).
+* Add metadata parameters like `userId` or `source` to help identify uploads in larger workflows.
+* Avoid attaching extremely large files to prevent delays or timeouts.
+* Ensure you have proper access permissions for file handling nodes that follow.
+
+---
+
+## Example Workflow Integration
+
+**Use Case:** Automatically analyze uploaded documents.
+
+* Step 1: The **File Upload Trigger** node starts the workflow when a user uploads a PDF.
+* Step 2: The **Text Extraction Node** extracts text from the uploaded file.
+* Step 3: The **AI Node** summarizes the extracted text.
+* Step 4: The **Email Node** sends the summary to the user.
+
+**Workflow Connection Example:**
+
+```
+{{fileUploadTrigger.input.file}}   → {{textExtraction.input.attachments}}
+{{textExtraction.output.content}}  → {{textGeneration.input.prompt}}
+```
+
+---
+
+## Common Errors
+
+* **"Missing file input"**
+  **Cause:** No file was uploaded.
+  **Solution:** Ensure a valid file is attached before triggering the workflow.
+
+* **"Invalid file format"**
+  **Cause:** The uploaded file type is not supported by downstream nodes.
+  **Solution:** Confirm the file type is compatible with the workflow’s next node.
+
+* **"Empty trigger"**
+  **Cause:** The trigger received an empty payload or invalid upload.
+  **Solution:** Retry the upload and verify that the file field is correctly mapped.
+
+* **"Connection not established"**
+  **Cause:** The trigger node isn’t connected to downstream nodes.
+  **Solution:** Connect the trigger to at least one processing node.
+

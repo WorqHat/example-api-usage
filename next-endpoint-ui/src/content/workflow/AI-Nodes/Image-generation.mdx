@@ -1,0 +1,173 @@
+**Category:** AI
+**Type:** Visual Content Generation
+
+---
+
+## Overview
+
+The **Image Generation Node** allows you to create AI-generated images from text descriptions. By simply providing a detailed prompt, you can produce realistic, artistic, or conceptual visuals automatically — no design skills required.
+
+This node is perfect for generating images for product mockups, concept art, blog illustrations, or any visual automation use case within your no-code workflow. It also supports optional style references through attachments, enabling custom and consistent visual styles.
+
+---
+
+## Description
+
+Use the **Image Generation Node** to transform a written prompt into one or more AI-generated images.
+You can input plain text describing what you want (e.g., “a futuristic city at night, cyberpunk style”) and optionally attach reference images to guide the AI’s artistic direction.
+
+The node outputs an image file or URL that can be used in downstream nodes for storage, display, or further processing.
+
+---
+
+## Input Parameters
+
+The **Image Generation** node accepts simple key-value inputs that define how the AI should create an image.
+
+- **prompt**
+  A detailed text description of the image you want to generate.
+  Be specific — describe the subject, style, colors, lighting, and mood.
+  Example:
+
+  ```
+  A cozy reading room with warm lighting and wooden furniture
+  ```
+
+- **attachments**
+  Comma-separated list of file IDs or variable references used as visual style references.
+  You can provide multiple files using syntax like:
+
+  ```
+  file1.jpg,file2.jpg
+  ```
+
+  or dynamically from other nodes using:
+
+  ```
+  {{nodeId.output.image1}},{{nodeId.output.image2}}
+  ```
+
+  These attachments help the AI maintain a consistent look or replicate certain visual elements.
+
+**Instructions:**
+Provide input values as flat key-value pairs. Access variables dynamically using:
+
+```
+{{nodeId.input.<key>}} or {{nodeId.output.<key>}}
+```
+
+## Output Parameters
+
+After execution, the **Image Generation** node provides information about the generated image and processing details.
+
+- **processingCount**
+  Indicates the total number of images generated during the process.
+
+- **processingTime**
+  The time taken to generate the image, returned in ISO timestamp format.
+
+- **processingId**
+  A unique identifier assigned to this image generation task.
+  Useful for tracking or referencing the specific generation process.
+
+- **image**
+  The file reference or URL of the generated image.
+  You can use this link to preview, download, or connect the image to another node.
+
+**Instructions:**
+Access output values in your workflow using the following variable syntax:
+
+```
+{{nodeId.output.image}}            → Generated image URL
+{{nodeId.output.processingTime}}   → Total generation time
+{{nodeId.output.processingId}}     → Unique process reference
+```
+
+---
+
+## Output Type
+
+**Type:** `image`
+This node always produces image content as output. Do not modify this value — it ensures proper handling of image files in your workflow.
+
+---
+
+## Example Usage
+
+### Example 1 — Image Generation
+
+**Input:**
+
+```json
+{
+  "prompt": "A young woman sitting at a desk studying with books and a laptop, focused and surrounded by soft natural light from a nearby window, realistic style, calm and productive atmosphere.",
+  "attachments": "image.png"
+}
+```
+
+**Output:**
+
+```json
+{
+  "processingCount": 1,
+  "processingTime": "2025-10-28T10:21:45.991Z",
+  "processingId": "img-23841gh",
+  "image": "https://example.com/images/generated_image.png"
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Node:** Drag and drop the **Image Generation Node** into your workflow.
+2. **Connect Input:** Link a text-based node (like _Text Generation_ or _Triggers_) to provide the prompt.
+3. **Set Prompt:** Describe what you want the image to depict, using detailed and visual language.
+4. **Add Attachments (Optional):** Include one or more reference files or variables to influence the style.
+5. **Run Workflow:** The node will generate an image and output the image file URL.
+6. **Use Output:** Pass the generated image to downstream nodes — such as _File Upload_, _Email Attachment_, or _Slack Message_.
+
+---
+
+## Best Practices
+
+- Use **clear and descriptive prompts** — mention subject, mood, lighting, and style.
+- Keep prompts **under 500 characters** for faster results.
+- Use **reference attachments** when you want consistent visuals (e.g., same style across multiple images).
+- Combine this node with **Text Generation** to automatically create AI art from AI-written descriptions.
+- Test multiple prompts for the same idea to discover the best output style.
+
+---
+
+## Example Workflow Integration
+
+**Scenario:**
+A workflow that automatically generates blog illustrations based on written content.
+
+1. **AI Node:** (Creates an article or blog summary)
+2. **Image Generation Node:** Generates a matching image based on the summary text.
+3. **File Upload Node:** Uploads the generated image to your CMS or database.
+
+---
+
+## Common Errors
+
+Below are common issues that may occur while using the **Image Generation** node, along with their causes and suggested solutions.
+
+- **"Missing prompt"**
+  **Cause:** The `prompt` field was left empty or not provided.
+  **Solution:** Enter a valid text prompt that clearly describes the image you want the AI to generate.
+
+- **"Invalid attachment reference"**
+  **Cause:** An incorrect file ID or variable reference was used in the `attachments` field.
+  **Solution:** Verify that the file IDs or variable references are valid and formatted correctly.
+
+- **"Image generation failed"**
+  **Cause:** The AI service encountered a timeout or could not process the given prompt.
+  **Solution:** Retry after a short delay or simplify the image description to make it easier to interpret.
+
+- **"Empty output"**
+  **Cause:** The workflow is misconfigured or the node is not connected properly.
+  **Solution:** Ensure the **Image Generation** node is linked to valid inputs and other connected nodes in the workflow.
+
+---

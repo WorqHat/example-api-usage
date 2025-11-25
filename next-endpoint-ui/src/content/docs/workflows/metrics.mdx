@@ -1,0 +1,371 @@
+---
+title: 'Workflow Metrics'
+description: 'Get metrics and analytics for workflows'
+---
+
+Retrieve metrics and analytics for your workflows, including execution counts, success rates, and performance data. This endpoint helps you understand how your workflows are performing over time.
+
+```endpoint
+GET https://api.worqhat.com/flows/metrics
+```
+
+## What Does This Endpoint Do?
+
+This endpoint provides performance statistics about your workflows. Think of it like a fitness tracker for your automation - it tells you how many workflows ran, how successful they were, and how long they took to complete.
+
+## When to Use Workflow Metrics
+
+You'll find this endpoint useful when you need to:
+
+- **Monitor workflow health**: Track success rates and identify failing workflows
+- **Optimize performance**: Find workflows that are taking too long to execute
+- **Generate reports**: Create dashboards showing workflow activity over time
+- **Troubleshoot issues**: Identify patterns in workflow failures
+- **Capacity planning**: Understand workflow usage to plan for scaling
+
+## How It Works
+
+1. You specify a **date range** to analyze (or use the defaults)
+2. You can optionally filter by **workflow status** (completed, failed, or in-progress)
+3. The API returns overall metrics and detailed statistics for individual workflows
+
+## Query Parameters
+
+<ParamField query="start_date" type="string">
+  Start date for filtering in YYYY-MM-DD format. If not provided, defaults to the first day of the current month.
+  
+  Example: `2025-07-01`
+</ParamField>
+
+<ParamField query="end_date" type="string">
+  End date for filtering in YYYY-MM-DD format. If not provided, defaults to the last day of the current month.
+  
+  Example: `2025-07-24`
+</ParamField>
+
+<ParamField query="status" type="string">
+  Filter by workflow status. Must be one of: 'completed', 'failed', or 'in_progress'. If not provided, returns metrics for workflows in all statuses.
+  
+  Example: `completed`
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="metrics" type="object">
+  Overall metrics for the requested workflows across the specified time period.
+</ResponseField>
+
+<ResponseField name="metrics.totalExecutions" type="integer">
+  Total number of workflow executions during the period. This counts every time a workflow was triggered, regardless of outcome.
+</ResponseField>
+
+<ResponseField name="metrics.successRate" type="number">
+  Success rate as a percentage (0-100). This shows what percentage of workflow executions completed successfully.
+</ResponseField>
+
+<ResponseField name="metrics.averageDuration" type="number">
+  Average execution duration in milliseconds. This helps you understand how long your workflows typically take to run.
+</ResponseField>
+
+<ResponseField name="metrics.errorRate" type="number">
+  Error rate as a percentage (0-100). This is the percentage of workflow executions that failed.
+</ResponseField>
+
+<ResponseField name="metrics.totalErrors" type="integer">
+  Total number of workflow executions that resulted in an error.
+</ResponseField>
+
+<ResponseField name="workflowMetrics" type="array">
+  Metrics broken down by individual workflows. This array contains detailed statistics for each workflow that ran during the period.
+</ResponseField>
+
+<ResponseField name="workflowMetrics[].id" type="string">
+  The unique identifier for the workflow.
+</ResponseField>
+
+<ResponseField name="workflowMetrics[].name" type="string">
+  The name of the workflow.
+</ResponseField>
+
+<ResponseField name="workflowMetrics[].executions" type="integer">
+  Number of times this specific workflow was executed during the period.
+</ResponseField>
+
+<ResponseField name="workflowMetrics[].successRate" type="number">
+  Success rate for this specific workflow as a percentage (0-100).
+</ResponseField>
+
+<ResponseField name="workflowMetrics[].averageDuration" type="number">
+  Average execution duration for this specific workflow in milliseconds.
+</ResponseField>
+
+<ResponseField name="workflowMetrics[].errors" type="integer">
+  Number of times this workflow resulted in an error.
+</ResponseField>
+
+<ResponseField name="workflowMetrics[].mostCommonError" type="string">
+  The most frequently occurring error type for this workflow.
+</ResponseField>
+
+<ResponseField name="period" type="object">
+  The time period that the metrics cover.
+</ResponseField>
+
+## Code Examples
+
+### Example 1: Basic Metrics Query
+
+This example shows how to get workflow metrics for a specific date range and status.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function getWorkflowMetrics() {
+      try {
+        // Call the getMetrics method
+        const response = await client.flows.getMetrics({
+          start_date: '2025-07-01',     // Start date in YYYY-MM-DD format
+          end_date: '2025-07-24',       // End date in YYYY-MM-DD format
+          status: 'completed'           // Only include completed workflows
+        });
+        
+        // Handle the successful response
+        console.log(`Total Executions: ${response.metrics.totalExecutions}`);
+        console.log(`Success Rate: ${response.metrics.successRate}%`);
+        console.log(`Average Duration: ${response.metrics.averageDuration}ms`);
+        
+        // Log metrics for individual workflows
+        response.workflowMetrics.forEach(workflow => {
+          console.log(`\nWorkflow: ${workflow.name} (${workflow.id})`);
+          console.log(`  Executions: ${workflow.executions}`);
+          console.log(`  Success Rate: ${workflow.successRate}%`);
+          console.log(`  Most Common Error: ${workflow.mostCommonError || 'None'}`);
+        });
+        
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error getting workflow metrics:', error.message);
+      }
+    }
+    
+    // Call the function
+    getWorkflowMetrics();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Get workflow metrics
+    try:
+        response = client.flows.get_metrics(
+            start_date="2025-07-01",    # Start date in YYYY-MM-DD format
+            end_date="2025-07-24",      # End date in YYYY-MM-DD format
+            status="completed"          # Only include completed workflows
+        )
+        
+        # Handle the successful response
+        print(f"Total Executions: {response.metrics.total_executions}")
+        print(f"Success Rate: {response.metrics.success_rate}%")
+        print(f"Average Duration: {response.metrics.average_duration}ms")
+        
+        # Print metrics for individual workflows
+        for workflow in response.workflow_metrics:
+            print(f"\nWorkflow: {workflow.name} ({workflow.id})")
+            print(f"  Executions: {workflow.executions}")
+            print(f"  Success Rate: {workflow.success_rate}%")
+            print(f"  Most Common Error: {workflow.most_common_error or 'None'}")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error getting workflow metrics: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Get workflow metrics
+      response, err := client.Flows.GetMetrics(context.TODO(), worqhat.FlowsGetMetricsParams{
+        StartDate: "2025-07-01",    // Start date in YYYY-MM-DD format
+        EndDate: "2025-07-24",      // End date in YYYY-MM-DD format
+        Status: "completed",        // Only include completed workflows
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error getting workflow metrics: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Total Executions: %d\n", response.Metrics.TotalExecutions)
+      fmt.Printf("Success Rate: %.2f%%\n", response.Metrics.SuccessRate)
+      fmt.Printf("Average Duration: %.2fms\n", response.Metrics.AverageDuration)
+      
+      // Print metrics for individual workflows
+      for _, workflow := range response.WorkflowMetrics {
+        fmt.Printf("\nWorkflow: %s (%s)\n", workflow.Name, workflow.ID)
+        fmt.Printf("  Executions: %d\n", workflow.Executions)
+        fmt.Printf("  Success Rate: %.2f%%\n", workflow.SuccessRate)
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Get workflow metrics for a specific date range and status
+    curl -X GET "https://api.worqhat.com/flows/metrics?start_date=2025-07-01&end_date=2025-07-24&status=completed" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -H "Content-Type: application/json"
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: Default Date Range
+
+This example shows how to get workflow metrics without specifying dates (using the default date range).
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function getAllWorkflowMetrics() {
+      try {
+        // Call the getMetrics method without date parameters
+        // This will use the default date range (current month)
+        const response = await client.flows.getMetrics();
+        
+        // Handle the successful response
+        console.log(`Period: ${response.period.startDate} to ${response.period.endDate}`);
+        console.log(`Total Executions: ${response.metrics.totalExecutions}`);
+        console.log(`Success Rate: ${response.metrics.successRate}%`);
+        console.log(`Error Rate: ${response.metrics.errorRate}%`);
+        
+        return response;
+      } catch (error) {
+        console.error('Error getting workflow metrics:', error.message);
+      }
+    }
+    
+    getAllWorkflowMetrics();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Get workflow metrics with default date range
+    try:
+        # No parameters means use the default date range (current month)
+        response = client.flows.get_metrics()
+        
+        # Handle the successful response
+        print(f"Period: {response.period.start_date} to {response.period.end_date}")
+        print(f"Total Executions: {response.metrics.total_executions}")
+        print(f"Success Rate: {response.metrics.success_rate}%")
+        print(f"Error Rate: {response.metrics.error_rate}%")
+    except Exception as e:
+        print(f"Error getting workflow metrics: {str(e)}")
+    ```
+  </Tab>
+</Tabs>
+
+## Example Response
+
+```json
+{
+  "metrics": {
+    "totalExecutions": 1256,
+    "successRate": 94.5,
+    "averageDuration": 1250.75,
+    "errorRate": 5.5,
+    "totalErrors": 69
+  },
+  "workflowMetrics": [
+    {
+      "id": "flow_12345",
+      "name": "Document Processing",
+      "executions": 532,
+      "successRate": 96.8,
+      "averageDuration": 980.25,
+      "errors": 17,
+      "mostCommonError": "document_parse_failure"
+    },
+    {
+      "id": "flow_67890",
+      "name": "Customer Onboarding",
+      "executions": 724,
+      "successRate": 92.8,
+      "averageDuration": 1450.5,
+      "errors": 52,
+      "mostCommonError": "validation_error"
+    }
+  ],
+  "period": {
+    "startDate": "2025-07-01T00:00:00Z",
+    "endDate": "2025-08-01T00:00:00Z"
+  }
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Invalid date format" | Date parameters are not in YYYY-MM-DD format | Check that your dates follow the correct format |
+| "End date before start date" | The end_date is earlier than the start_date | Make sure your end_date comes after your start_date |
+| "Invalid status parameter" | Status value is not one of the allowed options | Use only 'completed', 'failed', or 'in_progress' |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+
+## Tips for Using Workflow Metrics
+
+- Use the default date range (current month) when you want a quick overview of recent performance
+- Filter by status to focus on specific types of workflow executions (e.g., only failed ones)
+- Look for workflows with low success rates to identify areas for improvement
+- Monitor average durations to spot performance degradation over time
+- Use the metrics to identify your most frequently used workflows

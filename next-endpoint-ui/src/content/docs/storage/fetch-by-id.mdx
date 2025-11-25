@@ -1,0 +1,373 @@
+---
+title: 'Fetch File by ID'
+description: 'Retrieve a file from storage using its unique ID'
+---
+
+Retrieves a file from storage by its unique ID. Returns the file metadata and a download URL that you can use to access the file.
+
+```endpoint
+GET https://api.worqhat.com/storage/fetch/{fileId}
+```
+
+## What Does This Endpoint Do?
+
+This endpoint allows you to retrieve a file that you previously uploaded to WorqHat storage. Think of it like getting a file from a secure locker - you provide the unique key (file ID) and get back the file information and a way to access it.
+
+## When to Use Fetch File by ID
+
+You'll find this endpoint useful when you need to:
+
+- **Retrieve uploaded files**: Get files that were previously uploaded
+- **Generate download links**: Create temporary URLs for file downloads
+- **Check file metadata**: Get information about file size, type, and upload date
+- **Verify file existence**: Check if a file still exists in storage
+- **Build file management systems**: Create interfaces for users to access their files
+- **Process stored files**: Retrieve files for AI processing or analysis
+
+## How It Works
+
+1. You provide the **file ID** (obtained when you uploaded the file)
+2. The API looks up the file in your organization's storage
+3. The API returns file metadata and a signed download URL
+4. You can use the download URL to access the file (URL expires in 1 hour)
+
+## Code Examples
+
+### Example 1: Basic File Retrieval
+
+This example shows how to fetch a file using its ID.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function fetchDocument() {
+      try {
+        const fileId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+        
+        // Call the retrieveFileByID method
+        const response = await client.storage.retrieveFileByID(fileId);
+        
+        // Handle the successful response
+        console.log('File retrieved successfully!');
+        console.log('File name:', response.file.filename);
+        console.log('File size:', response.file.size, 'bytes');
+        console.log('Download URL:', response.file.url);
+        console.log('Uploaded at:', response.file.uploadedAt);
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error fetching file:', error.message);
+      }
+    }
+    
+    // Call the function
+    fetchDocument();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Fetch a file by ID
+    try:
+        file_id = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        response = client.storage.retrieve_file_by_id(file_id)
+        
+        # Handle the successful response
+        print("File retrieved successfully!")
+        print(f"File name: {response.file.filename}")
+        print(f"File size: {response.file.size} bytes")
+        print(f"Download URL: {response.file.url}")
+        print(f"Uploaded at: {response.file.uploadedAt}")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error fetching file: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Fetch a file by ID
+      fileID := "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      response, err := client.Storage.RetrieveFileByID(context.TODO(), fileID)
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error fetching file: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Println("File retrieved successfully!")
+      fmt.Printf("File name: %s\n", response.File.Filename)
+      fmt.Printf("File size: %d bytes\n", response.File.Size)
+      fmt.Printf("Download URL: %s\n", response.File.URL)
+      fmt.Printf("Uploaded at: %s\n", response.File.UploadedAt)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Fetch a file by ID
+    curl -X GET "https://api.worqhat.com/storage/fetch/a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+      -H "Authorization: Bearer YOUR_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: File Retrieval with Download
+
+This example shows how to fetch a file and then download it.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    import fs from 'fs';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function downloadDocument() {
+      try {
+        const fileId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+        
+        // Fetch file metadata
+        const response = await client.storage.retrieveFileByID(fileId);
+        
+        // Download the file using the signed URL
+        const downloadResponse = await fetch(response.file.url);
+        const fileBuffer = await downloadResponse.arrayBuffer();
+        
+        // Save the file locally
+        fs.writeFileSync(`./downloads/${response.file.filename}`, Buffer.from(fileBuffer));
+        
+        console.log(`File downloaded: ${response.file.filename}`);
+        console.log(`File size: ${response.file.size} bytes`);
+        return response;
+      } catch (error) {
+        console.error('Error downloading file:', error.message);
+      }
+    }
+    
+    downloadDocument();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    import requests
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Fetch and download a file
+    try:
+        file_id = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        
+        # Fetch file metadata
+        response = client.storage.retrieve_file_by_id(file_id)
+        
+        # Download the file using the signed URL
+        download_response = requests.get(response.file.url)
+        
+        # Save the file locally
+        with open(f"./downloads/{response.file.filename}", "wb") as f:
+            f.write(download_response.content)
+        
+        print(f"File downloaded: {response.file.filename}")
+        print(f"File size: {response.file.size} bytes")
+    except Exception as e:
+        print(f"Error downloading file: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "io"
+      "net/http"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Fetch file metadata
+      fileID := "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      response, err := client.Storage.RetrieveFileByID(context.TODO(), fileID)
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error fetching file: %s\n", err.Error())
+        return
+      }
+      
+      // Download the file using the signed URL
+      downloadResp, err := http.Get(response.File.URL)
+      if err != nil {
+        fmt.Printf("Error downloading file: %s\n", err.Error())
+        return
+      }
+      defer downloadResp.Body.Close()
+      
+      // Save the file locally
+      file, err := os.Create(f"./downloads/{response.File.Filename}")
+      if err != nil {
+        fmt.Printf("Error creating file: %s\n", err.Error())
+        return
+      }
+      defer file.Close()
+      
+      _, err = io.Copy(file, downloadResp.Body)
+      if err != nil {
+        fmt.Printf("Error saving file: %s\n", err.Error())
+        return
+      }
+      
+      fmt.Printf("File downloaded: %s\n", response.File.Filename)
+      fmt.Printf("File size: %d bytes\n", response.File.Size)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Fetch file metadata first
+    curl -X GET "https://api.worqhat.com/storage/fetch/a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+      -H "Authorization: Bearer YOUR_API_KEY"
+    
+    # Then download using the URL from the response
+    curl -o "downloaded_file.pdf" "https://storage.worqhat.com/org_123/documents/invoice_2025.pdf?signature=..."
+    ```
+  </Tab>
+</Tabs>
+
+## Request Parameters
+
+<ParamField path="fileId" type="string" required>
+  The unique identifier of the file to retrieve. This is the ID that was returned when you uploaded the file.
+  
+  Example: `"a1b2c3d4-e5f6-7890-abcd-ef1234567890"`
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if the file was retrieved successfully, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="file" type="object">
+  An object containing all the file metadata and information.
+</ResponseField>
+
+<ResponseField name="file.id" type="string">
+  The unique identifier of the file.
+</ResponseField>
+
+<ResponseField name="file.filename" type="string">
+  The original name of the file when it was uploaded.
+</ResponseField>
+
+<ResponseField name="file.path" type="string">
+  The full path where the file is stored in your organization's storage.
+</ResponseField>
+
+<ResponseField name="file.size" type="integer">
+  The size of the file in bytes.
+</ResponseField>
+
+<ResponseField name="file.contentType" type="string">
+  The MIME type of the file (e.g., "application/pdf", "image/jpeg").
+</ResponseField>
+
+<ResponseField name="file.uploadedAt" type="string">
+  The timestamp when the file was originally uploaded (ISO 8601 format).
+</ResponseField>
+
+<ResponseField name="file.url" type="string">
+  A signed URL for downloading the file. This URL expires in 1 hour and provides secure access to the file.
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "file": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "filename": "invoice_2025.pdf",
+    "path": "org_123/documents/invoices/invoice_2025.pdf",
+    "size": 245678,
+    "contentType": "application/pdf",
+    "uploadedAt": "2025-07-26T03:28:08.123Z",
+    "url": "https://storage.worqhat.com/org_123/documents/invoices/invoice_2025.pdf?signature=..."
+  }
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "File not found" | The file ID doesn't exist or has been deleted | Check that the file ID is correct and the file still exists |
+| "Invalid file ID" | The file ID format is incorrect | Use a valid UUID format for the file ID |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+| "File access denied" | You don't have permission to access this file | Ensure the file belongs to your organization |
+
+## Tips for Successful File Retrieval
+
+- **Save file IDs** when you upload files so you can retrieve them later
+- **Use the download URL quickly** as it expires in 1 hour
+- **Check file existence** before trying to download large files
+- **Handle errors gracefully** when files might have been deleted
+- **Consider caching** file metadata for frequently accessed files
+- **Use appropriate file types** based on the content type returned

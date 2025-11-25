@@ -1,3 +1,5 @@
+import React from "react";
+
 import ChangelogLayout, { Article, ChangelogImage } from "@/components/ChangelogLayout";
 import { getChangelogContent, parseChangelogArticles } from "@/lib/changelog";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -57,13 +59,25 @@ const mdxComponents = {
     );
   },
   p: ({ children, className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => {
-    // If className already exists (from explicit JSX in MDX), use it as-is
-    // Otherwise, apply our default styling
-    const finalClassName = className 
-      ? className 
-      : 'mb-4 leading-7 text-white/80';
-    
-    return <p className={finalClassName} {...props}>{children}</p>;
+    const childArray = React.Children.toArray(children);
+    const hasParagraphChild = childArray.some(
+      (child) => React.isValidElement(child) && child.type === "p"
+    );
+
+    if (hasParagraphChild) {
+      return (
+        <>
+          {childArray}
+        </>
+      );
+    }
+
+    const finalClassName = className || "mb-4 leading-7 text-white/80";
+    return (
+      <p className={finalClassName} {...props}>
+        {children}
+      </p>
+    );
   },
   a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
     <a

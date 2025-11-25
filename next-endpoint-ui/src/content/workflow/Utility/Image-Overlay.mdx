@@ -1,0 +1,116 @@
+**Category:** Utility
+**Type:** Media Processing
+
+---
+
+## Overview
+
+The **Image Overlay** node places an overlay image on top of a base image with configurable size and position.
+Use it for watermarks, stickers, and branded visuals.
+
+---
+
+## Description
+
+Provide a base `inputImage` and parameters for the overlay: type, size, and position.
+Dimensions can be pixels or percentages; positions can be presets (e.g., `top-left`) or coordinates.
+
+---
+
+## Input Parameters
+
+- **overlayType**
+  Overlay type (e.g., `watermark`, `sticker`).
+
+- **inputImage**
+  Base image file ID or URL.
+
+- **overlayImage**
+  Overlay image file ID or URL (required for most types).
+
+- **overlayWidth**
+  Overlay width (e.g., `128`, `50%`).
+
+- **overlayHeight**
+  Overlay height (e.g., `64`, `25%`).
+
+- **overlayPosition**
+  Position preset (`top-left`, `top-right`, `center`, `bottom-left`, `bottom-right`) or coordinates (`x,y`).
+
+**Notes:**
+
+- Provide flat key-value pairs.
+
+---
+
+## Output Parameters
+
+- **processingCount**
+- **processingTime**
+- **processingId**
+- **image**
+  Resulting image file reference or URL.
+
+---
+
+## Output Type
+
+**Output Type:** image
+
+---
+
+## Example Usage
+
+**Input:**
+
+```json
+{
+  "overlayType": "watermark",
+  "inputImage": "https://example.com/base.jpg",
+  "overlayImage": "https://example.com/logo.png",
+  "overlayWidth": "25%",
+  "overlayHeight": "auto",
+  "overlayPosition": "bottom-right"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "image": "https://example.com/output.jpg"
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Node**
+   Place the **Image Overlay** node after an image source node.
+
+2. **Configure Overlay**
+   Provide input/overlay images, size, and position.
+
+3. **Consume Result**
+   Use `{{imageOverlay.output.image}}` in downstream nodes.
+
+---
+
+## Best Practices
+
+- Use transparent PNGs for logo overlays.
+- Keep overlay size proportionate on mobile.
+- Maintain brand-safe padding from edges.
+
+---
+
+## Common Errors
+
+- **"Missing overlayImage"**
+  Provide an overlay image for non-text overlays.
+
+- **"Invalid position"**
+  Use a supported preset or valid coordinates.
+
+---

@@ -1,0 +1,249 @@
+**Category:** Database
+**Type:** Read / Query Node
+
+---
+
+## Overview
+
+The **Query Data Node** allows you to search, filter, and retrieve records from your connected database collection within a no-code workflow.
+You can use this node to fetch specific rows based on filters, get all data, or even use plain language to describe what you want to retrieve — no SQL required.
+
+---
+
+## Description
+
+This node helps you connect to your selected database table (or collection) and return matching records as structured JSON.
+You can apply multiple filters, combine them with AND/OR logic, sort the data, limit how many records you want, and even paginate large data sets.
+The output from this node can then be passed to other nodes like “Display Data,” “Generate Text,” or “Create Chart.”
+
+---
+
+## Input Parameters
+
+Below are the input settings you can configure in the node:
+
+- **Node Description:**
+  Optional text to describe what this node does (for internal clarity).
+
+- **Select Query Type:**
+  Choose between
+
+  - _Query Data_ → use structured filters with fields and operators.
+  - _Natural Language Query_ → type a plain-text instruction like “Find all active users created after January 2024”.
+
+- **Table Name:**
+  Choose the table or collection you want to query, for example `test3 (production)`.
+
+- **Query Fields:**
+  Add one or more filters to narrow down the search. Each filter includes:
+
+  - a field (for example, `id`, `name`, or `email`)
+  - an operator (`=`, `!=`, `contains`, etc.)
+  - a value (which can also come from an earlier node’s output).
+
+- **Query Combination Type:**
+  Defines how multiple filters are joined.
+
+  - `AND` → all conditions must match.
+  - `OR` → any condition can match.
+
+- **Order By:**
+  Select the field by which you want to sort the results (for example, `name` or `created_at`).
+
+- **Order Direction:**
+  Choose `Ascending` or `Descending` for the sorting order.
+
+- **Limit:**
+  Specify how many records you want to retrieve at most.
+
+- **Start After / Offset:**
+  Use this to skip records (for pagination).
+
+---
+
+## Output Parameters
+
+The node produces several pieces of information after running:
+
+- **tableName:**
+  The full name of the collection that was queried, for example `production:test3`.
+
+- **queryId:**
+  A unique ID automatically assigned to this specific query run. It helps with logs and debugging.
+
+- **data:**
+  The main output — an array (list) of records returned by the query. Each record is an object containing fields like `id`, `name`, `email`, and others from your database.
+
+- **message:**
+  A readable message summarizing what happened, for example “Successfully fetched 13 documents.”
+
+- **status:**
+  Indicates success or failure of the operation (e.g., `success`, `error`).
+
+---
+
+## Output Type
+
+The output is returned in **JSON format**.
+The key `data` holds an array of record objects. Each object contains all fields from that record in your database.
+This JSON can easily be passed to other nodes for further processing, display, or transformation.
+
+---
+
+## Example Usage
+
+### Example 1 – Query Data (structured filters)
+
+**Node settings:**
+
+```json
+{
+  "selectQueryType": "Query Data",
+  "tableName": "test3 (production)",
+  "queryCombinationType": "AND",
+  "orderBy": "name",
+  "orderDirection": "Ascending",
+  "limit": 50
+}
+```
+
+**Expected output:**
+
+```json
+{
+  "output": {
+    "tableName": "production:test3",
+    "queryId": "a5aeb97e-44f3-48d2-9fe6-ad2e475c527f",
+    "data": [
+      {
+        "id": "10",
+        "created_at": "2023-10-01T12:00:00.000Z",
+        "name": "Amanda Taylor",
+        "bio": "Amanda Taylor is a journalist covering environmental issues and climate change...",
+        "active": "yes",
+        "email": "amanda.taylor@newsagency.org",
+        "status": null
+      },
+      {
+        "id": "5",
+        "created_at": "2023-05-12T11:00:00.000Z",
+        "name": "David Wilson",
+        "bio": "David Wilson is a project manager in the construction industry...",
+        "active": "yes",
+        "email": "david.wilson@constructionco.net",
+        "status": null
+      }
+    ],
+    "message": "Successfully fetched 2 documents",
+    "status": "success"
+  }
+}
+```
+
+---
+
+### Example 2 – Natural Language Query
+
+**Node settings:**
+
+```json
+{
+  "selectQueryType": "Natural Language Query",
+  "tableName": "test3 (production)",
+  "naturalLanguage": "Find all active users created after January 2023 ordered by created_at descending",
+  "limit": 20
+}
+```
+
+**Expected output:**
+
+```json
+{
+  "output": {
+    "tableName": "production:test3",
+    "queryId": "b12c98fa-7e11-4a77-9cb8-8d7a7e901234",
+    "data": [
+      {
+        "id": "10",
+        "name": "Amanda Taylor",
+        "created_at": "2023-10-01T12:00:00.000Z",
+        "active": "yes"
+      },
+      {
+        "id": "5",
+        "name": "David Wilson",
+        "created_at": "2023-05-12T11:00:00.000Z",
+        "active": "yes"
+      }
+    ],
+    "message": "Successfully fetched 2 documents",
+    "status": "success"
+  }
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. Drag and drop the **Query Data** node into your workflow.
+2. Click the node to open its settings.
+3. Optionally give it a clear description like “Fetch recent users.”
+4. Choose the **Query Type**.
+
+   - Use “Query Data” if you want structured filters.
+   - Use “Natural Language Query” if you want to type instructions.
+
+5. Pick your **Table Name** (for example, `test3 (production)`).
+6. If using structured filters, click **Add Field** and set up each condition.
+7. Combine filters using “AND” or “OR.”
+8. Choose sorting, limit, and offset if needed.
+9. Click **Save Changes**.
+10. Connect this node to the next step — such as a display node or a text generation node — to use the results.
+
+---
+
+## Best Practices
+
+- Always use a **limit** to avoid pulling huge datasets.
+- When you only need one specific record, query using a unique field like `id`.
+- Use **consistent date formats** (ISO format: `YYYY-MM-DDTHH:mm:ss.sssZ`) for better filtering and sorting.
+- Combine **orderBy** with **limit** to get “top N” or “latest” results.
+- When using **Natural Language Query**, double-check that the interpreted query makes sense.
+- Keep your **queryId** for debugging or workflow tracking.
+
+---
+
+## Example Workflow Integration
+
+Here are common ways to use this node:
+
+- **Form Input → Query Data → Display Results**
+  A user enters a search term, Query Data fetches matches, and a Display node shows them.
+
+- **Schedule Trigger → Query Data → Email Node**
+  Runs daily, fetches recent updates, and emails the summary.
+
+- **Button Click → Query Data → Chart Node**
+  A dashboard button triggers Query Data, and the returned data builds a visualization.
+
+---
+
+## Common Errors and Fixes
+
+- **Empty results:**
+  Your filters may not match any records. Try loosening the conditions.
+
+- **Invalid table name:**
+  Double-check you selected the correct table or environment (for example, `test3 (production)`).
+
+- **Missing required field:**
+  You might have left out a necessary input or not connected upstream nodes correctly.
+
+- **Sorting not working:**
+  The `orderBy` field might be missing or inconsistent (string vs. date type).
+
+- **Permission errors:**
+  Ensure you have access to the database and correct credentials.
+
+---

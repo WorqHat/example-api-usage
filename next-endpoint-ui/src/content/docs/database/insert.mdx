@@ -1,0 +1,620 @@
+---
+title: 'Insert Data'
+description: 'Insert a new record into a database table'
+---
+
+Inserts a new record into the specified WorqDB table. This endpoint allows you to add new data to your database tables with optional control over the document identifier.
+
+```endpoint
+POST https://api.worqhat.com/db/insert
+```
+
+## What Does This Endpoint Do?
+
+This endpoint creates new records in your database tables. Think of it like adding a new row to a spreadsheet - you specify which table to add to and what data should be included in the new record.
+
+## When to Use Insert Data
+
+You'll find this endpoint useful when you need to:
+
+- **Create user accounts**: Add new users to your system
+- **Store form submissions**: Save data submitted through forms
+- **Log events**: Record activities or events as they happen
+- **Add inventory items**: Create new product entries
+- **Create content**: Add new articles, posts, or other content
+- **Store application data**: Persist any data your application needs to save
+
+## How It Works
+
+1. You specify the **table name** where you want to insert data
+2. You provide the **data** as key-value pairs
+3. You can optionally specify a **documentId** to use as the primary key
+4. The API inserts the record and returns the complete inserted data
+
+## Code Examples
+
+### Example 1: Basic Insert
+
+This example shows how to insert a record with an auto-generated documentId.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function createUser() {
+      try {
+        // Call the insertRecord method
+        const response = await client.db.insertRecord({
+          table: 'users',          // The table to insert into
+          data: {                  // The data to insert
+            name: 'John Doe',
+            email: 'john@example.com',
+            role: 'user',
+            active: true
+          },
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log('User created with ID:', response.data.documentId);
+        console.log('Created user:', response.data);
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error creating user:', error.message);
+      }
+    }
+    
+    // Call the function
+    createUser();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Insert a new record
+    try:
+        response = client.db.insert_record(
+            table="users",          # The table to insert into
+            data={                  # The data to insert
+                "name": "John Doe",
+                "email": "john@example.com",
+                "role": "user",
+                "active": True
+            },
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"User created with ID: {response.data.get('documentId')}")
+        print(f"Created user: {response.data}")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error creating user: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Insert a new record
+      response, err := client.DB.InsertRecord(context.TODO(), worqhat.DBInsertRecordParams{
+        Table: "users",            // The table to insert into
+        Data: map[string]interface{}{ // The data to insert
+          "name": "John Doe",
+          "email": "john@example.com",
+          "role": "user",
+          "active": true,
+        },
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error creating user: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("User created with ID: %s\n", response.Data["documentId"])
+      fmt.Printf("Created user: %+v\n", response.Data)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Insert a new record
+    curl -X POST "https://api.worqhat.com/db/insert" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "users",
+        "data": {
+          "name": "John Doe",
+          "email": "john@example.com",
+          "role": "user",
+          "active": true
+        },
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: Insert with Custom Document ID
+
+This example shows how to insert a record with a custom documentId that you specify.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function createProductWithCustomId() {
+      try {
+        // Generate a custom ID
+        const customId = `prod_${Date.now()}`;
+        
+        // Call the insertRecord method with custom documentId
+        const response = await client.db.insertRecord({
+          table: 'products',       // The table to insert into
+          data: {                  // The data to insert
+            documentId: customId,  // Specify your own document ID
+            name: 'Premium Widget',
+            price: 99.99,
+            inStock: true,
+            category: 'electronics'
+          },
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Product created with custom ID: ${response.data.documentId}`);
+        return response;
+      } catch (error) {
+        console.error('Error creating product:', error.message);
+      }
+    }
+    
+    createProductWithCustomId();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    import time
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Generate a custom ID
+    custom_id = f"prod_{int(time.time())}"  # Using timestamp for unique ID
+    
+    # Insert a record with custom documentId
+    try:
+        response = client.db.insert_record(
+            table="products",       # The table to insert into
+            data={                  # The data to insert
+                "documentId": custom_id,  # Specify your own document ID
+                "name": "Premium Widget",
+                "price": 99.99,
+                "inStock": True,
+                "category": "electronics"
+            },
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Product created with custom ID: {response.data.get('documentId')}")
+        print(f"Created product: {response.data}")
+    except Exception as e:
+        print(f"Error creating product: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+      "time"
+      "strconv"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Generate a custom ID
+      customID := "prod_" + strconv.FormatInt(time.Now().Unix(), 10)
+      
+      // Insert a record with custom documentId
+      response, err := client.DB.InsertRecord(context.TODO(), worqhat.DBInsertRecordParams{
+        Table: "products",         // The table to insert into
+        Data: map[string]interface{}{ // The data to insert
+          "documentId": customID,  // Specify your own document ID
+          "name": "Premium Widget",
+          "price": 99.99,
+          "inStock": true,
+          "category": "electronics",
+        },
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error creating product: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Product created with custom ID: %s\n", response.Data["documentId"])
+      fmt.Printf("Created product: %+v\n", response.Data)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Insert a record with custom documentId
+    curl -X POST "https://api.worqhat.com/db/insert" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "products",
+        "data": {
+          "documentId": "prod_1627384950",
+          "name": "Premium Widget",
+          "price": 99.99,
+          "inStock": true,
+          "category": "electronics"
+        },
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 3: Batch Insert with Array of JSON Objects
+
+This example shows how to insert multiple records at once by providing an array of JSON objects.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function createMultipleProducts() {
+      try {
+        // Call the insertRecord method with an array of data objects
+        const response = await client.db.insertRecord({
+          table: 'products',       // The table to insert into
+          data: [                  // Array of data objects to insert
+            {
+              name: 'Basic Widget',
+              price: 19.99,
+              inStock: true,
+              category: 'essentials'
+            },
+            {
+              name: 'Standard Widget',
+              price: 49.99,
+              inStock: true,
+              category: 'essentials'
+            },
+            {
+              name: 'Premium Widget',
+              price: 99.99,
+              inStock: false,
+              category: 'premium'
+            }
+          ],
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Inserted ${response.data.length} products`);
+        console.log('Created products:', response.data);
+        return response;
+      } catch (error) {
+        console.error('Error creating products:', error.message);
+      }
+    }
+    
+    createMultipleProducts();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Insert multiple records at once
+    try:
+        response = client.db.insert_record(
+            table="products",       # The table to insert into
+            data=[                  # Array of data objects to insert
+                {
+                    "name": "Basic Widget",
+                    "price": 19.99,
+                    "inStock": True,
+                    "category": "essentials"
+                },
+                {
+                    "name": "Standard Widget",
+                    "price": 49.99,
+                    "inStock": True,
+                    "category": "essentials"
+                },
+                {
+                    "name": "Premium Widget",
+                    "price": 99.99,
+                    "inStock": False,
+                    "category": "premium"
+                }
+            ],
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Inserted {len(response.data)} products")
+        print(f"Created products: {response.data}")
+    except Exception as e:
+        print(f"Error creating products: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Create array of product data
+      productsData := []map[string]interface{}{
+        {
+          "name":     "Basic Widget",
+          "price":    19.99,
+          "inStock":  true,
+          "category": "essentials",
+        },
+        {
+          "name":     "Standard Widget",
+          "price":    49.99,
+          "inStock":  true,
+          "category": "essentials",
+        },
+        {
+          "name":     "Premium Widget",
+          "price":    99.99,
+          "inStock":  false,
+          "category": "premium",
+        },
+      }
+      
+      // Insert multiple records at once
+      response, err := client.DB.InsertRecord(context.TODO(), worqhat.DBInsertRecordParams{
+        Table: "products",         // The table to insert into
+        Data:  productsData,       // Array of data objects to insert
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error creating products: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Inserted %d products\n", len(response.Data))
+      fmt.Printf("Created products: %+v\n", response.Data)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Insert multiple records at once
+    curl -X POST "https://api.worqhat.com/db/insert" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "products",
+        "data": [
+          {
+            "name": "Basic Widget",
+            "price": 19.99,
+            "inStock": true,
+            "category": "essentials"
+          },
+          {
+            "name": "Standard Widget",
+            "price": 49.99,
+            "inStock": true,
+            "category": "essentials"
+          },
+          {
+            "name": "Premium Widget",
+            "price": 99.99,
+            "inStock": false,
+            "category": "premium"
+          }
+        ],
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+## Request Body Explained
+
+<ParamField body="table" type="string" required>
+  The name of the table where you want to insert the record. For example, `users`, `products`, or `orders`.
+</ParamField>
+
+<ParamField body="data" type="object | array" required>
+  The data to insert, which can be provided in two formats:
+  
+  **Single Object Format**: A single JSON object with key-value pairs where each key represents a field name, and its value is the data you want to store.
+  
+  **Array Format**: An array of JSON objects for batch insertion of multiple records at once. Each object in the array follows the same structure as the single object format.
+  
+  In either format, you can optionally include a `documentId` field in each object to specify your own unique identifier for the record. If not provided, the system will generate one automatically.
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if the insert was successful, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="data" type="object | array">
+  For single record inserts:
+  - The complete inserted record as an object, including any auto-generated fields like `documentId` (if you didn't specify one) and all the data you provided in the request.
+  
+  For batch inserts:
+  - An array of objects, where each object represents a successfully inserted record with its complete data.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  A human-readable message describing the result of the operation.
+</ResponseField>
+
+## Example Response
+
+### Single Record Insert
+
+```json
+{
+  "success": true,
+  "data": {
+    "documentId": "doc_12345abcde",
+    "name": "John Doe",
+    "email": "john@example.com",
+    "role": "user",
+    "active": true
+  },
+  "message": "Record inserted successfully"
+}
+```
+
+### Batch Insert
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "documentId": "doc_12345abcde",
+      "name": "Basic Widget",
+      "price": 19.99,
+      "inStock": true,
+      "category": "essentials"
+    },
+    {
+      "documentId": "doc_67890fghij",
+      "name": "Standard Widget",
+      "price": 49.99,
+      "inStock": true,
+      "category": "essentials"
+    },
+    {
+      "documentId": "doc_54321klmno",
+      "name": "Premium Widget",
+      "price": 99.99,
+      "inStock": false,
+      "category": "premium"
+    }
+  ],
+  "message": "3 records inserted successfully"
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Table not found" | The specified table doesn't exist | Check your table name for typos |
+| "Duplicate documentId" | The documentId you provided already exists | Use a different documentId or let the system generate one |
+| "Missing required field" | You didn't provide a required parameter | Make sure you include table and data fields |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+
+## Tips for Successful Inserts
+
+- If you need to reference the record later, save the returned `documentId`
+- For records that need a predictable ID, provide your own `documentId`
+- For records where the ID doesn't matter, let the system generate one
+- The `documentId` is used as the primary key for all operations (update, delete, query)
+- The system will handle all internal record management automatically

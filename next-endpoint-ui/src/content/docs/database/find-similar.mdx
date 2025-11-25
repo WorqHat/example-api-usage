@@ -1,0 +1,610 @@
+---
+title: 'Find Similar Records'
+description: 'Find records similar to a specific existing record using vector embeddings'
+---
+
+Finds records similar to a specific existing record using vector embeddings. This endpoint is perfect for implementing "More like this" functionality, discovering related content, and performing cross-table similarity searches.
+
+```endpoint
+POST https://api.worqhat.com/db/find-similar
+```
+
+## What Does This Endpoint Do?
+
+This endpoint takes an existing record as a reference and finds other records that are semantically similar to it. It's like having a smart assistant that can say "if you like this, you might also like these" based on deep understanding of content similarity rather than simple keyword matching.
+
+## When to Use Find Similar Records
+
+You'll find this endpoint useful when you need to:
+
+- **Implement "More like this" features**: Show users similar products, articles, or content
+- **Discover related items**: Find records that are conceptually related to a specific item
+- **Cross-table recommendations**: Find similar content across different tables
+- **Content discovery**: Help users explore related content they might not have found otherwise
+- **Data analysis**: Identify patterns and relationships in your data
+- **Duplicate detection**: Find potentially duplicate or very similar records
+
+## How It Works
+
+1. You specify a **source record** by providing its table and ID
+2. The system retrieves the **vector embedding** of that record
+3. It searches for other records with **similar embeddings** in the same or different table
+4. Results are returned with **similarity scores** showing how closely each record matches the source
+5. You can optionally **exclude the source record** from results
+
+## Code Examples
+
+### Example 1: Basic Similar Records Search
+
+This example shows how to find records similar to a specific product.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function findSimilarProducts() {
+      try {
+        // Call the findSimilar method
+        const response = await client.db.findSimilar({
+          table: "products",
+          record_id: "123",
+          limit: 10,
+          threshold: 0.7,
+          exclude_self: true,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Found ${response.similar_records.length} similar products`);
+        console.log('Source product:', response.source_record);
+        console.log('Similar products:', response.similar_records);
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error finding similar products:', error.message);
+      }
+    }
+    
+    // Call the function
+    findSimilarProducts();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Find similar records
+    try:
+        response = client.db.find_similar(
+            table="products",
+            record_id="123",
+            limit=10,
+            threshold=0.7,
+            exclude_self=True,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Found {len(response.similar_records)} similar products")
+        print(f"Source product: {response.source_record}")
+        print(f"Similar products: {response.similar_records}")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error finding similar products: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Find similar records
+      response, err := client.DB.FindSimilar(context.TODO(), worqhat.DBFindSimilarParams{
+        Table: "products",
+        RecordID: "123",
+        Limit: 10,
+        Threshold: 0.7,
+        ExcludeSelf: true,
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error finding similar products: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Found %d similar products\n", len(response.SimilarRecords))
+      fmt.Printf("Source product: %+v\n", response.SourceRecord)
+      fmt.Printf("Similar products: %+v\n", response.SimilarRecords)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Find similar records
+    curl -X POST "https://api.worqhat.com/db/find-similar" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "products",
+        "record_id": "123",
+        "limit": 10,
+        "threshold": 0.7,
+        "exclude_self": true,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: Cross-Table Similarity Search
+
+This example shows how to find similar records across different tables.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function findCrossTableSimilar() {
+      try {
+        // Find similar records across different tables
+        const response = await client.db.findSimilar({
+          table: "products",        // Source table
+          record_id: "123",        // Source record ID
+          target_table: "articles", // Search in different table
+          limit: 15,
+          threshold: 0.6,
+          exclude_self: true,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Found ${response.similar_records.length} similar articles`);
+        console.log('Source product:', response.source_record);
+        response.similar_records.forEach(record => {
+          console.log(`Article: ${record.record.title}, Similarity: ${record.similarity}`);
+        });
+        return response;
+      } catch (error) {
+        console.error('Error finding cross-table similar records:', error.message);
+      }
+    }
+    
+    findCrossTableSimilar();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Find similar records across different tables
+    try:
+        response = client.db.find_similar(
+            table="products",        # Source table
+            record_id="123",        # Source record ID
+            target_table="articles", # Search in different table
+            limit=15,
+            threshold=0.6,
+            exclude_self=True,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Found {len(response.similar_records)} similar articles")
+        print(f"Source product: {response.source_record}")
+        for record in response.similar_records:
+            print(f"Article: {record.record.title}, Similarity: {record.similarity}")
+    except Exception as e:
+        print(f"Error finding cross-table similar records: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Find similar records across different tables
+      response, err := client.DB.FindSimilar(context.TODO(), worqhat.DBFindSimilarParams{
+        Table: "products",        // Source table
+        RecordID: "123",          // Source record ID
+        TargetTable: "articles",  // Search in different table
+        Limit: 15,
+        Threshold: 0.6,
+        ExcludeSelf: true,
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error finding cross-table similar records: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Found %d similar articles\n", len(response.SimilarRecords))
+      fmt.Printf("Source product: %+v\n", response.SourceRecord)
+      for _, record := range response.SimilarRecords {
+        fmt.Printf("Article: %s, Similarity: %.3f\n", record.Record["title"], record.Similarity)
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Find similar records across different tables
+    curl -X POST "https://api.worqhat.com/db/find-similar" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "products",
+        "record_id": "123",
+        "target_table": "articles",
+        "limit": 15,
+        "threshold": 0.6,
+        "exclude_self": true,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 3: Include Source Record
+
+This example shows how to include the source record in the results for comparison.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function findSimilarWithSource() {
+      try {
+        // Find similar records including the source
+        const response = await client.db.findSimilar({
+          table: "documents",
+          record_id: "456",
+          limit: 20,
+          threshold: 0.5,
+          exclude_self: false,  // Include the source record
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Found ${response.similar_records.length} similar documents (including source)`);
+        response.similar_records.forEach((record, index) => {
+          const isSource = record.similarity === 1.0;
+          console.log(`${index + 1}. ${record.record.title} (Similarity: ${record.similarity}) ${isSource ? '[SOURCE]' : ''}`);
+        });
+        return response;
+      } catch (error) {
+        console.error('Error finding similar documents:', error.message);
+      }
+    }
+    
+    findSimilarWithSource();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Find similar records including the source
+    try:
+        response = client.db.find_similar(
+            table="documents",
+            record_id="456",
+            limit=20,
+            threshold=0.5,
+            exclude_self=False,  # Include the source record
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Found {len(response.similar_records)} similar documents (including source)")
+        for i, record in enumerate(response.similar_records):
+            is_source = record.similarity == 1.0
+            print(f"{i + 1}. {record.record.title} (Similarity: {record.similarity}) {'[SOURCE]' if is_source else ''}")
+    except Exception as e:
+        print(f"Error finding similar documents: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Find similar records including the source
+      response, err := client.DB.FindSimilar(context.TODO(), worqhat.DBFindSimilarParams{
+        Table: "documents",
+        RecordID: "456",
+        Limit: 20,
+        Threshold: 0.5,
+        ExcludeSelf: false,  // Include the source record
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error finding similar documents: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Found %d similar documents (including source)\n", len(response.SimilarRecords))
+      for i, record := range response.SimilarRecords {
+        isSource := record.Similarity == 1.0
+        sourceLabel := ""
+        if isSource {
+          sourceLabel = " [SOURCE]"
+        }
+        fmt.Printf("%d. %s (Similarity: %.3f)%s\n", 
+          i+1, record.Record["title"], record.Similarity, sourceLabel)
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Find similar records including the source
+    curl -X POST "https://api.worqhat.com/db/find-similar" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "documents",
+        "record_id": "456",
+        "limit": 20,
+        "threshold": 0.5,
+        "exclude_self": false,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+## Request Body Explained
+
+<ParamField body="table" type="string" required>
+  Table containing the source record.
+  
+  Example: "products"
+</ParamField>
+
+<ParamField body="record_id" type="string|number" required>
+  ID of the source record to find similar records for.
+  
+  Example: "123"
+</ParamField>
+
+<ParamField body="limit" type="number" optional>
+  Maximum number of similar records to return. Range: 1-100, default: 10.
+</ParamField>
+
+<ParamField body="threshold" type="number" optional>
+  Minimum similarity score threshold (0-1). Only results above this threshold will be returned. Default: 0.7.
+</ParamField>
+
+<ParamField body="exclude_self" type="boolean" optional>
+  Whether to exclude the source record from results. Default: true.
+</ParamField>
+
+<ParamField body="target_table" type="string" optional>
+  Different table to search in for similar records. If not provided, searches in the same table as the source.
+  
+  Example: "articles"
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if the search was successful, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="source_record" type="object">
+  The original record used for similarity search.
+</ResponseField>
+
+<ResponseField name="similar_records" type="array">
+  Array of similar records, each containing:
+  - `table`: The table where the similar record was found
+  - `record`: The actual record data
+  - `similarity`: Similarity score (0-1) indicating how similar the record is to the source
+</ResponseField>
+
+<ResponseField name="executionTime" type="number">
+  Search execution time in milliseconds.
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "source_record": {
+    "id": "123",
+    "name": "AI-Powered Smart Assistant",
+    "description": "Advanced machine learning device for home automation",
+    "category": "electronics",
+    "price": 299.99
+  },
+  "similar_records": [
+    {
+      "table": "products",
+      "record": {
+        "id": "456",
+        "name": "Smart Home Hub",
+        "description": "Central control unit for automated home systems",
+        "category": "electronics",
+        "price": 199.99
+      },
+      "similarity": 0.891
+    },
+    {
+      "table": "products",
+      "record": {
+        "id": "789",
+        "name": "AI Voice Assistant",
+        "description": "Intelligent voice-controlled device for home automation",
+        "category": "electronics",
+        "price": 149.99
+      },
+      "similarity": 0.823
+    }
+  ],
+  "executionTime": 156
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Record not found" | The specified record ID doesn't exist | Check that the record ID exists in the specified table |
+| "Table not found" | The specified table doesn't exist | Check your table name for typos |
+| "No embeddings found" | The table doesn't have vector embeddings | Ensure your table has been processed for embeddings |
+| "Threshold too high" | No records meet the similarity threshold | Lower the threshold value (try 0.5-0.6) |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+
+## Tips for Better Results
+
+- **Start with moderate thresholds**: Begin with 0.6-0.7 and adjust based on your needs
+- **Use cross-table search**: Find similar content across different tables for broader discovery
+- **Include source for comparison**: Set `exclude_self: false` to see how the source ranks
+- **Experiment with limits**: Try different limit values to find the right balance
+- **Monitor similarity scores**: Higher scores indicate better matches
+- **Use for content discovery**: Great for helping users find related content they might like
+
+## Use Cases
+
+### E-commerce "More Like This"
+```javascript
+// Find products similar to what a user is viewing
+const similarProducts = await client.db.findSimilar({
+  table: "products",
+  record_id: currentProductId,
+  limit: 8,
+  threshold: 0.7
+});
+```
+
+### Content Recommendation
+```javascript
+// Find articles similar to one a user is reading
+const relatedArticles = await client.db.findSimilar({
+  table: "articles",
+  record_id: currentArticleId,
+  limit: 5,
+  threshold: 0.6
+});
+```
+
+### Cross-Table Discovery
+```javascript
+// Find products similar to a blog post about technology
+const relatedProducts = await client.db.findSimilar({
+  table: "blog_posts",
+  record_id: techPostId,
+  target_table: "products",
+  limit: 10,
+  threshold: 0.5
+});
+```
+
+### Duplicate Detection
+```javascript
+// Find potentially duplicate records
+const potentialDuplicates = await client.db.findSimilar({
+  table: "contacts",
+  record_id: contactId,
+  limit: 20,
+  threshold: 0.9,
+  exclude_self: true
+});
+```

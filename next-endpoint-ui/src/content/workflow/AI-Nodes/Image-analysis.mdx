@@ -1,0 +1,264 @@
+**Category:** AI
+**Type:** Image Understanding and Analysis
+
+---
+
+## Overview
+
+The **Image Analysis Node** uses advanced AI models to interpret and analyze images. It can describe objects, scenes, and actions in an image or provide targeted answers to specific questions about it.
+
+This node is ideal for workflows that involve **image understanding**, such as detecting objects, summarizing visual content, generating image captions, or answering user-defined questions about uploaded or generated images.
+
+It is fully designed for **no-code workflows**, enabling users to perform complex visual AI analysis without writing any code.
+
+---
+
+## Description
+
+Use the **Image Analysis Node** to extract insights from images using AI.
+You can upload or reference one or more images through the `attachments` field. The AI will automatically analyze them and generate a response.
+
+If you provide a **question**, the AI tailors its analysis to that query (e.g., “What type of vehicle is in this image?”).
+If no question is given, the AI produces a **general description** of the image’s contents.
+
+---
+
+## Input Parameters
+
+The **Image Analysis** node accepts flat key-value inputs that define which images to analyze and what kind of information the AI should extract.
+
+- **analysisType**
+  Must always be set to `"image-analysis"`.
+  This specifies that the node will use an AI model designed for image understanding and description.
+
+- **attachments**
+  Comma-separated list of image file IDs or variable references representing the images to be analyzed.
+  You can use syntax such as:
+
+  ```
+  file1.png,file2.jpg
+  ```
+
+  or dynamic references like:
+
+  ```
+  {{image}}
+  ```
+
+  or each images can be added by browsing locally.
+
+  Each file represents one image input for the analysis.
+
+- **question**
+  A specific question or instruction about the image content.
+  Examples:
+
+  - “What is the person holding?”
+  - “Describe the background.”
+  - “Identify the main objects in this image.”
+    If left empty, the AI provides a general summary or description of the image.
+
+**Instructions:**
+Provide all inputs as flat key-value pairs.
+Dynamic variables can be referenced using `{{nodeId.output.<key>}}` syntax to link outputs from previous nodes.
+
+---
+
+## Output Parameters
+
+After execution, the **Image Analysis** node provides the AI’s interpretation of the image along with processing details.
+
+- **content** _(string)_
+  The AI-generated description or analytical response about the image.
+  Contains a complete, readable interpretation of the visual content — such as objects, people, scenes, or actions detected in the image.
+
+**Instructions:**
+Access the generated description in your workflow using:
+
+```
+{{nodeId.output.content}}
+```
+
+Access the main AI result using:
+
+```
+{{nodeId.output.content}}
+```
+
+---
+
+## Output Type
+
+**Type:** `text`
+This node always outputs **textual AI analysis results** about one or more images.
+Do not modify this type — it ensures the output is recognized properly in downstream workflow nodes.
+
+---
+
+## Example Usage
+
+### Example 1 — Image Analysis Description
+
+**Input:**
+
+```json
+{
+  "analysisType": "image-analysis",
+  "attachments": "file123.jpg",
+  "question": "Describe the image."
+}
+```
+
+**Output:**
+
+```json
+{
+  "output": {
+    "content": "### Detailed Description of the Image\n\nThis is a warm, well-lit indoor scene capturing a young Black woman studying at a wooden desk in what appears to be a cozy home office or living room. The overall atmosphere is serene and focused, with soft natural sunlight streaming in from a large window on the left, casting gentle shadows and highlighting the subject's concentration...",
+    "processingTime": "6.272",
+    "processingId": "xai-grok-1761734286842",
+    "processingCount": 533
+  }
+}
+```
+
+---
+
+### Example 2 — Face Detection
+
+**Input:**
+
+```json
+{
+  "analysisType": "image-analysis",
+  "attachments": "{{imageGenNode.output.image}}",
+  "question": "Detect faces and provide facial attributes."
+}
+```
+
+**Output:**
+
+```json
+{
+  "output": {
+    "data": [
+      {
+        "age_range": {
+          "high": "27",
+          "low": "21"
+        },
+        "beard": {
+          "value": false,
+          "confidence": "96.11174774"
+        },
+        "emotions": {
+          "happy": "0.00216166",
+          "calm": "48.06826782",
+          "surprised": "0.00394881",
+          "fear": "0.03886223",
+          "angry": "0.01629591",
+          "confused": "0.17070770",
+          "sad": "45.47851563",
+          "disgusted": "0.01695156"
+        },
+        "eyeglasses": {
+          "confidence": "99.99996185",
+          "value": false
+        },
+        "eyes_open": {
+          "confidence": "99.99046326",
+          "value": false
+        },
+        "face_occluded": {
+          "confidence": "77.87515259",
+          "value": false
+        },
+        "gender": {
+          "confidence": "99.94132233",
+          "value": "Female"
+        },
+        "mouth_open": {
+          "confidence": "89.24304962",
+          "value": false
+        },
+        "mustache": {
+          "confidence": "99.77437592",
+          "value": false
+        },
+        "quality": {
+          "brightness": "44.11880493",
+          "sharpness": "78.64350128"
+        },
+        "smile": {
+          "confidence": "99.94223022",
+          "value": false
+        },
+        "sunglasses": {
+          "confidence": "99.99991608",
+          "value": false
+        }
+      }
+    ],
+    "number of faces": 1,
+    "processingTime": "1526.65667700",
+    "processingId": "05389043-9541-4218-9674-7ece28f16bdf",
+    "processingCount": 1
+  }
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Node:** Drag and drop the **Image Analysis Node** into your workflow.
+2. **Provide Attachments:** Connect the output of an image-generating or image-uploading node to the `attachments` field.
+3. **Set Analysis Type:** Always use `"image-analysis"` for the `analysisType` field.
+4. **Add an Optional Question:** Enter a specific question (e.g., “Is this food vegetarian?”) or leave it blank for a general analysis.
+5. **Run the Workflow:** The node will analyze the provided image(s) and generate a text-based interpretation.
+6. **Use Output:** Access the result using `{{nodeId.output.content}}` in downstream nodes like _Text Generation_, _Reporting_, or _Notifications_.
+
+---
+
+## Best Practices
+
+- Always ensure **attachments contain valid image files or variable references**.
+- Keep the **question** short and specific for better results.
+- If analyzing multiple images, use comma-separated references for consistent results.
+- Combine this node with **Text Generation** or **Report Creation** nodes to turn image insights into summaries or structured reports.
+- Use **high-quality images** for more accurate AI interpretation.
+
+---
+
+## Example Workflow Integration
+
+**Scenario:**
+Automatically analyze an AI-generated image and describe it for user documentation.
+
+1. **Image Generation Node:** Creates an image based on a prompt.
+2. **Image Analysis Node:** Examines the generated image and describes it.
+3. **Text Generation Node:** Uses the analysis result to generate a caption or description paragraph.
+
+---
+
+## Common Errors
+
+Below are common issues that may occur while using the **Image Analysis** node, along with their causes and suggested solutions.
+
+- **"Missing attachments"**
+  **Cause:** No image references were provided in the `attachments` field.
+  **Solution:** Make sure you include valid file IDs or variable references that point to the images you want analyzed.
+
+- **"Invalid analysisType"**
+  **Cause:** The `analysisType` parameter is missing or set incorrectly.
+  **Solution:** Always set the value to `"image-analysis"` to ensure the correct AI model is used.
+
+- **"No content output"**
+  **Cause:** The AI model returned an empty or invalid response.
+  **Solution:** Try using a clearer image or providing a more specific question in the `question` field.
+
+- **"File not accessible"**
+  **Cause:** The referenced image file could not be accessed or loaded.
+  **Solution:** Check file permissions or confirm that the image has been properly uploaded or generated in a previous node.
+
+---

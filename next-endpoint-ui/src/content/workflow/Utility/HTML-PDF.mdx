@@ -1,0 +1,145 @@
+
+**Category:** File Conversion
+**Type:** Output Node
+**Overview:**
+The **HTML to PDF Node** converts HTML content into a downloadable PDF file. It allows you to design and format professional-looking documents such as reports, invoices, articles, or certificates using HTML and CSS, and then automatically generate a PDF file.
+
+---
+
+### Description
+
+The **HTML to PDF Node** is used to transform structured HTML content into a PDF document. You can either manually write your HTML using the built-in HTML editor or let the AI automatically generate a template for you. Once executed, the node returns a file URL to the generated PDF, which can be downloaded or used in subsequent workflow steps such as “Send Mail” or “Upload File”.
+
+---
+
+### Input Parameters
+
+The node accepts the following inputs:
+
+* **HTML Template / HTML Content:**
+  The complete HTML structure you want to convert. This includes `<html>`, `<head>`, and `<body>` tags along with embedded CSS for styling.
+
+* **PDF Size:**
+  The paper size for the PDF document (e.g., A4, Letter). The default and most commonly used is `A4`.
+
+* **AI Template Description (Optional):**
+  A natural language prompt that describes the kind of HTML template you want the AI to create. You can describe layout, colors, and content ideas, and the system will generate a ready-to-edit HTML structure.
+
+---
+
+### Output Parameters
+
+After successful execution, the node returns:
+
+* **File URL:**
+  A secure URL where the generated PDF file is stored and can be accessed or downloaded.
+
+* **File ID:**
+  A unique identifier for the generated PDF file within the system.
+
+* **PDF Size:**
+  The paper size used for generating the PDF.
+
+* **Generated Timestamp:**
+  The exact date and time when the PDF was created.
+
+---
+
+### Output Type
+
+The node outputs a **file object**, which includes both metadata and a downloadable link to the generated PDF file. This file can be referenced or passed into other nodes such as email or storage nodes.
+
+---
+
+### Example Usage
+
+**Example 1: Simple Article Conversion**
+
+**Input:**
+
+```json
+{
+  "htmlContent": "<html><body><h1>My First PDF</h1><p>This PDF was generated from HTML.</p></body></html>",
+  "pdfSize": "A4"
+}
+```
+
+**Output:**
+
+```json
+{
+  "fileUrl": "https://example-storage.com/pdfs/my-first-pdf.pdf",
+  "fileId": "12345-abcde",
+  "pdfSize": "A4",
+  "generatedAt": "2025-10-29T11:30:43.241Z"
+}
+```
+
+**Example 2: Styled Template Conversion**
+
+**Input:**
+
+```json
+{
+  "htmlContent": "<!DOCTYPE html><html><head><style>body{font-family:Arial;}h1{color:#2563eb;}</style></head><body><h1>The Importance of Time Management</h1><p>Time management helps improve productivity and reduce stress.</p></body></html>",
+  "pdfSize": "A4"
+}
+```
+
+**Output:**
+
+```json
+{
+  "fileUrl": "https://worqhat-harshada.s3.ap-southeast-2.amazonaws.com/pdfs/1761737440503-mmfj1s.pdf",
+  "fileId": "8ecc2a09-4e6a-47bf-9d3a-27606041e007",
+  "pdfSize": "A4",
+  "generatedAt": "2025-10-29T11:30:43.241Z"
+}
+```
+
+---
+
+### How to Use in a No-Code Workflow
+
+1. **Add the “HTML to PDF” node** to your workflow.
+2. In **Node Settings**, write or paste your HTML code in the editor.
+
+   * You can use text, images, CSS styling, and variables.
+3. Choose the **PDF Size** (e.g., A4 or Letter).
+4. Optionally, describe the desired layout and click **“Generate Template”** to let AI design the HTML automatically.
+5. Click **Save Changes**.
+6. Connect the output of this node to a node like **Send Mail** or **Return Response** to share or view the PDF.
+
+---
+
+### Best Practices
+
+* Keep your HTML simple and properly structured to ensure accurate rendering.
+* Use inline CSS or internal `<style>` blocks for consistent formatting.
+* Avoid external image URLs unless they are publicly accessible.
+* Always preview your HTML using the built-in editor before generating the PDF.
+* Use clear headings, spacing, and color contrast for readability.
+
+---
+
+### Example Workflow Integration
+
+A typical use case for this node might be:
+
+1. **Fetch Data** from your database.
+2. **Generate HTML Template** dynamically using the data.
+3. **Convert HTML to PDF** using this node.
+4. **Send Mail** with the generated PDF attached.
+
+This allows you to automate PDF report generation and distribution without writing code.
+
+---
+
+### Common Errors
+
+* **Invalid HTML:** Unclosed tags or malformed CSS can cause PDF generation to fail.
+* **Unsupported Fonts or Images:** External resources might not load if hosted privately.
+* **Large HTML Content:** Very long HTML pages may take extra processing time or fail to render completely.
+
+---
+

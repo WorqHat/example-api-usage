@@ -1,0 +1,318 @@
+**Category:** AI
+**Type:** Data Processing
+
+---
+
+## Overview
+
+The **Text Extraction** node uses AI to extract text and metadata from different content sources such as PDFs, web pages, images, or audio files.
+It converts raw files or URLs into structured, readable text that can be used by other nodes in your workflow.
+
+---
+
+## Description
+
+This node is designed to automatically pull text and metadata from a variety of input formats — including **documents, websites, screenshots, or speech recordings**.
+Depending on the selected extraction type, it can:
+
+- Read and extract text from **PDF** documents.
+- Capture and process the textual content of a **webpage**.
+- Identify and read **text from images** (OCR-based).
+- Convert **speech-to-text** from audio files.
+
+It helps automate content analysis, data gathering, and transcription workflows with minimal setup.
+
+---
+
+## Input Parameters
+
+The **Text Extraction** node accepts flat key-value inputs that determine the source and method of text extraction.
+
+- **extractionType** _(string, required)_
+  Defines the type of extraction to perform. Supported values:
+
+  - `"pdf-extraction"` – Extracts text from PDF documents.
+  - `"web-extraction"` – Extracts text and metadata from a webpage.
+  - `"image-extraction"` – Extracts text from images using OCR (Optical Character Recognition).
+  - `"audio-extraction"` – Converts spoken content from audio files into text.
+
+- **webUrl** _(string, required for web-extraction)_
+  The URL of the web page to extract content from.
+  Example:
+
+  ```
+  https://example.com/article
+  ```
+
+- **attachments** _(string, required for pdf/image/audio extraction)_
+  Comma-separated list of file IDs or variable references to uploaded files.
+  Each file represents one source of extraction.
+  Example:
+
+  ```
+  file1.pdf,file2.pdf
+  ```
+
+  or
+
+  ```
+  {{nodeId.output.file1}},{{nodeId.output.file2}}
+  ```
+
+**Instructions:**
+Provide flat key-value pairs for all input parameters.
+For multiple files, separate entries with commas.
+You can dynamically reference data from previous nodes using:
+
+```
+{{nodeId.input.<key>}}
+```
+
+---
+
+## Output Parameters
+
+After execution, the **Text Extraction** node returns the extracted text along with processing information and detailed metadata.
+
+- **processingCount**
+  Number of files, pages, or segments processed during extraction.
+
+- **processingTime**
+  Total time taken for extraction, returned in ISO timestamp format.
+
+- **processingId**
+  A unique identifier assigned to this specific extraction request.
+
+- **content**
+  The main text extracted from the provided source.
+  For audio extraction, this will contain the full transcription.
+
+- **markdown**
+  A markdown-formatted version of the extracted text for easy readability and formatting.
+
+- **linksOnPage[]**
+  A list of links found on the page (only applicable for `web-extraction`).
+
+- **metadata.title**
+  The page or document title.
+
+- **metadata.keywords**
+  Extracted keywords or tags found in metadata.
+
+- **metadata.description**
+  Short description or summary found in the document or webpage metadata.
+
+- **metadata.robots**
+  Robot meta instructions (e.g., `index,follow`).
+
+- **metadata.ogTitle**
+  Open Graph title of the page.
+
+- **metadata.ogDescription**
+  Open Graph description of the page.
+
+- **metadata.ogImage**
+  URL of the Open Graph image associated with the webpage.
+
+- **metadata.ogSiteName**
+  The name of the website where content was extracted.
+
+- **metadata.screenshot**
+  Screenshot image reference captured during extraction (for `web-extraction`).
+
+- **speaker_labels[].speaker**
+  For audio extractions — identifies the speaker label (e.g., Speaker 1, Speaker 2).
+
+- **speaker_labels[].text**
+  Text spoken by each identified speaker segment.
+
+- **timestamps[].startTime**
+  Timestamp indicating when a specific word or phrase began in the audio file.
+
+- **timestamps[].endTime**
+  Timestamp indicating when a specific word or phrase ended.
+
+- **timestamps[].word**
+  Word or phrase detected during speech-to-text transcription.
+
+- **timestamps[].duration** _(string)_
+  Duration of the spoken segment.
+
+**Instructions:**
+Access output values using variables like:
+
+```
+{{nodeId.output.content}}                 → Extracted text
+{{nodeId.output.metadata.title}}          → Page or document title
+{{nodeId.output.linksOnPage[0]}}          → First link on the page
+{{nodeId.output.speaker_labels[0].text}}  → First speaker’s text segment
+```
+
+---
+
+## Output Type
+
+The output type must **always** be exactly:
+
+```
+"text"
+```
+
+This ensures the node consistently provides extracted text output, regardless of the extraction source (PDF, web, image, or audio).
+
+---
+
+## Example Usage
+
+### Example 1: Extract Text from a PDF
+
+```json
+{
+  "extractionType": "pdf-extraction",
+  "attachments": "file123.pdf"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "content": "This is the text extracted from the PDF document.",
+  "processingId": "proc_67892",
+  "processingTime": "2025-10-27T12:05:43Z",
+  "processingCount": 1
+}
+```
+
+---
+
+### Example 2: Extract Text from Image
+
+```json
+{
+  "extractionType": "image-extraction",
+  "attachments": "image123.png"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "content": "Here is the article content extracted from the page...",
+  "processingTime": "2025-10-27T12:06:11Z",
+  "processingId": "mistral-ocr-1761738927697",
+  "processingCount": 41
+}
+```
+
+---
+
+### Example 3: Extract Text from Audio
+
+```json
+{
+  "extractionType": "audio-extraction",
+  "attachments": "nature_audio.mp3"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "content": "The evening sky was painted with shades of orange and violet. As the city slowly settled into its nightly rhythm. Streetlights flickered to life, casting warm pools of light on the sidewalks where people hurried home, their faces half hidden behind scarves and tired smiles. Somewhere, a musician played a soft tune on a saxophone, its notes drifting between buildings like fragments of a forgotten dream. In the distance, the sound of traffic blended with laughter spilling out of a nearby cafe. Inside, a, uh, writer sat alone with a cup of coffee gone cold, his laptop open but untouched. He watched the rain begin to fall against the window, tracing patterns that matched the rhythm of his thoughts. Every drop felt like a reminder that even in a crowded city, moments of stillness could be found in the smallest details. A quiet song, a stranger's laughter, or the glow of street lights reflecting on wet pavement. And in that quiet, he finally began to type M. Not to impress anyone or chase perfection, but simply to capture the fleeting beauty of the world as he saw it.",
+  "processingTime": "2025-10-27T12:05:43Z",
+  "processingId": "dc9509af-3783-48bd-8819-85126a8e66a8",
+  "processingCount": 188
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Text Extraction Node**
+   Drag and drop the node into your workflow.
+
+2. **Select Extraction Type**
+   Choose the appropriate extraction type:
+
+   - `"pdf-extraction"` for PDF files
+   - `"web-extraction"` for web pages
+   - `"image-extraction"` for scanned images or screenshots
+   - `"audio-extraction"` for speech-to-text conversion
+
+3. **Provide Input**
+
+   - For PDFs, images, or audio: add file references under `attachments`.
+   - For webpages: enter the target URL in `webUrl`.
+
+4. **Run the Node**
+   The node will extract text, metadata, or transcription automatically.
+
+5. **Access Results**
+   Use variable syntax to retrieve outputs such as:
+
+   ```
+   {{textExtraction.output.content}}
+   {{textExtraction.output.metadata.title}}
+   ```
+
+6. **Connect to Next Nodes**
+   You can pass the extracted text to other nodes like **Text Generation**, **AI Analysis**, or **Summarization** for further automation.
+
+---
+
+## Best Practices
+
+- Ensure the correct extraction type is selected before execution.
+- When extracting from multiple files, separate file IDs with commas.
+- For web extractions, make sure the URL is publicly accessible.
+- Use OCR-friendly images (clear text visibility) for best results.
+- For large audio files, split them into smaller segments to improve performance.
+- Always review extracted content for accuracy before using it in production workflows.
+
+---
+
+## Example Workflow Integration
+
+**Use Case:** Automatically summarize a PDF report.
+
+- Step 1: The **File Upload Node** provides the PDF file reference.
+- Step 2: The **Text Extraction Node** extracts all text from the PDF.
+- Step 3: The **Text Generation Node** summarizes the extracted content into key points.
+- Step 4: The **Email Node** sends the summary to a user.
+
+**Workflow Example:**
+
+```
+{{fileUpload.output.fileId}}        →  {{textExtraction.input.attachments}}
+{{textExtraction.output.content}}   →  {{textGeneration.input.prompt}}
+```
+
+---
+
+## Common Errors
+
+- **"Missing extractionType"**
+  **Cause:** No extraction type was provided.
+  **Solution:** Always specify one of `"pdf-extraction"`, `"web-extraction"`, `"image-extraction"`, or `"audio-extraction"`.
+
+- **"Missing webUrl"**
+  **Cause:** The `webUrl` field is required for `web-extraction`.
+  **Solution:** Add a valid, publicly accessible URL.
+
+- **"Missing attachments"**
+  **Cause:** No file references provided for file-based extraction.
+  **Solution:** Add valid file IDs or variable references in the `attachments` field.
+
+- **"Unsupported file format"**
+  **Cause:** The file type is not supported for extraction.
+  **Solution:** Use PDF, image, or audio files in standard formats.
+
+- **"Empty output"**
+  **Cause:** The AI was unable to extract content from the provided source.
+  **Solution:** Recheck file quality, accessibility, or try a different extraction type.
+
+---

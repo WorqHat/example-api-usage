@@ -1,0 +1,272 @@
+**Category:** Utility
+**Type:** Calendar Integration
+
+---
+
+## Overview
+
+The **Calendar Fetch Events** node retrieves a list of events from a connected calendar within a specific date range.
+It allows you to automatically collect event data such as titles, times, participants, meeting links, and organizers.
+
+This node is ideal for building workflows that depend on upcoming or past events — for example, generating daily reports, summarizing meetings, or syncing event details with external systems like CRMs or chat tools.
+
+---
+
+## Description
+
+The **Calendar Fetch Events** node connects to your calendar service and pulls event information based on your defined criteria.
+You can specify:
+
+- A **calendar ID** to fetch events from a particular calendar.
+- A **start date** and **end date** to define the time window.
+
+Once executed, this node returns a structured list of events, including details such as event titles, descriptions, locations, participants, meeting links, and creation timestamps.
+
+This node does not modify your calendar; it only reads and provides event data for use in other parts of the workflow.
+
+---
+
+## Input Parameters
+
+The **Calendar Fetch Events** node requires the following parameters to define which events to retrieve.
+
+- **calendarId**
+  The unique identifier of the calendar to fetch events from.
+  Example: `"primary"` or a custom calendar ID.
+
+- **startDate**
+  The ISO-formatted start date and time from which events should be fetched.
+  Example: `"2025-11-01T00:00:00Z"`.
+
+- **endDate**
+  The ISO-formatted end date and time until which events should be fetched.
+  Example: `"2025-11-07T23:59:59Z"`.
+
+**Notes:**
+
+- All date values must be in **ISO 8601** format for compatibility.
+- The date range can include both past and upcoming events.
+- You can access input values using:
+
+  ```
+  {{calendarFetchEvents.input.calendarId}}
+  {{calendarFetchEvents.input.startDate}}
+  {{calendarFetchEvents.input.endDate}}
+  ```
+
+---
+
+## Output Parameters
+
+After execution, the **Calendar Fetch Events** node returns detailed information about all the events that match the specified criteria.
+
+- **events[]**
+  A list of all retrieved events. Each item in the list contains event details such as title, organizer, and meeting links.
+
+- **events[].eventId**
+  The unique identifier of each event.
+
+- **events[].status**
+  The status of the event, such as `"confirmed"`, `"tentative"`, or `"cancelled"`.
+
+- **events[].title**
+  The event’s title or name.
+
+- **events[].description**
+  The event’s description or agenda text.
+
+- **events[].location**
+  The physical or virtual location of the event.
+
+- **events[].startDate**
+  The event’s start time in ISO format.
+
+- **events[].endDate**
+  The event’s end time in ISO format.
+
+- **events[].creator**
+  The email address or name of the event creator.
+
+- **events[].organizer**
+  The email or identifier of the meeting organizer.
+
+- **events[].attendees[]**
+  A list of all attendees invited to the event.
+
+- **events[].attendees[].name**
+  The name of an attendee.
+
+- **events[].attendees[].status**
+  The attendance response — for example, `"accepted"`, `"declined"`, or `"tentative"`.
+
+- **events[].eventLink**
+  A direct URL to view the event in the calendar.
+
+- **events[].meetLink**
+  The Google Meet link, if a meeting link is attached to the event.
+
+- **events[].meetId**
+  The unique identifier of the attached Google Meet session.
+
+- **events[].createdAt**
+  Timestamp when the event was created.
+
+- **events[].updatedAt**
+  Timestamp when the event was last updated.
+
+- **totalEvents**
+  The total count of events retrieved in the query.
+
+- **timezone**
+  The time zone associated with the calendar from which events were fetched.
+
+**You can access these values using syntax like:**
+
+```
+{{calendarFetchEvents.output.events[0].title}}
+{{calendarFetchEvents.output.events[0].meetLink}}
+{{calendarFetchEvents.output.totalEvents}}
+```
+
+---
+
+## Output Type
+
+**Output Type:** JSON
+The node returns data in a structured JSON format, making it easy to use in downstream nodes for filtering, summaries, or reporting.
+
+---
+
+## Example Usage
+
+### Example 1: Fetch Events for the Current Week
+
+```json
+{
+  "calendarId": "primary",
+  "startDate": "2025-11-01T00:00:00Z",
+  "endDate": "2025-11-07T23:59:59Z"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "totalEvents": 2,
+  "timezone": "Asia/Kolkata",
+  "events": [
+    {
+      "eventId": "evt_23456",
+      "title": "Team Standup Meeting",
+      "startDate": "2025-11-02T09:00:00Z",
+      "endDate": "2025-11-02T09:30:00Z",
+      "meetLink": "https://meet.google.com/abc-defg-hij"
+    },
+    {
+      "eventId": "evt_23457",
+      "title": "Product Review Session",
+      "startDate": "2025-11-04T13:00:00Z",
+      "endDate": "2025-11-04T14:00:00Z"
+    }
+  ]
+}
+```
+
+---
+
+### Example 2: Fetch Events for a Specific Calendar
+
+```json
+{
+  "calendarId": "marketing_team_calendar",
+  "startDate": "2025-11-10T00:00:00Z",
+  "endDate": "2025-11-15T23:59:59Z"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "totalEvents": 2,
+  "events": [
+    {
+      "title": "Marketing Campaign Kickoff",
+      "organizer": "lead@company.com",
+      "location": "Conference Room 3"
+    },
+    {
+      "title": "Design Review",
+      "organizer": "design@company.com",
+      "meetLink": "https://meet.google.com/xyz-1234-efg"
+    }
+  ]
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Calendar Fetch Events Node**
+   Drag and drop the node into your workflow from the Utilities category.
+
+2. **Connect a Trigger Node**
+   Link a trigger node, such as a **Time Trigger** or **Email Trigger**, to decide when to fetch events (e.g., daily or weekly).
+
+3. **Configure Input Parameters**
+
+   - Enter the `calendarId` (e.g., `"primary"`).
+   - Define the `startDate` and `endDate` for the event range.
+
+4. **Connect to Downstream Nodes**
+   Use the event data in downstream nodes like **Text Generation** (for summaries), **Slack Message** (for notifications), or **Google Sheets** (for logging).
+
+5. **Test the Workflow**
+   Run a manual test to verify the data fetched matches your calendar events.
+
+6. **Save and Activate**
+   Once tested, activate the workflow for scheduled event retrieval.
+
+---
+
+## Best Practices
+
+- Always use valid ISO 8601 date and time formats to avoid data errors.
+- Keep the date range short (e.g., one week or one month) for faster performance.
+- Use the `timezone` output to align events across regions.
+- Combine this node with a **Text Generation Node** to automatically summarize daily or weekly meetings.
+- If your calendar has multiple sources, fetch and merge results from separate nodes.
+- Regularly refresh your authentication or calendar connection credentials.
+
+---
+
+## Example Workflow Integration
+
+**Use Case:** Generate a daily summary of meetings and post it to Slack.
+
+**Workflow Steps:**
+
+1. **Trigger Node:** Time Trigger (Runs every morning at 8 AM.)
+2. **Utility Node:** Calendar Fetch Events Node (Retrieves all meetings for the day.)
+3. **AI Node:** Text Generation (Summarizes the fetched events into a short message.)
+4. **Utility Node:** Slack Message (Sends the summary to the team channel.)
+
+## Common Errors
+
+- **"Invalid calendarId"**
+  **Cause:** The specified calendar ID is incorrect or inaccessible.
+  **Solution:** Verify the ID and ensure proper permissions.
+
+- **"Invalid date format"**
+  **Cause:** Dates are not in ISO 8601 format.
+  **Solution:** Use properly formatted timestamps, e.g., `"2025-11-01T09:00:00Z"`.
+
+- **"No events found"**
+  **Cause:** The date range or calendar is empty.
+  **Solution:** Adjust the date range or verify that the calendar contains events.
+
+- **"Connection error"**
+  **Cause:** The integration with the calendar service failed.
+  **Solution:** Reconnect your calendar integration and try again.

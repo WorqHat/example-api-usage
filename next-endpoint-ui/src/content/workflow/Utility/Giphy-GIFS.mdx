@@ -1,0 +1,84 @@
+**Category:** Utility
+**Type:** Media
+
+---
+
+## Overview
+
+The **Giphy GIFS** node fetches a GIF URL based on a search prompt.
+Use it to add fun or illustrative GIFs to your workflows.
+
+---
+
+## Description
+
+Provide a search prompt and the node returns a matching GIF URL from Giphy.
+
+---
+
+## Input Parameters
+
+- **prompt**
+  Search keywords or phrase.
+
+---
+
+## Output Parameters
+
+- **gifUrl**
+  URL of the selected GIF.
+
+---
+
+## Output Type
+
+**Output Type:** text
+
+---
+
+## Example Usage
+
+**Input:**
+
+```json
+{
+  "prompt": "happy celebration"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "gifUrl": "https://media.giphy.com/media/abc123/giphy.gif"
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Node**
+   Place the **Giphy GIFS** node where a GIF is needed.
+
+2. **Set Prompt**
+   Provide a clear and concise prompt.
+
+3. **Use the URL**
+   Pass `{{giphyGif.output.gifUrl}}` to downstream nodes (e.g., Slack, Email).
+
+---
+
+## Best Practices
+
+- Keep prompts specific for better results.
+- Ensure GIF usage complies with your content policies.
+
+---
+
+## Common Errors
+
+- **"No results"**
+  Try broader or alternative keywords.
+
+---

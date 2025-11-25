@@ -1,0 +1,151 @@
+**Category:** Database
+**Type:** Update Node
+
+---
+
+## Overview
+
+The **Update Data Node** allows you to modify existing records in a database table.
+It’s ideal for workflows where data needs to be updated automatically — for example, changing a user’s details, updating a timestamp, or modifying status information after another node’s execution.
+
+This node works within your selected environment (like **production**) and uses **query fields** to locate the target record, then **data parameters** to apply the updates.
+
+---
+
+## Description
+
+This node is used to update existing data in a connected database.
+You can define which record(s) should be updated by setting query fields (such as `id`, `name`, or `email`) and then specify what values to update using data parameters.
+
+For example, if you want to change a user’s name and email based on their ID, you can use this node to perform that action automatically — no SQL required.
+
+---
+
+## Input Parameters
+
+The following inputs are accepted by this node:
+
+- **id** – The unique identifier of the record you want to update. It’s used as both a query and data input.
+- **name** – The updated name value that should replace the old one.
+- **email** – The updated email address to store in the database.
+- **created_at** – A timestamp (in ISO format) showing when the record was created or last modified.
+
+All inputs are text-based except `created_at`, which should be a valid ISO date string (e.g., `2025-12-01T12:00:00.000Z`).
+
+---
+
+## Output Parameters
+
+After execution, the node returns a structured output containing:
+
+- **tableName** – The full name of the database table that was updated (for example, `production:test3`).
+- **queryId** – A unique identifier assigned to the query run.
+- **updatedCount** – The number of records successfully updated.
+- **message** – A summary message describing the result of the operation.
+- **status** – Indicates whether the update was successful or failed.
+
+---
+
+## Output Type
+
+The node produces a JSON object as output, summarizing the operation’s success and update results.
+This output can be used by subsequent nodes in your workflow for conditional actions, logging, or user notifications.
+
+---
+
+## Example Usage
+
+**Example Input:**
+
+```json
+{
+  "input": {
+    "id": "10",
+    "name": "John Doe",
+    "email": "jd@gmail.com",
+    "created_at": "2025-12-01T12:00:00.000Z"
+  }
+}
+```
+
+**Example Output:**
+
+```json
+{
+  "output": {
+    "tableName": "production:test3",
+    "queryId": "1d6330c7-e3c8-4712-a12f-4594242321d1",
+    "updatedCount": 1,
+    "message": "Successfully updated 1 record(s)",
+    "status": "success"
+  }
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. Add the **Update Data Node** from the **Database** category in your workflow.
+2. Under **Select Update Type**, choose **“Update Data.”**
+3. In **Table Name**, select the database table you want to modify (e.g., `test3 (production)`).
+4. Add **Query Fields** — these define which records to find. For example:
+
+   - `id = Input: id`
+   - `email = Input: email`
+
+5. Add **Data Parameters** — these specify what will be updated. For example:
+
+   - `name = Input: name`
+   - `created_at = Input: created_at`
+
+6. Connect the node to any input node (such as a form, trigger, or data fetch node) that supplies the required fields.
+7. Save your configuration and run the workflow.
+8. Review the output message to confirm how many records were updated and whether the operation was successful.
+
+---
+
+## Best Practices
+
+- Always use a **unique identifier** like `id` in your query fields to ensure only the correct record is updated.
+- Make sure all input values (especially timestamps and emails) are correctly formatted before execution.
+- Double-check that you’re updating the correct **environment** (e.g., production vs staging).
+- If testing changes, work in a sandbox or non-production table to avoid overwriting live data.
+- Use the output `message` and `status` for error checking or logging.
+
+---
+
+## Example Workflow Integration
+
+Here’s an example of how the **Update Data Node** can be used in a typical workflow:
+
+```
+Form Submission → Data Validation → Update Data Node → Send Confirmation Email
+```
+
+- A user submits a form with updated information.
+- The data is validated in a previous node.
+- The Update Data Node modifies the existing database record.
+- The workflow sends a confirmation email or message to the user.
+
+---
+
+## Common Errors and Solutions
+
+**“Successfully updated 0 record(s)”**
+No matching record was found using the provided query fields.
+→ Recheck your query field values (e.g., correct `id` or `email`).
+
+**“Table not found”**
+The specified table name or environment is incorrect.
+→ Verify that the table name exists and is selected properly.
+
+**“Missing required field”**
+A required input value was not provided.
+→ Make sure all input parameters are connected to valid data sources.
+
+**“Connection timeout”**
+The node couldn’t reach the database.
+→ Retry or check your network/database connection settings.
+
+---

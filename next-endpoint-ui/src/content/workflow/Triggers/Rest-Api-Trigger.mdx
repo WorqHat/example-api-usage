@@ -1,0 +1,215 @@
+**Category:** Trigger
+**Type:** API
+
+---
+
+## Overview
+
+The **REST API Trigger** node starts a workflow automatically when an external service or application sends an HTTP request to a specific REST API endpoint.
+It acts as the entry point for workflows that need to be triggered by external systems, such as websites, mobile apps, or third-party APIs.
+
+---
+
+## Description
+
+This node is used to trigger workflows through REST API calls.
+Whenever an external service makes a request to the provided endpoint, the workflow is activated, and the incoming data is passed to downstream nodes.
+
+It supports **GET**, **POST**, and **PUT** requests, and can accept data in multiple formats — such as **JSON**, **form-data**, or **query parameters**.
+This makes it ideal for integrating workflows with custom apps, webhooks, or backend systems.
+
+---
+
+## Input Parameters
+
+The **REST API Trigger** node accepts dynamic flat key-value pairs sent by an external request.
+You can define any keys according to the data you expect from the incoming call.
+
+- **exampleKey** _(string, optional)_
+  A placeholder for a key in the incoming request.
+  Example:
+
+  ```
+  "userId": "12345"
+  ```
+
+- **exampleKey2** _(string, optional)_
+  Another example input key.
+  Example:
+
+  ```
+  "email": "example@domain.com"
+  ```
+
+- **exampleKey3** _(string, optional)_
+  Any additional input data you may send through the API.
+  Example:
+
+  ```
+  "source": "mobile-app"
+  ```
+
+**Instructions:**
+
+- The node accepts only **flat key-value pairs** (no nested objects).
+- Data can be sent via:
+
+  - JSON body (`application/json`)
+  - Form data (`x-www-form-urlencoded`)
+  - Query parameters (e.g., `?userId=123&source=web`)
+
+- Arrays must be JSON-encoded (e.g., `["a", "b", "c"]`).
+- Files cannot be attached to this trigger.
+- All keys are optional and schema-free; you can define your own structure as needed.
+- Default values for undefined keys are `null`.
+
+Access input data within the workflow using:
+
+```
+{{nodeId.input.<key>}}
+```
+
+Example:
+
+```
+{{restApiTrigger.input.userId}}
+```
+
+---
+
+## Output Parameters
+
+This node does not produce separate output variables.
+Instead, it directly exposes the incoming request data for use by downstream nodes.
+
+**Output Parameters:**
+N/A
+
+**Instructions:**
+You can access incoming request values in other nodes using:
+
+```
+{{restApiTrigger.input.userId}}
+{{restApiTrigger.input.email}}
+{{restApiTrigger.input.source}}
+```
+
+---
+
+## Output Type
+
+**Output Type:** N/A
+The node does not generate an independent output type — it only exposes input data from an external API request.
+
+---
+
+## Example Usage
+
+### Example 1: Trigger Workflow with User Data
+
+**Incoming API Request:**
+
+```http
+POST /api/workflows/trigger
+Content-Type: application/json
+
+{
+  "userId": "001",
+  "email": "john@example.com",
+  "source": "mobile"
+}
+```
+
+**Accessible in Workflow:**
+
+```
+{{restApiTrigger.input.userId}}      → "001"
+{{restApiTrigger.input.email}}       → "john@example.com"
+{{restApiTrigger.input.source}}      → "mobile"
+```
+
+---
+
+### Example 2: Trigger Workflow via URL Parameters
+
+**Incoming Request:**
+
+```
+GET /api/workflows/trigger?productId=789&type=purchase
+```
+
+**Accessible in Workflow:**
+
+```
+{{restApiTrigger.input.productId}}   → "789"
+{{restApiTrigger.input.type}}        → "purchase"
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the REST API Trigger Node**
+   Place the node at the start of your workflow. It acts as the entry point for data received via HTTP requests.
+
+2. **Copy the Workflow Endpoint**
+   Each workflow generates a unique REST API endpoint (e.g., `https://yourdomain.com/api/workflows/trigger`).
+   External systems will send data to this endpoint.
+
+3. **Configure External Application**
+   From any app, website, or backend service, send a request (POST, GET, or PUT) to the endpoint with your desired key-value data.
+
+4. **Define Expected Fields**
+   Downstream nodes can reference incoming keys using the `{{nodeId.input.<key>}}` format.
+   Example:
+
+   ```
+   {{restApiTrigger.input.userId}}
+   ```
+
+5. **Test the Connection**
+   Use a tool like Postman or cURL to send a test request to the workflow endpoint and confirm it triggers correctly.
+
+6. **Connect to Other Nodes**
+   Link this trigger to other nodes (e.g., AI, Database, Email) to process, analyze, or respond to incoming data automatically.
+
+---
+
+## Best Practices
+
+- Use consistent key names (e.g., `userId`, `email`, `action`) across all requests.
+- Validate your incoming request payloads before processing.
+- If you expect large or complex data, send it as a JSON-encoded string.
+- Avoid sending files directly; instead, send file URLs or file IDs.
+- Use HTTPS for secure communication.
+- Test your API endpoint thoroughly with Postman or similar tools before deployment.
+
+---
+
+## Example Workflow Integration
+
+**Use Case:** Automatically process user signup data sent from an app.
+
+1. **Trigger Node** - REST API Trigger(node receives signup details such as name and email.)
+2. **AI Node** - Text Generation (drafts a welcome message.)
+3. **Utility Node** - Send Email (sends the message to the user.)
+
+## Common Errors
+
+- **"Invalid JSON format"**
+  **Cause:** The incoming request body is not properly formatted.
+  **Solution:** Ensure valid JSON syntax or use form-data encoding.
+
+- **"Missing endpoint or unauthorized access"**
+  **Cause:** Request sent to the wrong endpoint or missing authorization headers.
+  **Solution:** Verify the workflow’s API URL and authentication setup.
+
+- **"Unsupported input type"**
+  **Cause:** Files or unsupported data structures were sent.
+  **Solution:** Only send text, numbers, booleans, or JSON-encoded strings.
+
+- **"No data received"**
+  **Cause:** Request was sent with an empty payload.
+  **Solution:** Add at least one key-value pair in the request body or query string.
+
+---

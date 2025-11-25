@@ -1,0 +1,200 @@
+**Category:** Database
+**Type:** Action Node
+
+---
+
+## Overview
+
+The **Add New Data** node allows you to insert new records into your existing database tables or collections.
+It is used in no-code workflows to automatically store user input, API results, or processed data without writing any code.
+
+The node validates your input, maps the values to the correct columns, and returns detailed feedback about whether the record was successfully inserted or if any errors occurred.
+
+---
+
+## Description
+
+Use this node whenever you need to **add new data** into your connected database.
+You can specify the target table (called `collectionName`) and provide column-value pairs that represent each field in the record you want to insert.
+
+You can even use **dynamic variables** from previous nodes, so the data can flow automatically from one part of your workflow into your database.
+
+---
+
+## Input Parameters
+
+- **collectionName (String, Required)**
+  The name of the target table or collection.
+  Must be written in this format: `"environment:tableName"`.
+  Only two environments are supported — `"production"` and `"development"`.
+  Example: `"production:users"` or `"development:orders"`.
+
+- **Dynamic Column Fields (Optional)**
+  Each column in your database table automatically appears as a parameter.
+  You can provide values for these parameters to insert into the new record.
+  Example:
+
+  ```json
+  {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "age": "25"
+  }
+  ```
+
+- **Variable References (Optional)**
+  You can use variables from previous nodes using double curly braces, for example:
+
+  ```
+  {{form.input.name}}
+  {{api.output.email}}
+  ```
+
+**Additional Notes:**
+
+- Arrays can be written as comma-separated strings or JSON arrays.
+- Data types and required fields are automatically validated before insertion.
+- If validation fails, an error message will be returned in the output.
+
+---
+
+## Output Parameters
+
+The node returns a structured JSON object that contains the results of the insertion process.
+
+- **tableName:** Name of the table where the record was inserted.
+- **queryId:** A unique identifier assigned to the insert operation.
+- **message:** Human-readable status message (for example, “Record added successfully”).
+- **status:** Either `"success"` or `"error"`.
+- **errorType:** The type of error, such as `"validation_error"` or `"permission_denied"`.
+- **errorCode:** Specific code representing the error.
+- **missingColumn:** Name of any missing required column (if validation fails).
+
+You can access these values in downstream nodes using syntax like:
+
+```
+{{add-data.output.status}}
+{{add-data.output.message}}
+{{add-data.output.queryId}}
+```
+
+---
+
+## Output Type
+
+The node’s output is always a JSON object.
+It contains all the fields described above and can be passed directly into subsequent nodes for logging, conditional checks, or notifications.
+
+---
+
+## Example Usage
+
+**Example 1 – Basic Record Insertion**
+
+Input:
+
+```json
+{
+  "collectionName": "production:users",
+  "name": "John Doe",
+  "email": "john@example.com",
+  "age": "25"
+}
+```
+
+Expected Output:
+
+```json
+{
+  "output": {
+    "tableName": "users",
+    "queryId": "q12345",
+    "message": "Record added successfully",
+    "status": "success",
+    "errorType": null,
+    "errorCode": null,
+    "missingColumn": null
+  }
+}
+```
+
+---
+
+**Example 2 – Missing Required Field**
+
+Input:
+
+```json
+{
+  "collectionName": "development:employees",
+  "email": "employee@example.com"
+}
+```
+
+Expected Output:
+
+```json
+{
+  "output": {
+    "tableName": "employees",
+    "queryId": null,
+    "message": "Missing required column: name",
+    "status": "error",
+    "errorType": "validation_error",
+    "errorCode": "ERR_MISSING_FIELD",
+    "missingColumn": "name"
+  }
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. Drag the **Add New Data** node onto your workflow canvas.
+2. Open its **Node Settings** panel.
+3. Select or create the database table where you want to store data.
+4. Click **Add Data** to define the column names and their corresponding values.
+5. You can enter static values or insert variables from previous nodes using the `{{...}}` syntax.
+6. Save your changes and connect this node to other parts of your workflow — such as after a “Form Submission” or “API Response” node.
+7. Run or test the workflow. The node will attempt to insert the record and will display success or error details in its output.
+
+---
+
+## Best Practices
+
+- Always double-check your `collectionName` format (`"environment:tableName"`).
+- Ensure that the column names exactly match your database schema.
+- Use the `"development"` environment for testing before writing to production.
+- Use the `status` and `message` outputs to trigger next steps in your workflow (for example, sending a confirmation email only when status is `"success"`).
+- Keep your database fields clean and consistent — for example, use lowercase column names and avoid spaces.
+
+---
+
+## Example Workflow Integration
+
+Here’s a common real-world scenario:
+
+1. **Form Submission Node** – Captures a user’s input (name, email, etc.).
+2. **Add New Data Node** – Inserts that data into the `production:users` table.
+3. **Send Email Node** – Uses `{{add-data.output.status}}` to send a confirmation only if the record was added successfully.
+
+This integration helps automate user data collection end-to-end without writing any database code.
+
+---
+
+## Common Errors
+
+- **“Missing required column”** – One of the required columns in your table was not provided.
+  _Fix:_ Add the missing column in the node’s data parameters.
+
+- **“Invalid collectionName format”** – The collection name doesn’t follow the `"environment:tableName"` format.
+  _Fix:_ Use something like `"production:orders"` or `"development:employees"`.
+
+- **“Permission denied”** – The workflow does not have permission to write to this table.
+  _Fix:_ Check your environment’s permissions or credentials.
+
+- **“Duplicate key”** – You’re trying to insert a record with a unique value (like an email) that already exists.
+  _Fix:_ Ensure unique keys are not repeated in your input data.
+
+---

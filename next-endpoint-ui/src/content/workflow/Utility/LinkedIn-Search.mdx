@@ -1,0 +1,126 @@
+**Category:** Utility
+**Type:** Data Enrichment
+
+---
+
+## Overview
+
+The **LinkedIn Search** node looks up company or person data using LinkedIn-compatible enrichment.
+Use it to enrich workflows with firmographic or profile insights.
+
+---
+
+## Description
+
+Select a fetch type (`company-fetch` or `person-fetch`), then provide relevant fields (domain, company, first/last name, email, LinkedIn URL, etc.).
+At least one search parameter must be provided for the selected fetch type.
+
+---
+
+## Input Parameters
+
+- **fetchType**
+  Required: `company-fetch` or `person-fetch`.
+
+- **domain**
+  Company domain (e.g., `example.com`).
+
+- **company**
+  Company name.
+
+- **firstName**
+  Person’s first name.
+
+- **lastName**
+  Person’s last name.
+
+- **companyName**
+  Person’s company name.
+
+- **companyDomain**
+  Person’s company domain.
+
+- **email**
+  Person’s email.
+
+- **linkedinUrl**
+  Profile URL.
+
+**Notes:**
+
+- Provide flat key-value pairs.
+- At least one search parameter must be provided for the chosen `fetchType`.
+
+---
+
+## Output Parameters
+
+Company fields (subset):
+
+- **id**, **name**, **description**, **domain**, **website**, **employees**, **founded**, **revenueRange**, **mainIndustry**, **subIndustry**, **city**, **country**, **state**, **address**, **linkedin**, **crunchbase**, **categories**, **specialities**, **technologies**, **totalFunding**, **lastRoundType**, **lastRoundAmount**, **lastRoundDate**, **isIpo**, **companySummary**
+
+Person fields (subset):
+
+- **firstName**, **lastName**, **fullName**, **locationCity**, **locationState**, **locationCountry**, **locationCoordinates**, **jobTitle**, **departments**, **seniority**, **companyHomepageUrl**, **companyCity**, **companyCountry**, **companyLinkedin**, **companyCrunchbase**, **profileSummary**
+
+---
+
+## Output Type
+
+**Output Type:** JSON
+
+---
+
+## Example Usage
+
+**Input (company):**
+
+```json
+{
+  "fetchType": "company-fetch",
+  "domain": "example.com"
+}
+```
+
+**Expected Output (partial):**
+
+```json
+{
+  "name": "Example Inc.",
+  "domain": "example.com",
+  "employees": 250
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Node**
+   Place the **LinkedIn Search** node in your enrichment flow.
+
+2. **Provide Query**
+   Choose `fetchType` and give one or more identifying fields.
+
+3. **Use Outputs**
+   Pass outputs to downstream systems (CRM, messaging, etc.).
+
+---
+
+## Best Practices
+
+- Prefer exact domains for company lookups.
+- Combine multiple fields for better person matches.
+- Respect privacy and data usage policies.
+
+---
+
+## Common Errors
+
+- **"Insufficient parameters"**
+  Provide at least one field for the chosen `fetchType`.
+
+- **"No results"**
+  Refine your query (e.g., include domain or full name).
+
+---

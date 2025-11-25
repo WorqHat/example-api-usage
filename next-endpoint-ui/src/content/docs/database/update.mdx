@@ -1,0 +1,396 @@
+---
+title: 'Update Data'
+description: 'Update records in a database table'
+---
+Updates records in the specified WorqDB table based on the provided `where` conditions. This endpoint allows you to modify existing records in your database by specifying which records to update and what data to change.
+
+```endpoint
+PUT https://api.worqhat.com/db/update
+```
+
+## What Does This Endpoint Do?
+
+Imagine you have a database table with user information, and you need to change a user's status from "inactive" to "active" or update their name. This endpoint lets you do exactly that!
+
+## When to Use Update Data
+
+You'll find this endpoint useful when you need to:
+
+- **Update user profiles**: Change names, emails, or other profile information
+- **Change status values**: Mark orders as "shipped" or tasks as "completed"
+- **Update inventory**: Adjust product quantities or prices
+- **Modify settings**: Change configuration values in your application
+- **Mark notifications**: Set notifications as "read" or "unread"
+- **Process workflows**: Update records as they move through approval stages
+
+## How It Works
+
+1. You specify the **table name** where your data is stored
+2. You provide **where conditions** to identify which records to update
+3. You include the **new data** you want to set for those records
+4. The API updates the matching records and returns the updated data
+
+## Code Examples
+
+### Example 1: Multiple Where Conditions
+
+This example shows how to update records that match multiple conditions (both ID and email).
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function updateUserStatus() {
+      try {
+        // Call the updateRecords method
+        const response = await client.db.updateRecords({
+          table: 'users',                // The table to update
+          where: {                       // Which records to update
+            id: '123',                   // Find records with id = 123
+            email: 'user@example.com'    // AND email = user@example.com
+          },
+          data: {                        // New values to set
+            status: 'active',            // Change status to active
+            name: 'Updated Name'         // Update the name
+          },
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Updated ${response.count} records`);
+        console.log('Updated records:', response.data);
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error updating records:', error.message);
+      }
+    }
+    
+    // Call the function
+    updateUserStatus();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Update records in the database
+    try:
+        response = client.db.update_records(
+            table="users",                # The table to update
+            where={                       # Which records to update
+                "id": "123",              # Find records with id = 123
+                "email": "user@example.com" # AND email = user@example.com
+            },
+            data={                        # New values to set
+                "status": "active",       # Change status to active
+                "name": "Updated Name"    # Update the name
+            },
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Updated {response.count} records")
+        print(f"Updated records: {response.data}")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error updating records: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Update records in the database
+      response, err := client.DB.UpdateRecords(context.TODO(), worqhat.DBUpdateRecordsParams{
+        Table: "users",                // The table to update
+        Where: map[string]interface{}{ // Which records to update
+          "id": "123",                // Find records with id = 123
+          "email": "user@example.com", // AND email = user@example.com
+        },
+        Data: map[string]interface{}{   // New values to set
+          "status": "active",         // Change status to active
+          "name": "Updated Name",      // Update the name
+        },
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error updating records: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Updated %d records\n", response.Count)
+      fmt.Printf("Updated records: %+v\n", response.Data)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Update records using cURL
+    curl -X PUT "https://api.worqhat.com/db/update" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "users",
+        "where": {
+          "id": "123",
+          "email": "user@example.com"
+        },
+        "data": {
+          "status": "active",
+          "name": "Updated Name"
+        },
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: Single Where Condition
+
+This example shows how to update all records that match a single condition (status = "inactive").
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function updateInactiveUsers() {
+      try {
+        // Update all inactive users to active
+        const response = await client.db.updateRecords({
+          table: 'users',          // The table to update
+          where: {                 // Which records to update
+            status: 'inactive'     // Find ALL records with status = inactive
+          },
+          data: {                  // New values to set
+            status: 'active',      // Change status to active
+            updatedBy: 'system'    // Add audit information
+          },
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Updated ${response.count} inactive users to active status`);
+        return response;
+      } catch (error) {
+        console.error('Error updating users:', error.message);
+      }
+    }
+    
+    updateInactiveUsers();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Update all inactive users to active
+    try:
+        response = client.db.update_records(
+            table="users",          # The table to update
+            where={                 # Which records to update
+                "status": "inactive" # Find ALL records with status = inactive
+            },
+            data={                  # New values to set
+                "status": "active", # Change status to active
+                "updatedBy": "system" # Add audit information
+            },
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Updated {response.count} inactive users to active status")
+        print(f"First few updated records: {response.data[:3] if response.data else []}")
+    except Exception as e:
+        print(f"Error updating users: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Update all inactive users to active
+      response, err := client.DB.UpdateRecords(context.TODO(), worqhat.DBUpdateRecordsParams{
+        Table: "users",                // The table to update
+        Where: map[string]interface{}{ // Which records to update
+          "status": "inactive",       // Find ALL records with status = inactive
+        },
+        Data: map[string]interface{}{   // New values to set
+          "status": "active",         // Change status to active
+          "updatedBy": "system",       // Add audit information
+        },
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error updating users: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Updated %d inactive users to active status\n", response.Count)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Update all inactive users to active
+    curl -X PUT "https://api.worqhat.com/db/update" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "users",
+        "where": {
+          "status": "inactive"
+        },
+        "data": {
+          "status": "active",
+          "updatedBy": "system"
+        },
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+## Request Body Explained
+
+<ParamField body="table" type="string" required>
+  The name of the table where you want to update records. For example, `users`, `products`, or `orders`.
+</ParamField>
+
+<ParamField body="where" type="object" required>
+  Conditions to identify which records to update. This works like a filter - only records matching ALL conditions will be updated.
+  
+  For example: `{"id": "123", "status": "inactive"}` will update only records where both the ID is "123" AND the status is "inactive".
+</ParamField>
+
+<ParamField body="data" type="object" required>
+  The new values you want to set for the matching records. Each key-value pair represents a field name and its new value.
+  
+  For example: `{"status": "active", "last_login": "2025-08-01T12:00:00Z"}` will set the status field to "active" and the last_login field to the specified timestamp.
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if the update was successful, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  An array containing the updated records with their new values. This shows you exactly what was changed in the database.
+</ResponseField>
+
+<ResponseField name="count" type="integer">
+  The number of records that were updated. If this is 0, it means no records matched your where conditions.
+</ResponseField>
+
+<ResponseField name="executionTime" type="integer">
+  How long the update operation took to complete, measured in milliseconds.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  A human-readable message describing the result of the operation.
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "documentId": "doc_123456789",
+      "name": "Updated Name",
+      "email": "user@example.com",
+      "status": "active",
+      "organization_id": "org_id",
+      "createdAt": "2023-06-15 10:00:00",
+      "updatedAt": "2023-06-15 10:30:00"
+    }
+  ],
+  "count": 1,
+  "executionTime": 52,
+  "message": "1 record(s) updated successfully in users"
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Table not found" | The specified table doesn't exist | Check your table name for typos |
+| "No records matched the update criteria" | Your where conditions didn't match any records | Verify your where conditions are correct |
+| "Missing required field" | You didn't provide a required parameter | Make sure you include table, where, and data fields |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+
+## Tips for Successful Updates
+
+- Always use specific where conditions to avoid updating too many records by accident
+- Consider fetching the records first to verify which ones will be updated
+- Remember that updates are permanent - consider backing up important data before updates
+- For large tables, updates might take longer to complete

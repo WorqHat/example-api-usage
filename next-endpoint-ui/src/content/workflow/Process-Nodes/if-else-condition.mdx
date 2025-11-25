@@ -1,0 +1,201 @@
+
+**Category:** Logic & Control Flow
+**Type:** Conditional Branching
+
+---
+
+## Overview
+
+The **If/Else Condition** node helps you create **conditional logic branches** in your workflow.
+It checks a condition you define and then decides which path to take — **True** or **False** — based on the result.
+
+This allows you to make your workflow “think” and automatically handle different situations.
+For example, you can send a message only if the sender’s email matches a specific address, or trigger a notification only if a value meets certain criteria.
+
+---
+
+## Description
+
+This node compares one piece of data (like an email address, name, or number) against a value you choose.
+Depending on whether the condition is **true** or **false**, the workflow continues along the **True path** or the **False path**.
+
+It’s commonly used to:
+
+* Filter or sort data.
+* Control workflow decisions.
+* Automate actions based on user input or system data.
+
+---
+
+## Input Parameters
+
+| **Parameter**        | **Type** | **Description**                                                              | **Required** |
+| -------------------- | -------- | ---------------------------------------------------------------------------- | ------------ |
+| **Source Node**      | `string` | The node that provides the input data to check.                              | ✅            |
+| **Parameter**        | `string` | The specific data field to evaluate (for example, `senderEmail`).            | ✅            |
+| **Operator**         | `string` | The comparison method to use, such as `Equals`, `Not Equals`, or `Contains`. | ✅            |
+| **Value**            | `string` | The value to compare against the selected parameter.                         | ✅            |
+| **Node Description** | `string` | An optional text field to describe what this condition checks.               | ❌            |
+
+---
+
+## Output Parameters
+
+| **Parameter** | **Type**  | **Description**                                                                                                             |
+| ------------- | --------- | --------------------------------------------------------------------------------------------------------------------------- |
+| **condition** | `boolean` | Shows whether the defined condition evaluated to **true** or **false**.                                                     |
+| **Next Step** | `string`  | Indicates which path the workflow will follow next — the **True** branch or the **False** branch — depending on the result. |
+
+---
+
+## Output Type
+
+The output is a **Boolean** value:
+
+* **True** → The condition matched, and the workflow will follow the **True path**.
+* **False** → The condition did not match, and the workflow will follow the **False path**.
+
+---
+
+## Example Usage
+
+### Example 1: Check the Sender’s Email
+
+**Input:**
+
+```json
+{
+  "sourceNode": "Send Mail",
+  "parameter": "Input: senderEmail",
+  "operator": "Equals",
+  "value": "kolekarharshada08@gmail.com"
+}
+```
+
+**Execution Output:**
+
+```json
+{
+  "output": {
+    "condition": false,
+    "Next Step": "Return to Default Path"
+  }
+}
+```
+
+**Explanation:**
+The workflow checked if the sender’s email matched `kolekarharshada08@gmail.com`.
+Since it was actually `harshada@notifs.worqhat.com`, the result was **False**, and the workflow continued on the **False branch**.
+
+---
+
+### Example 2: Match a User Name
+
+**Input:**
+
+```json
+{
+  "sourceNode": "User Info",
+  "parameter": "Input: userName",
+  "operator": "Equals",
+  "value": "Alex"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "output": {
+    "condition": true,
+    "Next Step": "Send Welcome Email"
+  }
+}
+```
+
+**Explanation:**
+Because the user’s name was “Alex,” the condition was **True**, and the workflow moved to the **Send Welcome Email** step.
+
+---
+
+## How to Use in a No-Code Workflow
+
+Follow these simple steps to use the **If/Else Condition** node in your workflow:
+
+1. **Add the Node**
+   Drag and drop the **If/Else Condition** node into your workflow editor.
+
+2. **Connect a Source Node**
+   Choose the previous node that provides the data to check (for example, “Send Mail” or “API Response”).
+
+3. **Select a Parameter**
+   Pick which piece of data you want to evaluate — such as an email address or a status code.
+
+4. **Choose an Operator**
+   Select how the comparison should be done (`Equals`, `Contains`, `Greater Than`, etc.).
+
+5. **Set a Value**
+   Enter the value you want to compare against.
+
+6. **Connect the True and False Paths**
+
+   * Connect the **True path** to the action you want if the condition is met.
+   * Connect the **False path** to the action you want if it’s not met.
+
+7. **Run the Workflow**
+   When executed, the node automatically decides which path to follow based on your condition.
+
+---
+
+## Best Practices
+
+* Use **clear, descriptive names** for your nodes and conditions.
+* Double-check that the **parameter** exactly matches the field name from your source node.
+* For string comparisons, remember that some systems may be **case-sensitive**.
+* Keep your workflow organized by grouping related conditions together.
+* Always test your workflow with both True and False outcomes to ensure everything works correctly.
+
+---
+
+## Example Workflow Integration
+
+**Scenario:**
+You want to automatically reply to emails only from a specific sender.
+
+**Workflow Steps:**
+
+1. **Trigger Node:** Receive Email
+2. **If/Else Condition:**
+
+   * Source Node: `Send Mail`
+   * Parameter: `Input: senderEmail`
+   * Operator: `Equals`
+   * Value: `kolekarharshada08@gmail.com`
+3. **True Path:** Send an auto-reply email.
+4. **False Path:** Log the message and stop the workflow.
+
+**Result:**
+Only the selected sender receives an automatic reply, while others are ignored.
+
+---
+
+## Common Errors
+
+| **Error Message**                      | **Possible Cause**                                     | **Solution**                                                       |
+| -------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------ |
+| *“Parameter not found in Source Node”* | The selected parameter doesn’t exist or is misspelled. | Double-check the parameter name in the source node output.         |
+| *“Invalid Operator”*                   | An unsupported or misspelled operator was selected.    | Use valid operators such as `Equals`, `Not Equals`, or `Contains`. |
+| *“Value missing for condition”*        | The comparison value field is empty.                   | Enter a valid comparison value.                                    |
+| *Condition always returns False*       | Data type mismatch or incorrect input mapping.         | Check that your parameter and value use the same data format.      |
+
+---
+
+
+
+ **Summary:**
+The **If/Else Condition Node** is a simple yet powerful way to make your workflow behave intelligently.
+It checks conditions, chooses the right path, and ensures your automation reacts exactly the way you need — no coding required.
+
+---
+
+

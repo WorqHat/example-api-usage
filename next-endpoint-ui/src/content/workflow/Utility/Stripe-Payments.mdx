@@ -1,0 +1,160 @@
+**Category:** Utility
+**Type:** Stripe Integration
+
+---
+
+## Overview
+
+The **Stripe Payments** node creates checkout sessions and manages payments.
+Use it to accept payments, generate checkout URLs, and capture payment metadata.
+
+---
+
+## Description
+
+This node communicates with Stripe to create payments based on the provided inputs.
+It supports customer references, success/cancel URLs, payment mode, and line items (JSON-encoded).
+
+---
+
+## Input Parameters
+
+- **customerIdType**
+  How to reference the customer: `id` or `email`.
+
+- **customerId**
+  Stripe customer ID (used when `customerIdType = id`).
+
+- **customerEmail**
+  Customer email (used when `customerIdType = email`).
+
+- **referenceId**
+  Your internal reference ID for the session.
+
+- **uiMode**
+  UI mode for the checkout page (optional).
+
+- **successUrl**
+  Redirect URL on successful payment.
+
+- **cancelUrl**
+  Redirect URL if the user cancels.
+
+- **paymentMode**
+  Stripe session mode (`payment`, `subscription`, or `setup`).
+
+- **metadata**
+  JSON-encoded key-value object for custom data.
+
+- **lineItems**
+  JSON-encoded array of line items, each with price/quantity.
+
+**Notes:**
+
+- Provide all values as flat key-value pairs.
+- Use JSON-encoded strings for arrays/objects like `lineItems` and `metadata`.
+
+---
+
+## Output Parameters
+
+- **id**
+- **object**
+- **checkout_session_url**
+- **amount_subtotal**
+- **amount_total**
+- **currency**
+- **customer**
+- **customer_email**
+- **status**
+- **payment_status**
+- **mode**
+- **livemode**
+- **success_url**
+- **cancel_url**
+- **created**
+- **payment_method_collection**
+- **payment_intent**
+- **client_reference_id**
+- **subscription**
+- **payment_link**
+- **billing_address_collection**
+- **allow_promotion_codes**
+- **locale**
+- **submit_type**
+- **consent**
+- **consent_collection**
+
+**Access outputs using:**
+
+```
+{{stripePayments.output.checkout_session_url}}
+{{stripePayments.output.amount_total}}
+```
+
+---
+
+## Output Type
+
+**Output Type:** JSON
+
+---
+
+## Example Usage
+
+**Create Checkout Session (Input):**
+
+```json
+{
+  "customerIdType": "email",
+  "customerEmail": "jane@example.com",
+  "paymentMode": "payment",
+  "successUrl": "https://example.com/success",
+  "cancelUrl": "https://example.com/cancel",
+  "lineItems": "[{\"price\":\"price_123\",\"quantity\":1}]"
+}
+```
+
+**Expected Output (partial):**
+
+```json
+{
+  "checkout_session_url": "https://checkout.stripe.com/c/session_abc",
+  "id": "cs_test_123",
+  "status": "open",
+  "payment_status": "unpaid"
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Node**
+   Place the **Stripe Payments** node in your payment flow.
+
+2. **Map Inputs**
+   Provide either a Stripe customer ID or a customer email, session mode, URLs, and line items.
+
+3. **Use Output URL**
+   Redirect users to `checkout_session_url` to complete payment.
+
+---
+
+## Best Practices
+
+- Always validate `successUrl` and `cancelUrl` domains.
+- Use `metadata` to reconcile records in your system.
+- Handle webhooks to confirm payment status changes.
+
+---
+
+## Common Errors
+
+- **"Missing lineItems"**
+  Ensure `lineItems` is a valid JSON-encoded array.
+
+- **"Invalid customer reference"**
+  Provide correct `customerIdType` and matching id/email.
+
+---

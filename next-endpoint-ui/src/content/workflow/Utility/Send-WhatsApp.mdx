@@ -1,0 +1,123 @@
+**Category:** Communication
+**Type:** Messaging Node
+
+## Overview
+
+The **Send WhatsApp** node lets you send WhatsApp messages to users directly from your workflow using your connected **Twilio** account. It is ideal for automatic alerts, updates, or personalized notifications.
+
+## Description
+
+This node integrates your workflow with **Twilio’s WhatsApp API**, allowing you to send approved WhatsApp messages from your business number.
+Typical use cases include order confirmations, welcome messages, reminders, and alerts.
+
+Before using this node, ensure your **Twilio account is connected** and your **WhatsApp template is approved** in Twilio.
+
+## Input Parameters
+
+**From Number**
+WhatsApp-enabled Twilio number used to send the message.
+Example: `+14151234567`
+
+**To Number**
+Recipient’s phone number in international format.
+Example: `+919876543210`
+
+**Conversation Type**
+Defines the type of conversation.
+Example: Business-Initiated Conversation (requires Twilio-approved template)
+
+**Content SID**
+Twilio-approved WhatsApp template ID.
+Example: `HX12345abcdef67890`
+
+**Content Variables**
+Dynamic data replacing placeholders in the template.
+Example:
+Template: `Hello {{1}}, your order {{2}} is confirmed.`
+Key 1 → Neha
+Key 2 → 12345
+
+**Node Description**
+(Optional) Short note about this node’s purpose within the workflow.
+
+## Output Parameters
+
+**status** – Whether the message was sent successfully
+**message_id** – Twilio-generated message identifier
+**response** – Full Twilio API response
+
+## Output Type
+
+Returns a JSON object with message status and details.
+
+Example:
+
+```json
+{
+  "status": "success",
+  "message_id": "SMc25f4b84e9d742cfae12efb89a9f78df",
+  "response": {
+    "to": "+919876543210",
+    "body": "Hello Neha, your order 12345 is confirmed!"
+  }
+}
+```
+
+## Example Usage
+
+A customer places an order; the workflow sends automatic confirmation.
+
+```json
+{
+  "From Number": "+14151234567",
+  "To Number": "+919876543210",
+  "Conversation Type": "Business-Initiated Conversation",
+  "Content SID": "HX12345abcdef67890",
+  "Content Variables": {
+    "1": "Neha",
+    "2": "12345"
+  }
+}
+```
+
+Message sent:
+**Hello Neha, your order 12345 is confirmed!**
+
+## How to Use in a No-Code Workflow
+
+1. Drag the **Send WhatsApp** node into your workflow.
+2. Open **Node Settings**.
+3. Select your **Twilio From Number**.
+4. Enter the recipient’s **To Number**.
+5. Select **Conversation Type**.
+6. Add your **Content SID**.
+7. Provide **Content Variables** if needed.
+8. Save and connect to a trigger (e.g., order confirmation).
+9. Run workflow to send WhatsApp message.
+
+## Best Practices
+
+* Connect and verify your Twilio account before configuring.
+* Use only Twilio-approved templates for business-initiated messaging.
+* Ensure phone numbers use correct country codes.
+* Test messages with your number first.
+* Use variables to personalize messages.
+
+## Common Errors
+
+**Invalid phone number** – Phone number should include country code.
+**Twilio not connected** – Reconnect through integrations.
+**Unapproved template** – Use an approved Twilio WhatsApp template.
+**Missing Content SID** – Add a valid Content SID.
+
+## Metadata
+
+Node ID: `send-whatsapp`
+Version: 1.0
+Developer: Workflow System
+Category: Communication
+Integration: Twilio API
+Last Updated: October 2025
+
+---
+

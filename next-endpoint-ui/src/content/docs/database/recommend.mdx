@@ -1,0 +1,590 @@
+---
+title: 'Generate Recommendations'
+description: 'Generate item recommendations using vector embeddings and collaborative filtering'
+---
+
+Generates item recommendations using vector embeddings and collaborative filtering. This endpoint supports multiple recommendation strategies including similar items, diverse recommendations, and user history-based recommendations.
+
+```endpoint
+POST https://api.worqhat.com/db/recommend
+```
+
+## What Does This Endpoint Do?
+
+This endpoint uses AI-powered recommendation algorithms to suggest relevant items to users. It combines vector embeddings with collaborative filtering techniques to provide personalized recommendations that go beyond simple similarity matching.
+
+## When to Use Recommendations
+
+You'll find this endpoint useful when you need to:
+
+- **Build recommendation systems**: Create "Recommended for you" features for e-commerce, content platforms, or any application with items
+- **Personalize user experience**: Show users items they're likely to be interested in based on their behavior
+- **Increase engagement**: Help users discover new content or products they might like
+- **Implement diverse recommendations**: Avoid filter bubbles by showing varied suggestions
+- **Handle cold start problems**: Provide recommendations even for new users with limited history
+- **Cross-sell and upsell**: Suggest complementary or higher-value items
+
+## How It Works
+
+1. You provide a **table** and optionally a **source item** or **user history**
+2. The system analyzes **vector embeddings** and **user interaction patterns**
+3. It applies the specified **recommendation strategy** (similar, diverse, or popular)
+4. Results are returned with **similarity scores** and **strategy metadata**
+
+## Code Examples
+
+### Example 1: Item-to-Item Recommendations
+
+This example shows how to generate recommendations based on a specific item.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function getItemRecommendations() {
+      try {
+        // Call the recommend method
+        const response = await client.db.recommend({
+          table: "products",
+          record_id: "123",
+          strategy: "similar",
+          limit: 10,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Generated ${response.recommendations.length} recommendations`);
+        console.log('Strategy used:', response.strategy);
+        response.recommendations.forEach((rec, index) => {
+          console.log(`${index + 1}. ${rec.record.name} (Similarity: ${rec.similarity})`);
+        });
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error generating recommendations:', error.message);
+      }
+    }
+    
+    // Call the function
+    getItemRecommendations();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Generate recommendations
+    try:
+        response = client.db.recommend(
+            table="products",
+            record_id="123",
+            strategy="similar",
+            limit=10,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Generated {len(response.recommendations)} recommendations")
+        print(f"Strategy used: {response.strategy}")
+        for i, rec in enumerate(response.recommendations):
+            print(f"{i + 1}. {rec.record.name} (Similarity: {rec.similarity})")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error generating recommendations: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Generate recommendations
+      response, err := client.DB.Recommend(context.TODO(), worqhat.DBRecommendParams{
+        Table: "products",
+        RecordID: "123",
+        Strategy: "similar",
+        Limit: 10,
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error generating recommendations: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Generated %d recommendations\n", len(response.Recommendations))
+      fmt.Printf("Strategy used: %s\n", response.Strategy)
+      for i, rec := range response.Recommendations {
+        fmt.Printf("%d. %s (Similarity: %.3f)\n", 
+          i+1, rec.Record["name"], rec.Similarity)
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Generate recommendations
+    curl -X POST "https://api.worqhat.com/db/recommend" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "products",
+        "record_id": "123",
+        "strategy": "similar",
+        "limit": 10,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: User History-Based Recommendations
+
+This example shows how to generate recommendations based on a user's interaction history.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function getUserRecommendations() {
+      try {
+        // Generate recommendations based on user history
+        const response = await client.db.recommend({
+          table: "products",
+          user_history: ["123", "456", "789"], // User's interaction history
+          strategy: "similar",
+          limit: 15,
+          exclude_ids: ["123", "456"], // Exclude items user already interacted with
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Generated ${response.recommendations.length} personalized recommendations`);
+        response.recommendations.forEach((rec, index) => {
+          console.log(`${index + 1}. ${rec.record.name} (Similarity: ${rec.similarity})`);
+        });
+        return response;
+      } catch (error) {
+        console.error('Error generating user recommendations:', error.message);
+      }
+    }
+    
+    getUserRecommendations();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Generate recommendations based on user history
+    try:
+        response = client.db.recommend(
+            table="products",
+            user_history=["123", "456", "789"],  # User's interaction history
+            strategy="similar",
+            limit=15,
+            exclude_ids=["123", "456"],  # Exclude items user already interacted with
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Generated {len(response.recommendations)} personalized recommendations")
+        for i, rec in enumerate(response.recommendations):
+            print(f"{i + 1}. {rec.record.name} (Similarity: {rec.similarity})")
+    except Exception as e:
+        print(f"Error generating user recommendations: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Generate recommendations based on user history
+      userHistory := []string{"123", "456", "789"}
+      excludeIDs := []string{"123", "456"}
+      
+      response, err := client.DB.Recommend(context.TODO(), worqhat.DBRecommendParams{
+        Table: "products",
+        UserHistory: userHistory,  // User's interaction history
+        Strategy: "similar",
+        Limit: 15,
+        ExcludeIDs: excludeIDs,  // Exclude items user already interacted with
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error generating user recommendations: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Generated %d personalized recommendations\n", len(response.Recommendations))
+      for i, rec := range response.Recommendations {
+        fmt.Printf("%d. %s (Similarity: %.3f)\n", 
+          i+1, rec.Record["name"], rec.Similarity)
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Generate recommendations based on user history
+    curl -X POST "https://api.worqhat.com/db/recommend" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "products",
+        "user_history": ["123", "456", "789"],
+        "strategy": "similar",
+        "limit": 15,
+        "exclude_ids": ["123", "456"],
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 3: Diverse Recommendations
+
+This example shows how to generate diverse recommendations to avoid filter bubbles.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function getDiverseRecommendations() {
+      try {
+        // Generate diverse recommendations
+        const response = await client.db.recommend({
+          table: "articles",
+          user_history: ["art_1", "art_2", "art_3"],
+          strategy: "diverse",  // Use diverse strategy
+          limit: 20,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Generated ${response.recommendations.length} diverse recommendations`);
+        console.log('Strategy used:', response.strategy);
+        response.recommendations.forEach((rec, index) => {
+          console.log(`${index + 1}. ${rec.record.title} (Similarity: ${rec.similarity})`);
+        });
+        return response;
+      } catch (error) {
+        console.error('Error generating diverse recommendations:', error.message);
+      }
+    }
+    
+    getDiverseRecommendations();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Generate diverse recommendations
+    try:
+        response = client.db.recommend(
+            table="articles",
+            user_history=["art_1", "art_2", "art_3"],
+            strategy="diverse",  # Use diverse strategy
+            limit=20,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Generated {len(response.recommendations)} diverse recommendations")
+        print(f"Strategy used: {response.strategy}")
+        for i, rec in enumerate(response.recommendations):
+            print(f"{i + 1}. {rec.record.title} (Similarity: {rec.similarity})")
+    except Exception as e:
+        print(f"Error generating diverse recommendations: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Generate diverse recommendations
+      userHistory := []string{"art_1", "art_2", "art_3"}
+      
+      response, err := client.DB.Recommend(context.TODO(), worqhat.DBRecommendParams{
+        Table: "articles",
+        UserHistory: userHistory,
+        Strategy: "diverse",  // Use diverse strategy
+        Limit: 20,
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error generating diverse recommendations: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Generated %d diverse recommendations\n", len(response.Recommendations))
+      fmt.Printf("Strategy used: %s\n", response.Strategy)
+      for i, rec := range response.Recommendations {
+        fmt.Printf("%d. %s (Similarity: %.3f)\n", 
+          i+1, rec.Record["title"], rec.Similarity)
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Generate diverse recommendations
+    curl -X POST "https://api.worqhat.com/db/recommend" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "articles",
+        "user_history": ["art_1", "art_2", "art_3"],
+        "strategy": "diverse",
+        "limit": 20,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+## Request Body Explained
+
+<ParamField body="table" type="string" required>
+  Table to generate recommendations from.
+  
+  Example: "products"
+</ParamField>
+
+<ParamField body="record_id" type="string|number" optional>
+  Source item ID for item-to-item recommendations. Use this OR `user_history`, not both.
+  
+  Example: "123"
+</ParamField>
+
+<ParamField body="user_history" type="array" optional>
+  Array of record IDs the user has interacted with. Use this OR `record_id`, not both.
+  
+  Example: ["123", "456", "789"]
+</ParamField>
+
+<ParamField body="strategy" type="string" optional>
+  Recommendation strategy to use. Options: "similar", "diverse", "popular". Default: "similar".
+  
+  - `similar`: Find items similar to source or user history
+  - `diverse`: Find varied items to avoid filter bubbles
+  - `popular`: Find popular items across all users
+</ParamField>
+
+<ParamField body="limit" type="number" optional>
+  Maximum number of recommendations to return. Range: 1-100, default: 10.
+</ParamField>
+
+<ParamField body="exclude_ids" type="array" optional>
+  Record IDs to exclude from recommendations (e.g., items user already has).
+  
+  Example: ["123", "456"]
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if recommendations were generated successfully, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="recommendations" type="array">
+  Array of recommended items, each containing:
+  - `record`: The actual record data
+  - `similarity`: Similarity score (0-1) indicating recommendation strength
+  - `_meta`: Additional metadata including strategy and source information
+</ResponseField>
+
+<ResponseField name="strategy" type="string">
+  Strategy used for generating recommendations.
+</ResponseField>
+
+<ResponseField name="executionTime" type="number">
+  Recommendation generation time in milliseconds.
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "recommendations": [
+    {
+      "record": {
+        "id": "456",
+        "name": "Smart Home Hub",
+        "description": "Central control unit for automated home systems",
+        "category": "electronics",
+        "price": 199.99
+      },
+      "similarity": 0.823,
+      "_meta": {
+        "strategy": "similar",
+        "source": "single_item"
+      }
+    },
+    {
+      "record": {
+        "id": "789",
+        "name": "AI Voice Assistant",
+        "description": "Intelligent voice-controlled device for home automation",
+        "category": "electronics",
+        "price": 149.99
+      },
+      "similarity": 0.756,
+      "_meta": {
+        "strategy": "similar",
+        "source": "single_item"
+      }
+    }
+  ],
+  "strategy": "similar",
+  "executionTime": 189
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Table not found" | The specified table doesn't exist | Check your table name for typos |
+| "No embeddings found" | The table doesn't have vector embeddings | Ensure your table has been processed for embeddings |
+| "Record not found" | The specified record_id doesn't exist | Check that the record ID exists in the table |
+| "Invalid strategy" | The strategy value is not supported | Use one of: "similar", "diverse", "popular" |
+| "No user history provided" | Neither record_id nor user_history was provided | Provide either a record_id or user_history array |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+
+## Tips for Better Recommendations
+
+- **Use appropriate strategies**:
+  - `similar`: For "More like this" features
+  - `diverse`: To avoid filter bubbles and show variety
+  - `popular`: For trending or top items
+- **Exclude already-interacted items**: Use `exclude_ids` to avoid recommending items users already have
+- **Combine strategies**: Use different strategies for different sections of your app
+- **Monitor similarity scores**: Higher scores indicate stronger recommendations
+- **Test with different limits**: Find the right number of recommendations for your use case
+- **Use user history**: Provide user interaction history for more personalized results
+
+## Recommendation Strategies Explained
+
+### Similar Strategy
+- **Best for**: "More like this", "Related items", "You might also like"
+- **How it works**: Finds items with similar vector embeddings to the source
+- **Use case**: When users want items similar to what they're viewing
+
+### Diverse Strategy
+- **Best for**: Discovery, avoiding filter bubbles, showing variety
+- **How it works**: Finds items that are different from each other while still relevant
+- **Use case**: When you want to show users new and varied content
+
+### Popular Strategy
+- **Best for**: Trending items, top sellers, general recommendations
+- **How it works**: Finds items that are popular across all users
+- **Use case**: For new users or when you want to show trending content
+
+## Best Practices
+
+- **Start with similar strategy**: Most users expect recommendations similar to what they like
+- **Use diverse for discovery**: Help users find new content they might not have discovered
+- **Combine with user history**: More interaction data leads to better personalization
+- **Exclude irrelevant items**: Use `exclude_ids` to avoid recommending inappropriate items
+- **Monitor performance**: Track which recommendations users actually engage with
+- **A/B test strategies**: Experiment with different approaches to see what works best

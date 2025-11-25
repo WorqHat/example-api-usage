@@ -1,0 +1,150 @@
+
+**Category:** Database
+**Type:** Delete Node
+
+---
+
+## Overview
+
+The **Delete Data Node** allows you to remove specific records from your connected database automatically.
+It’s used in workflows where you want to clean up data, delete user information, or remove outdated entries — all without writing any SQL code.
+
+By defining simple query conditions, the node identifies matching records and deletes them permanently from the selected table.
+
+---
+
+## Description
+
+This node deletes records from a database table based on matching criteria you define through **Query Fields**.
+For example, if you specify the field `name` as your condition, the node will remove any records where the name matches the provided input.
+
+It’s particularly useful when you need to handle data removal as part of automated workflows — such as account deletion requests, cleanup operations, or resetting test data.
+
+---
+
+## Input Parameters
+
+The Delete Data Node can accept the following input values:
+
+* **id** – The unique identifier of a record. This can be used if you want to target a specific record.
+* **name** – The name of the record to delete. This is typically used as the main condition.
+* **email** – The email address of the record (optional). It can be used for additional filtering.
+* **created_at** – The timestamp when the record was created (optional, ISO format).
+
+Only `name` is required in this setup, as it’s used in the query condition to find which record to remove.
+
+---
+
+## Output Parameters
+
+Once executed, the node provides the following information as output:
+
+* **tableName** – The name of the database table (or collection) where the deletion occurred, such as `production:test3`.
+* **queryId** – A unique identifier automatically generated for the delete query.
+* **deletedCount** – The number of records successfully deleted from the database.
+* **message** – A brief summary describing the operation result.
+* **status** – Shows whether the deletion was successful or not (for example, `success` or `error`).
+
+---
+
+## Output Type
+
+The output is returned in **JSON format**, containing structured information about the delete action — including the target table, the number of records affected, and a success message.
+
+This output can be used by other nodes for logging, confirmation messages, or audit tracking.
+
+---
+
+## Example Usage
+
+**Example Input:**
+
+```json
+{
+  "input": {
+    "id": "10",
+    "name": "John Doe",
+    "email": "jd@gmail.com",
+    "created_at": "2025-12-01T12:00:00.000Z"
+  }
+}
+```
+
+**Example Output:**
+
+```json
+{
+  "output": {
+    "tableName": "production:test3",
+    "queryId": "3b9ac2cb-71a4-493c-8db0-fa5fe6d72490",
+    "deletedCount": 1,
+    "message": "Successfully deleted 1 record(s)",
+    "status": "success"
+  }
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. Add the **Delete Data Node** to your workflow from the **Database** category.
+2. Choose the correct **table or collection** where the data should be removed (for example, `test3 (production)`).
+3. Under **Query Fields**, specify the condition that will identify which record(s) to delete.
+
+   * Example: `name = Input: name`
+4. Connect the node to a data source that provides the input (like a form or a trigger node).
+5. Save your settings and **run the workflow**.
+6. After execution, the node will display a message confirming whether any records were deleted.
+
+---
+
+## Best Practices
+
+* Always use a **unique or specific query condition** (like `id` or an exact `name`) to prevent accidental deletion of multiple records.
+* Test your workflow in a **staging environment** before using it in production.
+* If possible, implement a **confirmation step** before deletion to avoid unintended data loss.
+* Log the output message for tracking and debugging purposes.
+* Never use overly broad filters (like deleting all records without conditions).
+
+---
+
+## Example Workflow Integration
+
+Here’s an example of how the **Delete Data Node** can fit within a complete workflow:
+
+```
+User Request → Validation Node → Delete Data Node → Success Notification
+```
+
+1. A user triggers the workflow (for example, by submitting a “Delete Account” form).
+2. The workflow validates the request details.
+3. The **Delete Data Node** removes the matching record from the database.
+4. The workflow sends a confirmation message or email to the user.
+
+---
+
+## Common Errors and Fixes
+
+**“Successfully deleted 0 record(s)”**
+
+* Cause: No record matched the query condition.
+* Fix: Check that the input value (for example, the `name`) exists in the database.
+
+**“Table not found”**
+
+* Cause: The table or collection name is incorrect.
+* Fix: Verify the table name and environment selection (such as production or staging).
+
+**“Missing required field”**
+
+* Cause: A required query parameter (for example, `name`) wasn’t provided.
+* Fix: Ensure all required inputs are connected in the workflow.
+
+**“Permission denied”**
+
+* Cause: Insufficient permissions to delete from the table.
+* Fix: Check your database credentials or admin access.
+
+---
+

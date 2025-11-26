@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import {
   type IconType,
   SiAstro,
@@ -433,7 +434,7 @@ export const CodeBlockSelectItem = ({
       {...props}
     >
       <span className="flex items-center gap-2">
-        {Icon && <Icon className="h-3 w-3 shrink-0" />}
+        {Icon && React.createElement(Icon, { className: "h-3 w-3 shrink-0" })}
         <span className="truncate">{children}</span>
       </span>
     </SelectItem>
@@ -479,9 +480,8 @@ export const CodeBlockCopyButton = ({
   const Icon = isCopied ? CheckIcon : CopyIcon;
   return (
     <Button
-      className={cn('shrink-0', className)}
+      className={cn('shrink-0 h-7 w-7 p-0', className)}
       onClick={copyToClipboard}
-      size="icon"
       variant="ghost"
       {...props}
     >

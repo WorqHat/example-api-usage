@@ -40,7 +40,7 @@ November focused on making big workflows dependable—even when data, audio, or 
 
 - Unified template routing across docs, canvas, and templates so every entry point behaves the same.
 - Send Mail now understands dynamic variables and handles subjects without edge-case hiccups.
-- Docs dialog can auto-import workflow templates, complete with YAML packaging and schema snapshots.
+- Docs dialog can auto-import workflow templates with complete metadata and schema information.
 
 <div className="mt-6 inline-flex items-center gap-x-2">
   <SparkleIcon className="h-5 w-5 text-sky-400" />
@@ -48,8 +48,8 @@ November focused on making big workflows dependable—even when data, audio, or 
 </div>
 
 - Multi-pass runtime error handling revives failed audio paths and keeps long-running loops moving.
-- Queueing moved from Redis to AWS SQS, adding job IDs, better sanitization, and fewer stuck fetch-data nodes.
-- Bulk imports lean on PostgreSQL with abort/cleanup hooks so embeddings stay fresh even under heavy load.
+- Improved queueing system with job IDs, better sanitization, and fewer stuck fetch-data nodes.
+- Bulk imports with abort/cleanup capabilities keep embeddings fresh even under heavy load.
 
 <div className="mt-6 inline-flex items-center gap-x-2">
   <SparkleIcon className="h-5 w-5 text-sky-400" />
@@ -58,7 +58,7 @@ November focused on making big workflows dependable—even when data, audio, or 
 
 - App Builder initialization routes, planner prompts, and action-plan streaming now live inside the main canvas.
 - CSV/Excel imports expose table metadata, run with higher concurrency, and keep embeddings warm while syncing.
-- AWS credential cleanup plus stricter runtime validation keeps rollout noise down across staging and prod.
+- Improved credential management plus stricter runtime validation ensures smoother deployments.
 
 ---
 
@@ -80,15 +80,15 @@ November focused on making big workflows dependable—even when data, audio, or 
   <Badge type="api" />
 </div>
 
-October was a marathon merge month. The new App Builder finally lives inside the workflow canvas, billing got a facelift, and semantic automation now stitches together AI summaries, database accordions, and Sentry visibility for every org.
+October was a marathon merge month. The new App Builder finally lives inside the workflow canvas, billing got a facelift, and semantic automation now stitches together AI summaries, database accordions, and enhanced visibility for every org.
 
 <div className="inline-flex items-center gap-x-2">
   <SparkleIcon className="h-5 w-5 text-sky-400" />
   <h3 className="text-lg font-semibold">Canvas + workflow builder fusion</h3>
 </div>
 
-- Organization routes, Sentry instrumentation, hackathon plans, and AI code helpers now live in the canvas experience.
-- Daytona sandbox orchestration, preview URLs, a Go proxy rewrite, and builder-mode caching make deployments feel instant.
+- Organization routes, enhanced monitoring, and AI code helpers now live in the canvas experience.
+- Improved sandbox orchestration, preview URLs, and builder-mode caching make deployments feel instant.
 - Flow generator stack combines workflow + parameter generators with constraint handling, credential passthrough, and URL-based routing.
 
 <div className="mt-6 inline-flex items-center gap-x-2">
@@ -96,18 +96,18 @@ October was a marathon merge month. The new App Builder finally lives inside the
   <p className="text-lg font-semibold">Billing, pricing, and analytics evolution</p>
 </div>
 
-- Dedicated billing screens, payment methods, usage dashboards, and INR-aware pricing tables bring clarity to every invoice.
-- Usage caps, storage quota tracking, Stripe metering crons, and workflow analytics APIs keep spending predictable.
-- Subscription webhooks, external LLM subscriptions, and dependency upgrades harden the payments stack for enterprise rollouts.
+- Dedicated billing screens, payment methods, usage dashboards, and multi-currency pricing tables bring clarity to every invoice.
+- Usage caps, storage quota tracking, automated metering, and workflow analytics APIs keep spending predictable.
+- Subscription webhooks, external LLM subscriptions, and improved infrastructure harden the payments stack for enterprise rollouts.
 
 <div className="mt-6 inline-flex items-center gap-x-2">
   <SparkleIcon className="h-5 w-5 text-sky-400" />
   <p className="text-lg font-semibold">Semantic automation & data UX</p>
 </div>
 
-- Database UX overhaul adds accordion lists, seed-type mapping, sanitized columns/indexes, and branch-aware URL params.
+- Database UX overhaul adds accordion lists, seed-type mapping, improved column/index management, and branch-aware URL params.
 - Semantic search tooling, asynchronous embedding generation, and refreshed prompts power the new AI board views.
-- REST API triggers, Stytch credential updates, and sanitized table prompts polish every workflow node before GA.
+- REST API triggers, improved credential management, and enhanced table prompts polish every workflow node.
 
 ---
 
@@ -119,7 +119,7 @@ October was a marathon merge month. The new App Builder finally lives inside the
   className="rounded-lg shadow-lg"
 />
 
-## September 2025 — Billing UI Blitz & Database Foundations{{ date: '2025-09-29T00:00Z' }}
+## September 2025 — Newer Billing UI and Databricks Partnership{{ date: '2025-09-29T00:00Z' }}
 
 <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
   Usage transparency, storage analytics, and Neon-powered database journeys
@@ -129,34 +129,34 @@ October was a marathon merge month. The new App Builder finally lives inside the
   <Badge type="general" />
 </div>
 
-September delivered the plumbing for serious scale: new billing dashboards, automated deploy tooling, and Neon database journeys with CodeMirror editors, AI planners, and Daytona-powered sandboxes.
+September delivered powerful new features for scale: new billing dashboards, automated deploy tooling, and enhanced database workflows with advanced editors, AI planners, and development sandboxes.
 
 <div className="inline-flex items-center gap-x-2">
   <SparkleIcon className="h-5 w-5 text-sky-400" />
   <h3 className="text-lg font-semibold">Billing visibility & usage data</h3>
 </div>
 
-- Dedicated billing screens, payment history, usage dashboards, and Stytch-driven upgrades landed in one sweep.
-- Neon metrics ingestion, workflow analytics APIs, storage usage endpoints, and skeleton loaders keep status pages instant.
-- Pricing renaissance: INR-aware tables, lower base prices, usage caps, alerts, and automated Stripe metering.
+- Dedicated billing screens, payment history, usage dashboards, and seamless upgrade flows landed in one sweep.
+- Workflow analytics APIs, storage usage endpoints, and skeleton loaders keep status pages instant.
+- Pricing improvements: multi-currency support, lower base prices, usage caps, alerts, and automated billing.
 
 <div className="mt-6 inline-flex items-center gap-x-2">
   <SparkleIcon className="h-5 w-5 text-sky-400" />
-  <p className="text-lg font-semibold">Database & builder groundwork</p>
+  <p className="text-lg font-semibold">Database & builder improvements</p>
 </div>
 
-- Storage migration from GCS to S3 introduced signed URLs, org buckets, and multi-tenant Postgres provisioning.
-- Neon gains branch monitoring, PITR restore, autoscaling, saved queries, schema diff tooling, and AI-assisted Create Table flows.
-- Backend builder foundations add the Daytona orchestrator, Go proxy, AllApps page, preview tokens, and Docker support.
+- Enhanced storage with signed URLs, organization buckets, and multi-tenant database provisioning.
+- Database features: branch monitoring, point-in-time restore, autoscaling, saved queries, schema diff tooling, and AI-assisted table creation flows.
+- Backend builder foundations add improved orchestration, preview environments, and container support.
 
 <div className="mt-6 inline-flex items-center gap-x-2">
   <SparkleIcon className="h-5 w-5 text-sky-400" />
   <p className="text-lg font-semibold">AI & workflow polish</p>
 </div>
 
-- Function node visualization, workflow persistence, streaming prompts, and RequiredData integration tighten the backend designer.
-- Calendar & scheduling nodes gain chrono-based inputs plus normalized fetch/add APIs, while SQL reliability gets retry logic and Codestral-backed code generation.
-- AI Builder UX adds project planning SSE, StreamingNode previews, auto-scroll, and Kibo-style SQL examples to keep long contexts manageable.
+- Function node visualization, workflow persistence, streaming prompts, and improved data integration tighten the backend designer.
+- Calendar & scheduling nodes gain enhanced date inputs plus improved fetch/add APIs, while SQL reliability gets retry logic and AI-powered code generation.
+- AI Builder UX adds real-time project planning, streaming previews, auto-scroll, and improved SQL examples to keep long contexts manageable.
 
 ---
 

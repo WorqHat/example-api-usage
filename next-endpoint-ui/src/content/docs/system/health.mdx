@@ -1,0 +1,101 @@
+---
+title: 'Health Check'
+description: 'Check the health status of the API'
+---
+
+Check if the API server is running and get uptime information. This endpoint can be used for monitoring and alerting systems.
+
+```endpoint
+GET https://api.worqhat.com/health
+```
+
+## Response
+
+<ResponseField name="status" type="string">
+  The current health status of the API (e.g., "ok", "degraded", "down")
+</ResponseField>
+
+<ResponseField name="version" type="string">
+  The current version of the API
+</ResponseField>
+
+<ResponseField name="timestamp" type="string">
+  The timestamp of when the health check was performed
+</ResponseField>
+
+<ResponseField name="uptime" type="integer">
+  The API uptime in seconds
+</ResponseField>
+
+## Code Examples
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    const response = await client.health.check();
+    console.log(response.status);
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    response = client.health.check()
+    print(response.status)
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      response, err := client.Health.Check(context.TODO())
+      if err != nil {
+        panic(err.Error())
+      }
+      fmt.Printf("%+v\n", response.Status)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    curl -X GET "https://api.worqhat.com/health" \
+      -H "Authorization: Bearer YOUR_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+<ResponseExample>
+```json
+{
+  "status": "ok",
+  "version": "1.0.0",
+  "timestamp": "2025-08-01T14:30:45Z",
+  "uptime": 1209600
+}
+```
+</ResponseExample>

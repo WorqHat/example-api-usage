@@ -1,0 +1,573 @@
+---
+title: 'Semantic Search'
+description: 'Search database using vector embeddings and natural language'
+---
+
+Performs semantic search across database tables using vector embeddings. This endpoint allows you to search for records based on meaning and context rather than exact keyword matches, making it perfect for finding conceptually similar content.
+
+```endpoint
+POST https://api.worqhat.com/db/semantic-search
+```
+
+## What Does This Endpoint Do?
+
+This endpoint uses AI-powered vector embeddings to understand the semantic meaning of your search query and find records that are conceptually similar, even if they don't contain the exact words you searched for. Think of it like having a smart assistant that understands what you're looking for, not just the words you use.
+
+## When to Use Semantic Search
+
+You'll find this endpoint useful when you need to:
+
+- **Find conceptually similar content**: Search for products, articles, or documents that are related in meaning
+- **Discover relevant information**: Find records that match the intent of your query, not just keywords
+- **Cross-table searches**: Search across multiple tables simultaneously for comprehensive results
+- **Handle synonyms and variations**: Find results even when using different words to describe the same concept
+- **Improve search relevance**: Get more accurate results than traditional keyword-based search
+
+## How It Works
+
+1. You provide a **natural language query** describing what you're looking for
+2. The API converts your query into a **vector embedding** that captures its semantic meaning
+3. The system searches for records with **similar embeddings** across your specified tables
+4. Results are returned with **similarity scores** showing how well each record matches your query
+
+## Code Examples
+
+### Example 1: Basic Semantic Search
+
+This example shows how to perform a simple semantic search on a single table.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function searchProducts() {
+      try {
+        // Call the semanticSearch method
+        const response = await client.db.semanticSearch({
+          query: "Find products related to machine learning",
+          table: "products",
+          limit: 10,
+          threshold: 0.7,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Found ${response.results.length} relevant products`);
+        console.log('Search results:', response.results);
+        console.log('Query execution time:', response.executionTime, 'ms');
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error performing semantic search:', error.message);
+      }
+    }
+    
+    // Call the function
+    searchProducts();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Perform semantic search
+    try:
+        response = client.db.semantic_search(
+            query="Find products related to machine learning",
+            table="products",
+            limit=10,
+            threshold=0.7,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Found {len(response.results)} relevant products")
+        print(f"Search results: {response.results}")
+        print(f"Query execution time: {response.execution_time} ms")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error performing semantic search: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Perform semantic search
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
+      response, err := client.DB.SemanticSearch(context.TODO(), worqhat.DBSemanticSearchParams{
+        Query: "Find products related to machine learning",
+        Table: "products",
+        Limit: 10,
+        Threshold: 0.7,
+        Environment: env, // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error performing semantic search: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Found %d relevant products\n", len(response.Results))
+      fmt.Printf("Search results: %+v\n", response.Results)
+      fmt.Printf("Query execution time: %d ms\n", response.ExecutionTime)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Perform semantic search
+    curl -X POST "https://api.worqhat.com/db/semantic-search" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "query": "Find products related to machine learning",
+        "table": "products",
+        "limit": 10,
+        "threshold": 0.7,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: Cross-Table Semantic Search
+
+This example shows how to search across multiple tables simultaneously.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function searchAcrossTables() {
+      try {
+        // Search across multiple tables
+        const response = await client.db.semanticSearch({
+          query: "artificial intelligence and automation",
+          tables: ["products", "articles", "documents"],
+          limit: 15,
+          threshold: 0.6,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Found ${response.results.length} relevant items across tables`);
+        response.results.forEach(result => {
+          console.log(`Table: ${result.table}, Similarity: ${result.similarity}`);
+        });
+        return response;
+      } catch (error) {
+        console.error('Error performing cross-table search:', error.message);
+      }
+    }
+    
+    searchAcrossTables();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Search across multiple tables
+    try:
+        response = client.db.semantic_search(
+            query="artificial intelligence and automation",
+            tables=["products", "articles", "documents"],
+            limit=15,
+            threshold=0.6,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Found {len(response.results)} relevant items across tables")
+        for result in response.results:
+            print(f"Table: {result.table}, Similarity: {result.similarity}")
+    except Exception as e:
+        print(f"Error performing cross-table search: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Search across multiple tables
+      tables := []string{"products", "articles", "documents"}
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
+      response, err := client.DB.SemanticSearch(context.TODO(), worqhat.DBSemanticSearchParams{
+        Query: "artificial intelligence and automation",
+        Tables: tables,
+        Limit: 15,
+        Threshold: 0.6,
+        Environment: env, // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error performing cross-table search: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Found %d relevant items across tables\n", len(response.Results))
+      for _, result := range response.Results {
+        fmt.Printf("Table: %s, Similarity: %.3f\n", result.Table, result.Similarity)
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Search across multiple tables
+    curl -X POST "https://api.worqhat.com/db/semantic-search" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "query": "artificial intelligence and automation",
+        "tables": ["products", "articles", "documents"],
+        "limit": 15,
+        "threshold": 0.6,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 3: Semantic Search with Filters
+
+This example shows how to combine semantic search with additional filters.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function searchWithFilters() {
+      try {
+        // Semantic search with additional filters
+        const response = await client.db.semanticSearch({
+          query: "premium electronics gadgets",
+          table: "products",
+          limit: 10,
+          threshold: 0.7,
+          filters: {
+            category: "electronics",
+            price: { min: 100, max: 500 },
+            inStock: true
+          },
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Found ${response.results.length} filtered products`);
+        console.log('Filtered results:', response.results);
+        return response;
+      } catch (error) {
+        console.error('Error performing filtered search:', error.message);
+      }
+    }
+    
+    searchWithFilters();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Semantic search with additional filters
+    try:
+        response = client.db.semantic_search(
+            query="premium electronics gadgets",
+            table="products",
+            limit=10,
+            threshold=0.7,
+            filters={
+                "category": "electronics",
+                "price": {"min": 100, "max": 500},
+                "inStock": True
+            },
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Found {len(response.results)} filtered products")
+        print(f"Filtered results: {response.results}")
+    except Exception as e:
+        print(f"Error performing filtered search: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Semantic search with additional filters
+      filters := map[string]interface{}{
+        "category": "electronics",
+        "price": map[string]interface{}{
+          "min": 100,
+          "max": 500,
+        },
+        "inStock": true,
+      }
+      
+      response, err := client.DB.SemanticSearch(context.TODO(), worqhat.DBSemanticSearchParams{
+        Query: "premium electronics gadgets",
+        Table: "products",
+        Limit: 10,
+        Threshold: 0.7,
+        Filters: filters,
+        Environment: env, // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error performing filtered search: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Found %d filtered products\n", len(response.Results))
+      fmt.Printf("Filtered results: %+v\n", response.Results)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Semantic search with additional filters
+    curl -X POST "https://api.worqhat.com/db/semantic-search" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "query": "premium electronics gadgets",
+        "table": "products",
+        "limit": 10,
+        "threshold": 0.7,
+        "filters": {
+          "category": "electronics",
+          "price": {"min": 100, "max": 500},
+          "inStock": true
+        },
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+## Request Body Explained
+
+<ParamField body="query" type="string" required>
+  The natural language search query describing what you're looking for. Be descriptive and specific for better results.
+  
+  Examples: "Find products related to machine learning", "Articles about sustainable energy", "Documents on data privacy"
+</ParamField>
+
+<ParamField body="table" type="string" optional>
+  Single table to search in. Use this OR the `tables` parameter, not both.
+  
+  Example: "products"
+</ParamField>
+
+<ParamField body="tables" type="array" optional>
+  Multiple tables to search across. Use this OR the `table` parameter, not both.
+  
+  Example: ["products", "articles", "documents"]
+</ParamField>
+
+<ParamField body="limit" type="number" optional>
+  Maximum number of results to return. Range: 1-100, default: 10.
+</ParamField>
+
+<ParamField body="threshold" type="number" optional>
+  Minimum similarity score threshold (0-1). Only results above this threshold will be returned. Default: 0.7.
+</ParamField>
+
+<ParamField body="filters" type="object" optional>
+  Additional WHERE conditions to apply to narrow down results. Supports various filter types including ranges.
+  
+  Example: `{"category": "electronics", "price": {"min": 100, "max": 500}}`
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if the search was successful, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="results" type="array">
+  Array of search results, each containing:
+  - `table`: The table where the record was found
+  - `record`: The actual record data
+  - `similarity`: Similarity score (0-1) indicating how well the record matches your query
+  - `_meta`: Additional metadata including matched fields
+</ResponseField>
+
+<ResponseField name="query_embedding_preview" type="array">
+  First 5 dimensions of the query embedding vector for debugging purposes.
+</ResponseField>
+
+<ResponseField name="executionTime" type="number">
+  Search execution time in milliseconds.
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "results": [
+    {
+      "table": "products",
+      "record": {
+        "id": "prod_123",
+        "name": "AI-Powered Smart Assistant",
+        "description": "Advanced machine learning device for home automation",
+        "category": "electronics",
+        "price": 299.99
+      },
+      "similarity": 0.847,
+      "_meta": {
+        "matched_fields": ["name", "description"]
+      }
+    },
+    {
+      "table": "products",
+      "record": {
+        "id": "prod_456",
+        "name": "Neural Network Processor",
+        "description": "High-performance computing unit for AI applications",
+        "category": "electronics",
+        "price": 599.99
+      },
+      "similarity": 0.823,
+      "_meta": {
+        "matched_fields": ["description"]
+      }
+    }
+  ],
+  "query_embedding_preview": [0.123, -0.456, 0.789, -0.321, 0.654],
+  "executionTime": 245
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Table not found" | The specified table doesn't exist | Check your table name for typos |
+| "No embeddings found" | The table doesn't have vector embeddings | Ensure your table has been processed for embeddings |
+| "Query too short" | The search query is too brief | Use more descriptive queries with at least 3-5 words |
+| "Threshold too high" | No results meet the similarity threshold | Lower the threshold value (try 0.5-0.6) |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+
+## Tips for Better Results
+
+- **Use descriptive queries**: Include context and details about what you're looking for
+- **Experiment with thresholds**: Start with 0.7 and adjust based on your needs
+- **Combine with filters**: Use filters to narrow down results after semantic matching
+- **Try different phrasings**: If results aren't relevant, rephrase your query
+- **Use cross-table search**: Search multiple tables for comprehensive results
+- **Review similarity scores**: Higher scores indicate better matches
+
+## Best Practices
+
+- **Start broad, then narrow**: Begin with general queries and add filters as needed
+- **Monitor performance**: Use execution time to optimize your queries
+- **Combine with traditional search**: Use semantic search alongside keyword search for best results
+- **Regular updates**: Re-index your data when content changes significantly
+- **Test different queries**: Experiment with various phrasings to find what works best for your data

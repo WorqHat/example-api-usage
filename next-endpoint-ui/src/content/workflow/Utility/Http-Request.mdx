@@ -1,0 +1,193 @@
+**Category:** Integrations
+**Type:** API / External Service Connector
+
+## Overview
+
+The HTTP Request Node allows users to send HTTP requests to external APIs or services inside a no-code workflow.
+It supports **GET, POST, PUT, DELETE** and can send/receive JSON or other formats.
+It connects workflows to any web-based system for data retrieval or automation.
+
+## Description
+
+The HTTP Request Node acts as a bridge between your workflow and external APIs.
+It can send data, retrieve data, or interact with external applications by specifying:
+
+- Endpoint URL
+- Request Method
+- Body
+
+Example use cases:
+
+- Create a record in a database
+- Fetch weather data
+- Notify another service
+
+## Input Parameters
+
+**endpointUrl (String)**
+Complete API endpoint
+Example: `https://jsonplaceholder.typicode.com/posts`
+Required: Yes
+
+**method (String)**
+Supported: GET, POST, PUT, DELETE
+Required: Yes
+
+**authType (String)**
+Authentication type: None / Basic / Bearer
+Required: No
+
+**token (String)**
+Bearer token for Bearer authentication _(Optional)_
+
+**username (String)**
+Used with Basic auth
+Required: No
+
+**password (String)**
+Used with Basic auth
+Required: No
+
+**queryParams (Array)**
+Optional key-value params appended to URL
+
+**bodyType (String)**
+Format of body: JSON / Form Data / x-www-form-urlencoded
+Required: No
+
+**jsonBody (Array)**
+Used when bodyType = JSON
+Example:
+
+```json
+[
+  { "key": "title", "value": "hello world" },
+  { "key": "body", "value": "this is test request" },
+  { "key": "userid", "value": "1" }
+]
+```
+
+**formData (Array)**
+Key-value form input
+
+**urlEncodedData (Array)**
+Used when sending URL-encoded data
+
+**headers (Array)**
+Example:
+
+```json
+[{ "key": "Content-Type", "value": "application/json" }]
+```
+
+## Output Parameters
+
+- **title (String)** – Returned title
+- **body (String)** – Returned body
+- **userid (String)** – Returned user id
+- **id (Number)** – Identifier created by API
+- **status (Number)** – HTTP status code returned by the request
+- **response (Object)** – Full response body as returned by the API
+
+## Output Type
+
+Single JSON object
+
+## Example Usage
+
+### Example 1 — POST request
+
+**Input:**
+
+```json
+{
+  "endpointUrl": "https://jsonplaceholder.typicode.com/posts",
+  "method": "POST",
+  "authType": "None",
+  "bodyType": "JSON",
+  "jsonBody": [
+    { "key": "title", "value": "hello world" },
+    { "key": "body", "value": "this is test request" },
+    { "key": "userid", "value": "1" }
+  ]
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "title": "hello world",
+  "body": "this is test request",
+  "userid": "1",
+  "id": 101
+}
+```
+
+### Example 2 — GET request
+
+**Input:**
+
+```json
+{
+  "endpointUrl": "https://jsonplaceholder.typicode.com/posts/1",
+  "method": "GET",
+  "authType": "None"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "userId": 1,
+  "id": 1,
+  "title": "Sample title",
+  "body": "Sample body text for post 1"
+}
+```
+
+## How to Use
+
+1. Add HTTP Request Node
+2. Enter endpoint URL
+3. Select method (GET/POST/PUT/DELETE)
+4. If sending data → select bodyType = JSON → add fields
+5. Add headers if required
+6. Test request
+7. Map response fields
+8. Save & run
+
+## Best Practices
+
+- Verify endpoint URL
+- Never hard-code API keys
+- Structure request body per API doc
+- Use retry when API rate-limits
+- Check status/error handling
+
+## Example Workflow
+
+1. User submits form
+2. Form submission → HTTP Request Node
+3. API returns the created resource
+4. Response ID passed to next node
+
+## Common Errors
+
+**404 Not Found**
+Incorrect endpoint
+
+**401 Unauthorized**
+Missing token or invalid auth
+
+**400 Bad Request**
+Malformed JSON body
+
+**500 Internal Server Error**
+API problem — retry later
+
+**CORS Error**
+Blocked due to browser — run server-side
+
+---

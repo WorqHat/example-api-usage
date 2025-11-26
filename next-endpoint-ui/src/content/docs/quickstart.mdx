@@ -1,0 +1,316 @@
+---
+title: "⚡ Quickstart Guide"
+---
+
+## Getting Started with WorqHat API
+
+This quickstart guide will help you make your first API request to the WorqHat platform. Follow these simple steps to get up and running quickly.
+
+### Step 1: Get Your API Key
+
+Before you can make any API requests, you'll need to obtain an API key:
+
+1. Log in to your [WorqHat Dashboard](https://worqhat.app)
+2. Navigate to the API section
+3. Generate a new API key
+4. Copy your API key and store it securely
+
+<Warning>
+Never share your API key publicly or commit it to version control systems. Use environment variables or secure key management solutions to store your API key.
+</Warning>
+
+### Install the SDKs
+
+Install the official WorqHat SDKs for your language of choice.
+
+<CodeGroup>
+```bash npm
+npm install worqhat
+```
+
+```bash yarn
+yarn add worqhat
+```
+
+```bash pnpm
+pnpm add worqhat
+```
+
+```bash bun
+bun add worqhat
+```
+
+```bash pip
+pip install worqhat
+```
+
+```bash pipenv
+pipenv install worqhat
+```
+
+```bash poetry
+poetry add worqhat
+```
+</CodeGroup>
+
+<Note>
+Node.js package: <a href="https://www.npmjs.com/package/worqhat" target="_blank" rel="noreferrer">worqhat on npm</a><br/>
+Python package: <a href="https://pypi.org/project/worqhat/" target="_blank" rel="noreferrer">worqhat on PyPI</a>
+</Note>
+
+### Hello, WorqHat (SDK Sanity Check)
+
+Quickly verify your installation by initializing the client and calling the health check.
+
+<CodeGroup>
+```javascript node.js
+import Worqhat from 'worqhat';
+
+const client = new Worqhat({
+  apiKey: process.env.WORQHAT_API_KEY,
+});
+
+(async () => {
+  const res = await client.health.check();
+  console.log('API Status:', res.status);
+})();
+```
+
+```python python
+import os
+from worqhat import Worqhat
+
+client = Worqhat(api_key=os.environ.get("WORQHAT_API_KEY", ""))
+
+res = client.health.check()
+print("API Status:", res.status)
+```
+</CodeGroup>
+
+### Step 2: Make Your First API Request
+
+Let's make a simple request to check the API health status:
+
+<CodeGroup>
+```bash curl
+curl -X GET "https://api.worqhat.com/health" \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+```javascript fetch.js
+fetch('https://api.worqhat.com/health', {
+  headers: {
+    'Authorization': 'Bearer YOUR_API_KEY'
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+```python requests.py
+import requests
+
+headers = {
+    "Authorization": "Bearer YOUR_API_KEY"
+}
+
+response = requests.get("https://api.worqhat.com/health", headers=headers)
+print(response.json())
+```
+</CodeGroup>
+
+You should receive a response similar to:
+
+```json
+{
+  "status": "ok",
+  "uptime": 123.45,
+  "version": "1.0.0",
+  "environment": "production",
+  "timestamp": "2025-07-24T17:00:00Z",
+  "services": {
+    "database": "ok"
+  }
+}
+```
+
+### Step 3: Explore the API
+
+Now that you've made your first request, you can explore the different endpoints available:
+
+<CardGroup cols={2}>
+  <Card title="Database Operations" href="#database-operations">
+    Query, insert, update, and delete data using the database endpoints.
+  </Card>
+  <Card title="Workflow Management" href="#workflow-management">
+    Create and manage workflows for your organization.
+  </Card>
+  <Card title="System Information" href="#system-information">
+    Get information about the API server and its health status.
+  </Card>
+  <Card title="User Management" href="#user-management">
+    Manage users and their permissions.
+  </Card>
+</CardGroup>
+
+## Code Examples
+
+### Checking API Health
+
+<CodeGroup dropdown>
+```javascript node.js
+import Worqhat from 'worqhat';
+
+const client = new Worqhat({
+  apiKey: process.env.WORQHAT_API_KEY,
+});
+
+async function checkApiHealth() {
+  try {
+    const response = await client.health.check();
+    console.log(`API Status: ${response.status}`);
+    return response;
+  } catch (error) {
+    console.error('Error checking API health:', error);
+  }
+}
+
+checkApiHealth();
+```
+
+```python python
+from worqhat import Worqhat
+
+# Initialize the client
+client = Worqhat(
+    api_key="YOUR_API_KEY",  # Better to use environment variables
+)
+
+# Check API health
+response = client.health.check()
+print(f"API Status: {response.status}")
+```
+
+```go golang
+package main
+
+import (
+  "context"
+  "fmt"
+
+  "github.com/WorqHat/worqhat-go-sdk"
+  "github.com/WorqHat/worqhat-go-sdk/option"
+)
+
+func main() {
+  client := worqhat.NewClient(
+    option.WithAPIKey("YOUR_API_KEY"),  // Better to use environment variables
+  )
+  
+  response, err := client.Health.Check(context.TODO())
+  if err != nil {
+    panic(err.Error())
+  }
+  
+  fmt.Printf("API Status: %s\n", response.Status)
+}
+```
+
+```java java
+import com.worqhat.api.client.WorqhatClient;
+import com.worqhat.api.client.okhttp.WorqhatOkHttpClient;
+import com.worqhat.api.models.health.HealthCheckResponse;
+
+public class HealthCheck {
+    public static void main(String[] args) {
+        WorqhatClient client = WorqhatOkHttpClient.builder()
+            .apiKey(System.getenv("WORQHAT_API_KEY"))
+            .build();
+            
+        HealthCheckResponse response = client.health().check();
+        System.out.println("API Status: " + response.getStatus());
+    }
+}
+```
+</CodeGroup>
+
+### Database Operations
+
+<CodeGroup dropdown>
+```javascript node.js
+import Worqhat from 'worqhat';
+
+const client = new Worqhat({
+  apiKey: process.env.WORQHAT_API_KEY,
+});
+
+async function queryDatabase() {
+  try {
+    const response = await client.db.executeQuery({
+      query: "SELECT * FROM users WHERE status = 'active' LIMIT 10",
+    });
+    console.log(response.data);
+    return response;
+  } catch (error) {
+    console.error('Error querying database:', error);
+  }
+}
+
+queryDatabase();
+```
+
+```python python
+from worqhat import Worqhat
+
+# Initialize the client
+client = Worqhat(
+    api_key="YOUR_API_KEY",  # Better to use environment variables
+)
+
+# Query the database
+response = client.db.execute_query(
+    query="SELECT * FROM users WHERE status = 'active' LIMIT 10",
+)
+print(response.data)
+```
+
+```go golang
+package main
+
+import (
+  "context"
+  "fmt"
+
+  "github.com/WorqHat/worqhat-go-sdk"
+  "github.com/WorqHat/worqhat-go-sdk/option"
+)
+
+func main() {
+  client := worqhat.NewClient(
+    option.WithAPIKey("YOUR_API_KEY"),  // Better to use environment variables
+  )
+  
+  response, err := client.DB.ExecuteQuery(context.TODO(), worqhat.DBExecuteQueryParams{
+    Query: "SELECT * FROM users WHERE status = 'active' LIMIT 10",
+  })
+  if err != nil {
+    panic(err.Error())
+  }
+  
+  fmt.Printf("%+v\n", response.Data)
+}
+```
+</CodeGroup>
+
+## Next Steps
+
+Now that you've made your first API request, you can:
+
+1. Explore the [API Reference](/api-reference) for detailed endpoint documentation
+2. Learn about [Authentication](/authentication) mechanisms
+3. Check out our [Code Examples](/code-examples) for common use cases
+4. Join our [Developer Community](https://discord.com/invite/KHh9mguKBx) for support
+
+<Card title="Need Help?" icon="question" href="https://worqhat.com/contact-us">
+  Contact our support team if you encounter any issues or have questions about the API.
+</Card>

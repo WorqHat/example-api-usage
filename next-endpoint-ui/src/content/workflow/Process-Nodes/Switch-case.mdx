@@ -1,0 +1,162 @@
+
+**Category:** Logic and Flow Control
+**Type:** Conditional Branching Node
+
+---
+
+## Overview
+
+The **Switch Case Node** enables conditional logic within your workflow.
+It evaluates an input value and directs the workflow to the appropriate branch based on the defined conditions.
+If no condition matches, the workflow continues through the **Default** path, ensuring uninterrupted execution.
+
+This node is ideal for creating workflows that require multiple decision points, such as routing data, performing different actions based on user input, or managing alternative outcomes.
+
+---
+
+## Description
+
+The Switch Case Node functions like a decision gate. It checks an incoming value—such as a number, text, or boolean—and determines which branch of the workflow should be executed next.
+
+For example:
+
+* If the input is “1”, the workflow can proceed to an “Add Data” node.
+* If the input is “2”, it can proceed to a “Delete Data” node.
+* If the input does not match any case, it will follow the default branch and return a fallback response.
+
+This ensures your automation logic remains organized and predictable.
+
+---
+
+## Input Parameters
+
+The following inputs are used to configure the node:
+
+* **Parameter** – The value to be checked (for example, `number: 2`).
+* **Cases** – A list of possible values that determine workflow branching.
+* **Default** – The fallback route if no cases match.
+* **Parameter Type** – The type of input value (integer, string, boolean, etc.).
+
+---
+
+## Output Parameters
+
+After evaluation, the node outputs information that defines which case was matched and where the workflow will continue next.
+
+* **Parameter** – The value that was checked.
+* **Parameter Type** – The type of data used in evaluation.
+* **Matched Case** – The case name that matched the input value (or “default” if none matched).
+* **Next Node** – The ID or name of the next node to be executed.
+
+---
+
+## Example Usage
+
+### Example 1 — When a Case Matches
+
+**Input:**
+
+```json
+{
+  "input": {
+    "number": "1"
+  }
+}
+```
+
+**Output:**
+
+```json
+{
+  "parameter": 1,
+  "parameterType": "integer",
+  "matchedCase": "Add Data",
+  "nextNode": "add-data-3"
+}
+```
+
+In this example, the input `"1"` matched the “Add Data” case, so the workflow continued to that node.
+
+---
+
+### Example 2 — When No Case Matches
+
+**Input:**
+
+```json
+{
+  "input": {
+    "number": "2"
+  }
+}
+```
+
+**Output:**
+
+```json
+{
+  "parameter": "2",
+  "parameterType": "integer",
+  "matchedCase": "default",
+  "nextNode": "return-state-5"
+}
+```
+
+Here, the input `"2"` did not match any defined case, so the workflow followed the default path and returned the message:
+
+```json
+{ "enter valid choice": null }
+```
+
+---
+
+## How to Use
+
+1. **Add the Switch Case Node** to your workflow.
+2. **Connect a Trigger Node**, such as the REST API Trigger, to pass input data.
+3. **Select the Input Field** you want the node to evaluate (for example, `number`).
+4. **Define Cases** that represent different workflow paths.
+5. **Connect Each Case Output** to the appropriate node (for example, Add Data or Delete Data).
+6. **Set Up a Default Path** to handle any unexpected or unmatched inputs.
+7. **Test the Workflow** using sample inputs to ensure each case functions correctly.
+
+---
+
+## Best Practices
+
+* Always include a **Default** branch to prevent workflow interruptions.
+* Ensure the **data type** of your input matches the defined case values (for example, `"2"` as a string vs `2` as an integer).
+* Use clear, descriptive names for each case to simplify debugging.
+* Test each case individually to confirm correct routing before deploying your workflow.
+
+---
+
+## Example Workflow Integration
+
+A common implementation looks like this:
+
+```
+REST API Trigger → Switch Case → (Add Data / Delete Data / Return State)
+```
+
+In this setup:
+
+* Input `"1"` routes to the **Add Data** node.
+* Input `"2"` routes to the **Delete Data** node.
+* Any other input follows the **Default** path to the **Return State** node, returning a message such as `{ "enter valid choice": null }`.
+
+---
+
+## Common Errors
+
+* **Issue:** Every input goes to the default branch.
+  **Solution:** Verify that your input matches the defined case values and data types.
+
+* **Issue:** Workflow stops unexpectedly.
+  **Solution:** Ensure a Default branch is configured and connected.
+
+* **Issue:** Incorrect node triggered.
+  **Solution:** Double-check that each case is properly linked to the intended next node.
+
+---
+

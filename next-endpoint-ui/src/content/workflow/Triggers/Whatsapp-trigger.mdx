@@ -1,0 +1,155 @@
+**Category:** Trigger
+**Type:** Event-Based
+
+---
+
+## Overview
+
+The **WhatsApp Trigger** node automatically starts your workflow whenever a new WhatsApp message is received.
+It’s perfect for automating responses, logging incoming chats, or kicking off custom actions when someone messages you on WhatsApp.
+
+---
+
+## Description
+
+This node listens for incoming WhatsApp messages through your connected WhatsApp account.
+Whenever someone sends a text or media message, it instantly activates the workflow and passes the message details — like sender name, message body, and attachments — to the next steps in your automation.
+
+You can use it to:
+
+* Send auto-replies to specific keywords.
+* Store received messages in a database.
+* Forward media or text to another channel.
+* Trigger smart responses using AI nodes.
+
+All message data is automatically captured by the node, so you don’t need to configure anything manually.
+
+---
+
+## Input Parameters
+
+The WhatsApp Trigger includes five automatically-filled fields whenever a new message is received:
+
+* **messageId** → The unique ID of the incoming WhatsApp message.
+* **from** → The WhatsApp number or name of the sender.
+* **to** → The WhatsApp number or name of the receiver (your connected account).
+* **body** → The text content of the message. Empty if the message contains only media.
+* **file** → The file reference or ID if an image, PDF, video, or other attachment is sent.
+
+These values are automatically populated by WhatsApp’s webhook system — you don’t have to set them yourself.
+You can access them anywhere in the workflow using variables like:
+
+```
+{{nodeId.input.messageId}}
+{{nodeId.input.from}}
+{{nodeId.input.to}}
+{{nodeId.input.body}}
+{{nodeId.input.file}}
+```
+
+---
+
+## Output Parameters
+
+This node doesn’t create new outputs.
+Its purpose is to **make WhatsApp message data available** for use in other connected nodes.
+
+---
+
+## Output Type
+
+There’s no output type — this node simply exposes message information to the rest of your workflow.
+
+---
+
+## Example Usage
+
+### Example 1 — Basic Text Message
+
+When someone sends:
+
+```json
+{
+  "messageId": "1",
+  "from": "Akshay",
+  "to": "John",
+  "body": "meet at evening"
+}
+```
+
+Your workflow might respond or store the message like this:
+
+```json
+{
+  "message": "meet at evening"
+}
+```
+
+The workflow starts automatically when the message arrives, using the text `"meet at evening"` as input for the next node.
+
+---
+
+### Example 2 — Message with Attachment
+
+If a message includes media:
+
+```json
+{
+  "messageId": "4523",
+  "from": "+919876543210",
+  "to": "+911234567890",
+  "body": "Please find the attached report.",
+  "file": "report_2025.pdf"
+}
+```
+
+The workflow can use the `file` field to download, store, or forward the attachment to another system.
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the WhatsApp Trigger Node**
+   Drag and drop the node as the first step in your workflow. It acts as the workflow’s starting point.
+
+2. **Connect It to Action Nodes**
+   Link it to a node that performs an action — for example, a **Send Message**, **Text Generation**, or **Return State** node.
+
+3. **Use Message Data**
+   You can use dynamic variables like `{{nodeId.input.body}}` to read the user’s message and respond accordingly.
+
+4. **Save and Activate**
+   Once connected, save and activate the workflow.
+   Now, every time a WhatsApp message is received, the workflow will start automatically.
+
+---
+
+## Best Practices
+
+* Use `{{nodeId.input.body}}` to check or process the user’s text.
+* If the `file` field has a value, handle it before performing text-only actions.
+* Store important messages or attachments in a database for record-keeping.
+* Combine this node with a **Text Generation** node to create auto-replies.
+* Add a **Condition** node if you want the workflow to react differently depending on message content.
+
+---
+
+
+
+## Common Errors and Fixes
+
+* **Workflow doesn’t trigger:**
+  Check if your WhatsApp webhook or integration is properly connected.
+
+* **File field is empty:**
+  The message didn’t include media. Skip file processing for text-only messages.
+
+* **Message body missing:**
+  This happens if the message only contained an attachment — use the `file` value instead.
+
+* **No response or action:**
+  Make sure you’ve connected another node (like “Return State” or “Send Message”) after the trigger.
+
+---
+
+

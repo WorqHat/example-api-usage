@@ -1,0 +1,339 @@
+---
+title: 'Delete File'
+description: 'Permanently delete a file from storage'
+---
+
+Permanently deletes a file from storage using its unique ID. This action cannot be undone, so use with caution.
+
+```endpoint
+DELETE https://api.worqhat.com/storage/delete/{fileId}
+```
+
+## What Does This Endpoint Do?
+
+This endpoint allows you to permanently remove a file from WorqHat storage. Think of it like deleting a file from your computer's trash - once deleted, the file cannot be recovered.
+
+## When to Use Delete File
+
+You'll find this endpoint useful when you need to:
+
+- **Clean up old files**: Remove outdated or unnecessary files
+- **Implement data retention policies**: Delete files that are beyond your retention period
+- **Free up storage space**: Remove large files to make room for new ones
+- **Handle user requests**: Delete user data upon request (e.g., for privacy compliance)
+- **Remove temporary files**: Clean up files that were only needed temporarily
+- **Manage storage costs**: Delete files to reduce storage usage and costs
+
+## How It Works
+
+1. You provide the **file ID** (obtained when you uploaded the file)
+2. The API locates the file in your organization's storage
+3. The API permanently deletes the file from storage
+4. The API returns confirmation of the deletion
+
+## Code Examples
+
+### Example 1: Basic File Deletion
+
+This example shows how to delete a file using its ID.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function deleteDocument() {
+      try {
+        const fileId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+        
+        // Call the deleteFileByID method
+        const response = await client.storage.deleteFileByID(fileId);
+        
+        // Handle the successful response
+        console.log('File deleted successfully!');
+        console.log('Message:', response.message);
+        console.log('Deleted at:', response.deletedAt);
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error deleting file:', error.message);
+      }
+    }
+    
+    // Call the function
+    deleteDocument();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Delete a file by ID
+    try:
+        file_id = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+        response = client.storage.delete_file_by_id(file_id)
+        
+        # Handle the successful response
+        print("File deleted successfully!")
+        print(f"Message: {response.message}")
+        print(f"Deleted at: {response.deletedAt}")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error deleting file: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Delete a file by ID
+      fileID := "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+      response, err := client.Storage.DeleteFileByID(context.TODO(), fileID)
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error deleting file: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Println("File deleted successfully!")
+      fmt.Printf("Message: %s\n", response.Message)
+      fmt.Printf("Deleted at: %s\n", response.DeletedAt)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Delete a file by ID
+    curl -X DELETE "https://api.worqhat.com/storage/delete/a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+      -H "Authorization: Bearer YOUR_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: Batch File Deletion
+
+This example shows how to delete multiple files in sequence.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function deleteMultipleFiles() {
+      try {
+        const fileIds = [
+          'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+          'b2c3d4e5-f6g7-8901-bcde-f23456789012',
+          'c3d4e5f6-g7h8-9012-cdef-345678901234'
+        ];
+        
+        const results = [];
+        
+        for (const fileId of fileIds) {
+          try {
+            const response = await client.storage.deleteFileByID(fileId);
+            results.push({ fileId, success: true, message: response.message });
+            console.log(`Deleted file ${fileId}: ${response.message}`);
+          } catch (error) {
+            results.push({ fileId, success: false, error: error.message });
+            console.error(`Failed to delete file ${fileId}:`, error.message);
+          }
+        }
+        
+        console.log('Batch deletion completed:', results);
+        return results;
+      } catch (error) {
+        console.error('Error in batch deletion:', error.message);
+      }
+    }
+    
+    deleteMultipleFiles();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Delete multiple files
+    try:
+        file_ids = [
+            "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "b2c3d4e5-f6g7-8901-bcde-f23456789012",
+            "c3d4e5f6-g7h8-9012-cdef-345678901234"
+        ]
+        
+        results = []
+        
+        for file_id in file_ids:
+            try:
+                response = client.storage.delete_file_by_id(file_id)
+                results.append({"file_id": file_id, "success": True, "message": response.message})
+                print(f"Deleted file {file_id}: {response.message}")
+            except Exception as e:
+                results.append({"file_id": file_id, "success": False, "error": str(e)})
+                print(f"Failed to delete file {file_id}: {str(e)}")
+        
+        print(f"Batch deletion completed: {results}")
+    except Exception as e:
+        print(f"Error in batch deletion: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Delete multiple files
+      fileIDs := []string{
+        "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+        "b2c3d4e5-f6g7-8901-bcde-f23456789012",
+        "c3d4e5f6-g7h8-9012-cdef-345678901234",
+      }
+      
+      results := []map[string]interface{}{}
+      
+      for _, fileID := range fileIDs {
+        response, err := client.Storage.DeleteFileByID(context.TODO(), fileID)
+        
+        if err != nil {
+          results = append(results, map[string]interface{}{
+            "file_id": fileID,
+            "success": false,
+            "error": err.Error(),
+          })
+          fmt.Printf("Failed to delete file %s: %s\n", fileID, err.Error())
+        } else {
+          results = append(results, map[string]interface{}{
+            "file_id": fileID,
+            "success": true,
+            "message": response.Message,
+          })
+          fmt.Printf("Deleted file %s: %s\n", fileID, response.Message)
+        }
+      }
+      
+      fmt.Printf("Batch deletion completed: %+v\n", results)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Delete multiple files
+    curl -X DELETE "https://api.worqhat.com/storage/delete/a1b2c3d4-e5f6-7890-abcd-ef1234567890" \
+      -H "Authorization: Bearer YOUR_API_KEY"
+    
+    curl -X DELETE "https://api.worqhat.com/storage/delete/b2c3d4e5-f6g7-8901-bcde-f23456789012" \
+      -H "Authorization: Bearer YOUR_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+## Request Parameters
+
+<ParamField path="fileId" type="string" required>
+  The unique identifier of the file to delete. This is the ID that was returned when you uploaded the file.
+  
+  Example: `"a1b2c3d4-e5f6-7890-abcd-ef1234567890"`
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if the file was deleted successfully, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  A human-readable message describing the result of the deletion operation.
+</ResponseField>
+
+<ResponseField name="deletedAt" type="string">
+  The timestamp when the file was deleted (ISO 8601 format).
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "message": "File deleted successfully",
+  "deletedAt": "2025-07-26T03:28:08.123Z"
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "File not found" | The file ID doesn't exist or has already been deleted | Check that the file ID is correct and the file still exists |
+| "Invalid file ID" | The file ID format is incorrect | Use a valid UUID format for the file ID |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+| "File access denied" | You don't have permission to delete this file | Ensure the file belongs to your organization |
+
+## Tips for Safe File Deletion
+
+- **Double-check file IDs** before deleting to avoid accidental deletions
+- **Implement confirmation steps** in user interfaces before deletion
+- **Keep backups** of important files before deletion
+- **Use batch deletion carefully** to avoid deleting too many files at once
+- **Log deletion activities** for audit purposes
+- **Consider soft deletion** for files that might need to be recovered
+- **Test deletion in development** before using in production

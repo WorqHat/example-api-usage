@@ -1,0 +1,1288 @@
+---
+title: 'Detect Anomalies'
+description: 'Identify anomalous or outlier records using vector embeddings'
+---
+
+Identifies anomalous or outlier records using K-nearest neighbors analysis on vector embeddings. This endpoint is perfect for fraud detection, data quality checks, and identifying unusual patterns in your data.
+
+```endpoint
+POST https://api.worqhat.com/db/detect-anomalies
+```
+
+## What Does This Endpoint Do?
+
+This endpoint uses advanced machine learning techniques to identify records that are significantly different from the majority of your data. It analyzes vector embeddings to find outliers that might indicate fraud, errors, or interesting patterns that warrant investigation.
+
+## When to Use Anomaly Detection
+
+You'll find this endpoint useful when you need to:
+
+- **Fraud detection**: Identify suspicious transactions, accounts, or activities
+- **Data quality assurance**: Find records that might contain errors or inconsistencies
+- **Security monitoring**: Detect unusual patterns that could indicate security breaches
+- **Business intelligence**: Discover outliers that might represent new opportunities or risks
+- **Compliance monitoring**: Identify records that don't conform to expected patterns
+- **Research and analysis**: Find interesting edge cases or unusual data points
+
+## How It Works
+
+1. You specify a **table** to analyze for anomalies
+2. The system retrieves **vector embeddings** for all records in the table
+3. It performs **K-nearest neighbors analysis** to calculate anomaly scores
+4. Records with **high anomaly scores** are identified as outliers
+5. Results include **nearest neighbors** and **distance metrics** for each anomaly
+
+## Code Examples
+
+### Example 1: Basic Anomaly Detection
+
+This example shows how to detect anomalies in a transactions table.
+
+<CodeBlock
+  defaultValue="javascript"
+  data={[
+    {
+      language: "javascript",
+      filename: "detect-anomalies.js",
+      code: `import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function detectAnomalies() {
+      try {
+        // Call the detectAnomalies method
+        const response = await client.db.detectAnomalies({
+          table: "transactions",
+          k: 10,
+          threshold: 0.8,
+          limit: 50,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+    console.log(\`Analyzed \${response.total_records} records\`);
+    console.log(\`Found \${response.anomaly_count} anomalies\`);
+        console.log('Anomalies:', response.anomalies);
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error detecting anomalies:', error.message);
+      }
+    }
+    
+    // Call the function
+detectAnomalies();`,
+    },
+    {
+      language: "python",
+      filename: "detect_anomalies.py",
+      code: `from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Detect anomalies
+    try:
+        response = client.db.detect_anomalies(
+            table="transactions",
+            k=10,
+            threshold=0.8,
+            limit=50,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Analyzed {response.total_records} records")
+        print(f"Found {response.anomaly_count} anomalies")
+        print(f"Anomalies: {response.anomalies}")
+    except Exception as e:
+        # Handle any errors
+    print(f"Error detecting anomalies: {str(e)}")`,
+    },
+    {
+      language: "go",
+      filename: "detect_anomalies.go",
+      code: `package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func getEnvOrDefault(key, defaultValue string) string {
+      if value := os.Getenv(key); value != "" {
+        return value
+      }
+      return defaultValue
+    }
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Detect anomalies
+      response, err := client.DB.DetectAnomalies(context.TODO(), worqhat.DBDetectAnomaliesParams{
+        Table: "transactions",
+        K: 10,
+        Threshold: 0.8,
+        Limit: 50,
+        Environment: getEnvOrDefault("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error detecting anomalies: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Analyzed %d records\n", response.TotalRecords)
+      fmt.Printf("Found %d anomalies\n", response.AnomalyCount)
+      fmt.Printf("Anomalies: %+v\n", response.Anomalies)
+}`,
+    },
+    {
+      language: "bash",
+      filename: "detect-anomalies.sh",
+      code: `# Detect anomalies
+curl -X POST "https://api.worqhat.com/db/detect-anomalies" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "table": "transactions",
+    "k": 10,
+    "threshold": 0.8,
+    "limit": 50,
+    "environment": "production"
+  }'`,
+    },
+  ]}
+>
+  <CodeBlockHeader>
+    <CodeBlockFiles>
+      <CodeBlockFilename value="javascript">
+        detect-anomalies.js
+      </CodeBlockFilename>
+      <CodeBlockFilename value="python">
+        detect_anomalies.py
+      </CodeBlockFilename>
+      <CodeBlockFilename value="go">
+        detect_anomalies.go
+      </CodeBlockFilename>
+      <CodeBlockFilename value="bash">
+        detect-anomalies.sh
+      </CodeBlockFilename>
+    </CodeBlockFiles>
+
+    <CodeBlockSelect>
+      <CodeBlockSelectTrigger>
+        <CodeBlockSelectValue placeholder="Select language" />
+      </CodeBlockSelectTrigger>
+      <CodeBlockSelectContent>
+        <CodeBlockSelectItem value="javascript">
+          detect-anomalies.js
+        </CodeBlockSelectItem>
+        <CodeBlockSelectItem value="python">
+          detect_anomalies.py
+        </CodeBlockSelectItem>
+        <CodeBlockSelectItem value="go">
+          detect_anomalies.go
+        </CodeBlockSelectItem>
+        <CodeBlockSelectItem value="bash">
+          detect-anomalies.sh
+        </CodeBlockSelectItem>
+      </CodeBlockSelectContent>
+    </CodeBlockSelect>
+
+    <CodeBlockCopyButton />
+  </CodeBlockHeader>
+
+  <CodeBlockBody>
+    <CodeBlockItem value="javascript">
+      <CodeBlockContent language="javascript">
+        {`import Worqhat from 'worqhat';
+
+// Initialize the client with your API key
+const client = new Worqhat({
+  apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+});
+
+async function detectAnomalies() {
+  try {
+    // Call the detectAnomalies method
+    const response = await client.db.detectAnomalies({
+      table: "transactions",
+      k: 10,
+      threshold: 0.8,
+      limit: 50,
+      environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+    });
+    
+    // Handle the successful response
+    console.log(\`Analyzed \${response.total_records} records\`);
+    console.log(\`Found \${response.anomaly_count} anomalies\`);
+    console.log('Anomalies:', response.anomalies);
+    return response;
+  } catch (error) {
+    // Handle any errors
+    console.error('Error detecting anomalies:', error.message);
+  }
+}
+
+// Call the function
+detectAnomalies();`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+
+    <CodeBlockItem value="python">
+      <CodeBlockContent language="python">
+        {`from worqhat import Worqhat
+import os
+
+# Initialize the client with your API key
+client = Worqhat(
+    api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+)
+
+    # Detect anomalies
+try:
+    response = client.db.detect_anomalies(
+        table="transactions",
+        k=10,
+        threshold=0.8,
+        limit=50,
+        environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+    )
+    
+    # Handle the successful response
+    print(f"Analyzed {response.total_records} records")
+    print(f"Found {response.anomaly_count} anomalies")
+    print(f"Anomalies: {response.anomalies}")
+except Exception as e:
+    # Handle any errors
+    print(f"Error detecting anomalies: {str(e)}")`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+
+    <CodeBlockItem value="go">
+      <CodeBlockContent language="go">
+        {`package main
+
+import (
+  "context"
+  "fmt"
+  "os"
+
+  "github.com/WorqHat/worqhat-go-sdk"
+  "github.com/WorqHat/worqhat-go-sdk/option"
+)
+
+func getEnvOrDefault(key, defaultValue string) string {
+  if value := os.Getenv(key); value != "" {
+    return value
+  }
+  return defaultValue
+}
+
+func main() {
+  // Initialize the client with your API key
+  client := worqhat.NewClient(
+    option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+  )
+  
+  // Detect anomalies
+  response, err := client.DB.DetectAnomalies(context.TODO(), worqhat.DBDetectAnomaliesParams{
+    Table: "transactions",
+    K: 10,
+    Threshold: 0.8,
+    Limit: 50,
+    Environment: getEnvOrDefault("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+  })
+  
+  // Handle errors
+  if err != nil {
+    fmt.Printf("Error detecting anomalies: %s\n", err.Error())
+    return
+  }
+  
+  // Handle the successful response
+  fmt.Printf("Analyzed %d records\n", response.TotalRecords)
+  fmt.Printf("Found %d anomalies\n", response.AnomalyCount)
+  fmt.Printf("Anomalies: %+v\n", response.Anomalies)
+}`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+
+    <CodeBlockItem value="bash">
+      <CodeBlockContent language="bash">
+        {`# Detect anomalies
+    curl -X POST "https://api.worqhat.com/db/detect-anomalies" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "transactions",
+        "k": 10,
+        "threshold": 0.8,
+        "limit": 50,
+        "environment": "production"
+  }'`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+  </CodeBlockBody>
+</CodeBlock>
+
+### Example 2: Fraud Detection with Custom Parameters
+
+This example shows how to tune parameters for fraud detection in financial transactions.
+
+<CodeBlock
+  defaultValue="javascript"
+  data={[
+    {
+      language: "javascript",
+      filename: "detect-fraud.js",
+      code: `import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function detectFraud() {
+      try {
+        // Detect fraud with stricter parameters
+        const response = await client.db.detectAnomalies({
+          table: "financial_transactions",
+          k: 15,              // More neighbors for better accuracy
+          threshold: 0.9,     // Higher threshold for stricter detection
+          limit: 100,         // More results to investigate
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+    console.log(\`Fraud detection analysis complete\`);
+    console.log(\`Total transactions analyzed: \${response.total_records}\`);
+    console.log(\`Potential fraud cases: \${response.anomaly_count}\`);
+        
+        // Process each anomaly
+        response.anomalies.forEach((anomaly, index) => {
+      console.log(\`\\nAnomaly \${index + 1}:\`);
+      console.log(\`- Transaction ID: \${anomaly.record.transaction_id}\`);
+      console.log(\`- Amount: $\${anomaly.record.amount}\`);
+      console.log(\`- Anomaly Score: \${anomaly.anomaly_score}\`);
+      console.log(\`- Average Distance: \${anomaly.avg_distance}\`);
+        });
+        return response;
+      } catch (error) {
+        console.error('Error detecting fraud:', error.message);
+      }
+    }
+    
+detectFraud();`,
+    },
+    {
+      language: "python",
+      filename: "detect_fraud.py",
+      code: `from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Detect fraud with stricter parameters
+    try:
+        response = client.db.detect_anomalies(
+            table="financial_transactions",
+            k=15,              # More neighbors for better accuracy
+            threshold=0.9,    # Higher threshold for stricter detection
+            limit=100,        # More results to investigate
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print("Fraud detection analysis complete")
+        print(f"Total transactions analyzed: {response.total_records}")
+        print(f"Potential fraud cases: {response.anomaly_count}")
+        
+        # Process each anomaly
+        for i, anomaly in enumerate(response.anomalies):
+        print(f"\\nAnomaly {i + 1}:")
+            print(f"- Transaction ID: {anomaly.record.transaction_id}")
+        print(f"- Amount: {anomaly.record.amount}")
+            print(f"- Anomaly Score: {anomaly.anomaly_score}")
+            print(f"- Average Distance: {anomaly.avg_distance}")
+    except Exception as e:
+    print(f"Error detecting fraud: {str(e)}")`,
+    },
+    {
+      language: "go",
+      filename: "detect_fraud.go",
+      code: `package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Detect fraud with stricter parameters
+      response, err := client.DB.DetectAnomalies(context.TODO(), worqhat.DBDetectAnomaliesParams{
+        Table: "financial_transactions",
+        K: 15,              // More neighbors for better accuracy
+        Threshold: 0.9,     // Higher threshold for stricter detection
+        Limit: 100,         // More results to investigate
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error detecting fraud: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Println("Fraud detection analysis complete")
+      fmt.Printf("Total transactions analyzed: %d\n", response.TotalRecords)
+      fmt.Printf("Potential fraud cases: %d\n", response.AnomalyCount)
+      
+      // Process each anomaly
+      for i, anomaly := range response.Anomalies {
+    fmt.Printf("\\nAnomaly %d:\\n", i+1)
+    fmt.Printf("- Transaction ID: %s\\n", anomaly.Record["transaction_id"])
+    fmt.Printf("- Amount: $%.2f\\n", anomaly.Record["amount"])
+    fmt.Printf("- Anomaly Score: %.3f\\n", anomaly.AnomalyScore)
+    fmt.Printf("- Average Distance: %.3f\\n", anomaly.AvgDistance)
+      }
+}`,
+    },
+    {
+      language: "bash",
+      filename: "detect-fraud.sh",
+      code: `# Detect fraud with stricter parameters
+curl -X POST "https://api.worqhat.com/db/detect-anomalies" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "table": "financial_transactions",
+    "k": 15,
+    "threshold": 0.9,
+    "limit": 100,
+    "environment": "production"
+  }'`,
+    },
+  ]}
+>
+  <CodeBlockHeader>
+    <CodeBlockFiles>
+      <CodeBlockFilename value="javascript">
+        detect-fraud.js
+      </CodeBlockFilename>
+      <CodeBlockFilename value="python">
+        detect_fraud.py
+      </CodeBlockFilename>
+      <CodeBlockFilename value="go">
+        detect_fraud.go
+      </CodeBlockFilename>
+      <CodeBlockFilename value="bash">
+        detect-fraud.sh
+      </CodeBlockFilename>
+    </CodeBlockFiles>
+
+    <CodeBlockSelect>
+      <CodeBlockSelectTrigger>
+        <CodeBlockSelectValue placeholder="Select language" />
+      </CodeBlockSelectTrigger>
+      <CodeBlockSelectContent>
+        <CodeBlockSelectItem value="javascript">
+          detect-fraud.js
+        </CodeBlockSelectItem>
+        <CodeBlockSelectItem value="python">
+          detect_fraud.py
+        </CodeBlockSelectItem>
+        <CodeBlockSelectItem value="go">
+          detect_fraud.go
+        </CodeBlockSelectItem>
+        <CodeBlockSelectItem value="bash">
+          detect-fraud.sh
+        </CodeBlockSelectItem>
+      </CodeBlockSelectContent>
+    </CodeBlockSelect>
+
+    <CodeBlockCopyButton />
+  </CodeBlockHeader>
+
+  <CodeBlockBody>
+    <CodeBlockItem value="javascript">
+      <CodeBlockContent language="javascript">
+        {`import Worqhat from 'worqhat';
+
+// Initialize the client with your API key
+const client = new Worqhat({
+  apiKey: process.env.WORQHAT_API_KEY,
+});
+
+async function detectFraud() {
+  try {
+    // Detect fraud with stricter parameters
+    const response = await client.db.detectAnomalies({
+      table: "financial_transactions",
+      k: 15,              // More neighbors for better accuracy
+      threshold: 0.9,     // Higher threshold for stricter detection
+      limit: 100,         // More results to investigate
+      environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+    });
+    
+    // Handle the successful response
+    console.log(\`Fraud detection analysis complete\`);
+    console.log(\`Total transactions analyzed: \${response.total_records}\`);
+    console.log(\`Potential fraud cases: \${response.anomaly_count}\`);
+    
+    // Process each anomaly
+    response.anomalies.forEach((anomaly, index) => {
+      console.log(\`\\nAnomaly \${index + 1}:\`);
+      console.log(\`- Transaction ID: \${anomaly.record.transaction_id}\`);
+      console.log(\`- Amount: $\${anomaly.record.amount}\`);
+      console.log(\`- Anomaly Score: \${anomaly.anomaly_score}\`);
+      console.log(\`- Average Distance: \${anomaly.avg_distance}\`);
+    });
+    return response;
+  } catch (error) {
+    console.error('Error detecting fraud:', error.message);
+  }
+}
+
+detectFraud();`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+
+    <CodeBlockItem value="python">
+      <CodeBlockContent language="python">
+        {`from worqhat import Worqhat
+import os
+
+# Initialize the client with your API key
+client = Worqhat(
+    api_key=os.environ.get("WORQHAT_API_KEY"),
+)
+
+    # Detect fraud with stricter parameters
+try:
+    response = client.db.detect_anomalies(
+        table="financial_transactions",
+        k=15,              # More neighbors for better accuracy
+        threshold=0.9,    # Higher threshold for stricter detection
+        limit=100,        # More results to investigate
+        environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+    )
+    
+    # Handle the successful response
+    print("Fraud detection analysis complete")
+    print(f"Total transactions analyzed: {response.total_records}")
+    print(f"Potential fraud cases: {response.anomaly_count}")
+    
+    # Process each anomaly
+    for i, anomaly in enumerate(response.anomalies):
+        print(f"\\nAnomaly {i + 1}:")
+        print(f"- Transaction ID: {anomaly.record.transaction_id}")
+        print(f"- Amount: {anomaly.record.amount}")
+        print(f"- Anomaly Score: {anomaly.anomaly_score}")
+        print(f"- Average Distance: {anomaly.avg_distance}")
+except Exception as e:
+    print(f"Error detecting fraud: {str(e)}")`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+
+    <CodeBlockItem value="go">
+      <CodeBlockContent language="go">
+        {`package main
+
+import (
+  "context"
+  "fmt"
+  "os"
+
+  "github.com/WorqHat/worqhat-go-sdk"
+  "github.com/WorqHat/worqhat-go-sdk/option"
+)
+
+func main() {
+  // Initialize the client with your API key
+  client := worqhat.NewClient(
+    option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+  )
+  
+  // Detect fraud with stricter parameters
+  response, err := client.DB.DetectAnomalies(context.TODO(), worqhat.DBDetectAnomaliesParams{
+    Table: "financial_transactions",
+    K: 15,              // More neighbors for better accuracy
+    Threshold: 0.9,     // Higher threshold for stricter detection
+    Limit: 100,         // More results to investigate
+    Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+  })
+  
+  // Handle errors
+  if err != nil {
+    fmt.Printf("Error detecting fraud: %s\n", err.Error())
+    return
+  }
+  
+  // Handle the successful response
+  fmt.Println("Fraud detection analysis complete")
+  fmt.Printf("Total transactions analyzed: %d\n", response.TotalRecords)
+  fmt.Printf("Potential fraud cases: %d\n", response.AnomalyCount)
+  
+  // Process each anomaly
+  for i, anomaly := range response.Anomalies {
+    fmt.Printf("\\nAnomaly %d:\\n", i+1)
+    fmt.Printf("- Transaction ID: %s\\n", anomaly.Record["transaction_id"])
+    fmt.Printf("- Amount: $%.2f\\n", anomaly.Record["amount"])
+    fmt.Printf("- Anomaly Score: %.3f\\n", anomaly.AnomalyScore)
+    fmt.Printf("- Average Distance: %.3f\\n", anomaly.AvgDistance)
+  }
+}`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+
+    <CodeBlockItem value="bash">
+      <CodeBlockContent language="bash">
+        {`# Detect fraud with stricter parameters
+    curl -X POST "https://api.worqhat.com/db/detect-anomalies" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "financial_transactions",
+        "k": 15,
+        "threshold": 0.9,
+        "limit": 100,
+        "environment": "production"
+  }'`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+  </CodeBlockBody>
+</CodeBlock>
+
+### Example 3: Data Quality Check
+
+This example shows how to use anomaly detection for data quality assurance.
+
+<CodeBlock
+  defaultValue="javascript"
+  data={[
+    {
+      language: "javascript",
+      filename: "data-quality.js",
+      code: `import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function checkDataQuality() {
+      try {
+        // Check data quality with moderate parameters
+        const response = await client.db.detectAnomalies({
+          table: "user_profiles",
+          k: 8,               // Moderate number of neighbors
+          threshold: 0.7,      // Moderate threshold for data quality
+          limit: 30,           // Reasonable number of results
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+    console.log(\`Data quality check complete\`);
+    console.log(\`Total profiles analyzed: \${response.total_records}\`);
+    console.log(\`Potential data quality issues: \${response.anomaly_count}\`);
+        
+        // Analyze anomalies for data quality issues
+        response.anomalies.forEach((anomaly, index) => {
+      console.log(\`\\nData Quality Issue \${index + 1}:\`);
+      console.log(\`- User ID: \${anomaly.record.user_id}\`);
+      console.log(\`- Profile: \${JSON.stringify(anomaly.record, null, 2)}\`);
+      console.log(\`- Anomaly Score: \${anomaly.anomaly_score}\`);
+      console.log(\`- Nearest Neighbors: \${anomaly.nearest_neighbors.length}\`);
+        });
+        return response;
+      } catch (error) {
+        console.error('Error checking data quality:', error.message);
+      }
+    }
+    
+checkDataQuality();`,
+    },
+    {
+      language: "python",
+      filename: "data_quality.py",
+      code: `from worqhat import Worqhat
+    import os
+    import json
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Check data quality with moderate parameters
+    try:
+        response = client.db.detect_anomalies(
+            table="user_profiles",
+            k=8,               # Moderate number of neighbors
+            threshold=0.7,     # Moderate threshold for data quality
+            limit=30,          # Reasonable number of results
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print("Data quality check complete")
+        print(f"Total profiles analyzed: {response.total_records}")
+        print(f"Potential data quality issues: {response.anomaly_count}")
+        
+        # Analyze anomalies for data quality issues
+        for i, anomaly in enumerate(response.anomalies):
+        print(f"\\nData Quality Issue {i + 1}:")
+            print(f"- User ID: {anomaly.record.user_id}")
+            print(f"- Profile: {json.dumps(anomaly.record, indent=2)}")
+            print(f"- Anomaly Score: {anomaly.anomaly_score}")
+            print(f"- Nearest Neighbors: {len(anomaly.nearest_neighbors)}")
+    except Exception as e:
+    print(f"Error checking data quality: {str(e)}")`,
+    },
+    {
+      language: "go",
+      filename: "data_quality.go",
+      code: `package main
+    
+    import (
+      "context"
+      "encoding/json"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Check data quality with moderate parameters
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
+      response, err := client.DB.DetectAnomalies(context.TODO(), worqhat.DBDetectAnomaliesParams{
+        Table: "user_profiles",
+        K: 8,               // Moderate number of neighbors
+        Threshold: 0.7,     // Moderate threshold for data quality
+        Limit: 30,          // Reasonable number of results
+        Environment: env, // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error checking data quality: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Println("Data quality check complete")
+      fmt.Printf("Total profiles analyzed: %d\n", response.TotalRecords)
+      fmt.Printf("Potential data quality issues: %d\n", response.AnomalyCount)
+      
+      // Analyze anomalies for data quality issues
+      for i, anomaly := range response.Anomalies {
+    fmt.Printf("\\nData Quality Issue %d:\\n", i+1)
+    fmt.Printf("- User ID: %s\\n", anomaly.Record["user_id"])
+        
+        profileJSON, _ := json.MarshalIndent(anomaly.Record, "", "  ")
+    fmt.Printf("- Profile: %s\\n", profileJSON)
+    fmt.Printf("- Anomaly Score: %.3f\\n", anomaly.AnomalyScore)
+    fmt.Printf("- Nearest Neighbors: %d\\n", len(anomaly.NearestNeighbors))
+      }
+}`,
+    },
+    {
+      language: "bash",
+      filename: "data-quality.sh",
+      code: `# Check data quality with moderate parameters
+curl -X POST "https://api.worqhat.com/db/detect-anomalies" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{
+    "table": "user_profiles",
+    "k": 8,
+    "threshold": 0.7,
+    "limit": 30,
+    "environment": "production"
+  }'`,
+    },
+  ]}
+>
+  <CodeBlockHeader>
+    <CodeBlockFiles>
+      <CodeBlockFilename value="javascript">
+        data-quality.js
+      </CodeBlockFilename>
+      <CodeBlockFilename value="python">
+        data_quality.py
+      </CodeBlockFilename>
+      <CodeBlockFilename value="go">
+        data_quality.go
+      </CodeBlockFilename>
+      <CodeBlockFilename value="bash">
+        data-quality.sh
+      </CodeBlockFilename>
+    </CodeBlockFiles>
+
+    <CodeBlockSelect>
+      <CodeBlockSelectTrigger>
+        <CodeBlockSelectValue placeholder="Select language" />
+      </CodeBlockSelectTrigger>
+      <CodeBlockSelectContent>
+        <CodeBlockSelectItem value="javascript">
+          data-quality.js
+        </CodeBlockSelectItem>
+        <CodeBlockSelectItem value="python">
+          data_quality.py
+        </CodeBlockSelectItem>
+        <CodeBlockSelectItem value="go">
+          data_quality.go
+        </CodeBlockSelectItem>
+        <CodeBlockSelectItem value="bash">
+          data-quality.sh
+        </CodeBlockSelectItem>
+      </CodeBlockSelectContent>
+    </CodeBlockSelect>
+
+    <CodeBlockCopyButton />
+  </CodeBlockHeader>
+
+  <CodeBlockBody>
+    <CodeBlockItem value="javascript">
+      <CodeBlockContent language="javascript">
+        {`import Worqhat from 'worqhat';
+
+// Initialize the client with your API key
+const client = new Worqhat({
+  apiKey: process.env.WORQHAT_API_KEY,
+});
+
+async function checkDataQuality() {
+  try {
+    // Check data quality with moderate parameters
+    const response = await client.db.detectAnomalies({
+      table: "user_profiles",
+      k: 8,               // Moderate number of neighbors
+      threshold: 0.7,      // Moderate threshold for data quality
+      limit: 30,           // Reasonable number of results
+      environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+    });
+    
+    // Handle the successful response
+    console.log(\`Data quality check complete\`);
+    console.log(\`Total profiles analyzed: \${response.total_records}\`);
+    console.log(\`Potential data quality issues: \${response.anomaly_count}\`);
+    
+    // Analyze anomalies for data quality issues
+    response.anomalies.forEach((anomaly, index) => {
+      console.log(\`\\nData Quality Issue \${index + 1}:\`);
+      console.log(\`- User ID: \${anomaly.record.user_id}\`);
+      console.log(\`- Profile: \${JSON.stringify(anomaly.record, null, 2)}\`);
+      console.log(\`- Anomaly Score: \${anomaly.anomaly_score}\`);
+      console.log(\`- Nearest Neighbors: \${anomaly.nearest_neighbors.length}\`);
+    });
+    return response;
+  } catch (error) {
+    console.error('Error checking data quality:', error.message);
+  }
+}
+
+checkDataQuality();`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+
+    <CodeBlockItem value="python">
+      <CodeBlockContent language="python">
+        {`from worqhat import Worqhat
+import os
+import json
+
+# Initialize the client with your API key
+client = Worqhat(
+    api_key=os.environ.get("WORQHAT_API_KEY"),
+)
+
+    # Check data quality with moderate parameters
+try:
+    response = client.db.detect_anomalies(
+        table="user_profiles",
+        k=8,               # Moderate number of neighbors
+        threshold=0.7,     # Moderate threshold for data quality
+        limit=30,          # Reasonable number of results
+        environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+    )
+    
+    # Handle the successful response
+    print("Data quality check complete")
+    print(f"Total profiles analyzed: {response.total_records}")
+    print(f"Potential data quality issues: {response.anomaly_count}")
+    
+    # Analyze anomalies for data quality issues
+    for i, anomaly in enumerate(response.anomalies):
+        print(f"\\nData Quality Issue {i + 1}:")
+        print(f"- User ID: {anomaly.record.user_id}")
+        print(f"- Profile: {json.dumps(anomaly.record, indent=2)}")
+        print(f"- Anomaly Score: {anomaly.anomaly_score}")
+        print(f"- Nearest Neighbors: {len(anomaly.nearest_neighbors)}")
+except Exception as e:
+    print(f"Error checking data quality: {str(e)}")`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+
+    <CodeBlockItem value="go">
+      <CodeBlockContent language="go">
+        {`package main
+
+import (
+  "context"
+  "encoding/json"
+  "fmt"
+  "os"
+
+  "github.com/WorqHat/worqhat-go-sdk"
+  "github.com/WorqHat/worqhat-go-sdk/option"
+)
+
+func main() {
+  // Initialize the client with your API key
+  client := worqhat.NewClient(
+    option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+  )
+  
+  // Check data quality with moderate parameters
+  response, err := client.DB.DetectAnomalies(context.TODO(), worqhat.DBDetectAnomaliesParams{
+    Table: "user_profiles",
+    K: 8,               // Moderate number of neighbors
+    Threshold: 0.7,     // Moderate threshold for data quality
+    Limit: 30,          // Reasonable number of results
+    Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+  })
+  
+  // Handle errors
+  if err != nil {
+    fmt.Printf("Error checking data quality: %s\n", err.Error())
+    return
+  }
+  
+  // Handle the successful response
+  fmt.Println("Data quality check complete")
+  fmt.Printf("Total profiles analyzed: %d\n", response.TotalRecords)
+  fmt.Printf("Potential data quality issues: %d\n", response.AnomalyCount)
+  
+  // Analyze anomalies for data quality issues
+  for i, anomaly := range response.Anomalies {
+    fmt.Printf("\\nData Quality Issue %d:\\n", i+1)
+    fmt.Printf("- User ID: %s\\n", anomaly.Record["user_id"])
+    
+    profileJSON, _ := json.MarshalIndent(anomaly.Record, "", "  ")
+    fmt.Printf("- Profile: %s\\n", profileJSON)
+    fmt.Printf("- Anomaly Score: %.3f\\n", anomaly.AnomalyScore)
+    fmt.Printf("- Nearest Neighbors: %d\\n", len(anomaly.NearestNeighbors))
+  }
+}`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+
+    <CodeBlockItem value="bash">
+      <CodeBlockContent language="bash">
+        {`# Check data quality with moderate parameters
+    curl -X POST "https://api.worqhat.com/db/detect-anomalies" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "user_profiles",
+        "k": 8,
+        "threshold": 0.7,
+        "limit": 30,
+        "environment": "production"
+  }'`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+  </CodeBlockBody>
+</CodeBlock>
+
+## Request Body Explained
+
+<ParamField body="table" type="string" required>
+  Table to analyze for anomalies.
+  
+  Example: "transactions"
+</ParamField>
+
+<ParamField body="k" type="number" optional>
+  Number of nearest neighbors to consider for anomaly detection. Range: 1-50, default: 10. Higher values provide more stable results but may miss subtle anomalies.
+</ParamField>
+
+<ParamField body="threshold" type="number" optional>
+  Minimum anomaly score threshold (0-1). Only records above this threshold are considered anomalies. Default: 0.8. Higher values detect fewer, more extreme anomalies.
+</ParamField>
+
+<ParamField body="limit" type="number" optional>
+  Maximum number of anomalies to return. Range: 1-100, default: 50.
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if anomaly detection was successful, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="anomalies" type="array">
+  Array of detected anomalies, each containing:
+  - `record`: The anomalous record data
+  - `anomaly_score`: Anomaly score (0-1, higher = more unusual)
+  - `avg_distance`: Average distance to K nearest neighbors
+  - `nearest_neighbors`: Array of nearest neighbor records with distances
+</ResponseField>
+
+<ResponseField name="total_records" type="number">
+  Total number of records analyzed.
+</ResponseField>
+
+<ResponseField name="anomaly_count" type="number">
+  Number of anomalies detected.
+</ResponseField>
+
+<ResponseField name="parameters" type="object">
+  Parameters used for the analysis (k, threshold).
+</ResponseField>
+
+<ResponseField name="executionTime" type="number">
+  Analysis execution time in milliseconds.
+</ResponseField>
+
+## Example Response
+
+<CodeBlock
+  defaultValue="json"
+  data={[
+    {
+      language: "json",
+      filename: "response.json",
+      code: `{
+  "success": true,
+  "anomalies": [
+    {
+      "record": {
+        "id": "txn_123",
+        "amount": 50000.00,
+        "currency": "USD",
+        "merchant": "Unknown",
+        "location": "Remote"
+      },
+      "anomaly_score": 0.923,
+      "avg_distance": 0.456,
+      "nearest_neighbors": [
+        {
+          "record": {
+            "id": "txn_456",
+            "amount": 25.50,
+            "currency": "USD",
+            "merchant": "Coffee Shop",
+            "location": "Local"
+          },
+          "distance": 0.234
+        },
+        {
+          "record": {
+            "id": "txn_789",
+            "amount": 15.75,
+            "currency": "USD",
+            "merchant": "Restaurant",
+            "location": "Local"
+          },
+          "distance": 0.312
+        }
+      ]
+    }
+  ],
+  "total_records": 1000,
+  "anomaly_count": 15,
+  "parameters": {
+    "k": 10,
+    "threshold": 0.8
+  },
+  "executionTime": 1247
+}`,
+    },
+  ]}
+>
+  <CodeBlockHeader>
+    <CodeBlockFiles>
+      <CodeBlockFilename value="json">
+        response.json
+      </CodeBlockFilename>
+    </CodeBlockFiles>
+
+    <CodeBlockCopyButton />
+  </CodeBlockHeader>
+
+  <CodeBlockBody>
+    <CodeBlockItem value="json">
+      <CodeBlockContent language="json">
+        {`{
+  "success": true,
+  "anomalies": [
+    {
+      "record": {
+        "id": "txn_123",
+        "amount": 50000.00,
+        "currency": "USD",
+        "merchant": "Unknown",
+        "location": "Remote"
+      },
+      "anomaly_score": 0.923,
+      "avg_distance": 0.456,
+      "nearest_neighbors": [
+        {
+          "record": {
+            "id": "txn_456",
+            "amount": 25.50,
+            "currency": "USD",
+            "merchant": "Coffee Shop",
+            "location": "Local"
+          },
+          "distance": 0.234
+        },
+        {
+          "record": {
+            "id": "txn_789",
+            "amount": 15.75,
+            "currency": "USD",
+            "merchant": "Restaurant",
+            "location": "Local"
+          },
+          "distance": 0.312
+        }
+      ]
+    }
+  ],
+  "total_records": 1000,
+  "anomaly_count": 15,
+  "parameters": {
+    "k": 10,
+    "threshold": 0.8
+  },
+  "executionTime": 1247
+}`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+  </CodeBlockBody>
+</CodeBlock>
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Table not found" | The specified table doesn't exist | Check your table name for typos |
+| "No embeddings found" | The table doesn't have vector embeddings | Ensure your table has been processed for embeddings |
+| "Insufficient data" | Not enough records for meaningful analysis | Ensure you have at least 20+ records in the table |
+| "K value too large" | K parameter exceeds available data | Reduce K value or ensure you have more records |
+| "Threshold too high" | No records meet the anomaly threshold | Lower the threshold value (try 0.6-0.7) |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+
+## Tips for Better Anomaly Detection
+
+- **Start with moderate parameters**: Begin with k=10, threshold=0.8 and adjust based on results
+- **Consider your use case**:
+  - Fraud detection: Higher threshold (0.9+), more neighbors (k=15+)
+  - Data quality: Moderate threshold (0.7), moderate neighbors (k=8-10)
+  - General analysis: Lower threshold (0.6), fewer neighbors (k=5-8)
+- **Review nearest neighbors**: Examine what "normal" records look like to understand anomalies
+- **Monitor execution time**: Larger datasets take longer to analyze
+- **Validate results**: Manually review detected anomalies to ensure they make sense
+- **Iterate and refine**: Adjust parameters based on the quality of detected anomalies
+
+## Parameter Tuning Guidelines
+
+### K (Number of Neighbors)
+- **Low K (5-8)**: More sensitive to local variations, may detect subtle anomalies
+- **Medium K (10-15)**: Balanced approach, good for most use cases
+- **High K (20+)**: More stable, focuses on major outliers, less sensitive to noise
+
+### Threshold (Anomaly Score)
+- **Low Threshold (0.6-0.7)**: Detects more anomalies, including minor outliers
+- **Medium Threshold (0.8)**: Balanced detection, good default
+- **High Threshold (0.9+)**: Only detects major anomalies, very strict
+
+## Use Cases
+
+### Fraud Detection
+```javascript
+// Detect suspicious financial transactions
+const fraudAnomalies = await client.db.detectAnomalies({
+  table: "transactions",
+  k: 15,
+  threshold: 0.9,
+  limit: 100
+});
+```
+
+### Data Quality Assurance
+```javascript
+// Find records with potential data quality issues
+const qualityIssues = await client.db.detectAnomalies({
+  table: "user_profiles",
+  k: 8,
+  threshold: 0.7,
+  limit: 50
+});
+```
+
+### Security Monitoring
+```javascript
+// Detect unusual user behavior patterns
+const securityAnomalies = await client.db.detectAnomalies({
+  table: "user_activities",
+  k: 12,
+  threshold: 0.85,
+  limit: 30
+});
+```
+
+### Business Intelligence
+```javascript
+// Find interesting outliers in business data
+const businessAnomalies = await client.db.detectAnomalies({
+  table: "sales_data",
+  k: 10,
+  threshold: 0.75,
+  limit: 20
+});
+```

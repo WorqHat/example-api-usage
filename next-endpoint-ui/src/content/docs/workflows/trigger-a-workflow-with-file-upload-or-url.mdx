@@ -1,0 +1,738 @@
+---
+title: 'Working with File-Based Workflow Triggers'
+description: 'Learn how to trigger WorqHat workflows using file uploads or URLs'
+---
+
+# Working with File-Based Workflow Triggers
+
+WorqHat workflows can process various types of files, from documents and images to data files and media. This guide explains how to trigger workflows using file uploads or by providing URLs to files, enabling powerful document processing, media analysis, and data extraction capabilities.
+
+## Understanding File-Based Workflow Triggers
+
+File-based triggers allow you to send files to your workflows for processing. WorqHat supports two primary methods:
+
+1. **Direct File Upload**: Upload a file directly from your application or system
+2. **URL-Based Processing**: Provide a URL to a publicly accessible file that WorqHat will download and process
+
+Additionally, you can include custom parameters alongside your file or URL to provide context or configuration for your workflow.
+
+## When to Use File-Based Triggers
+
+File-based workflow triggers are ideal for scenarios like:
+
+- Document processing and analysis
+- Image recognition and processing
+- Data extraction from structured files (CSV, Excel, etc.)
+- Media transcription and analysis
+- Report generation from uploaded data
+- Processing user-submitted files in your applications
+
+## Prerequisites
+
+Before triggering a workflow with files, you'll need:
+
+1. A WorqHat account with workflow creation permissions
+2. An API key with appropriate permissions
+3. The workflow ID of the workflow you want to trigger
+4. Files to process or URLs pointing to files
+
+## Quickstart: Trigger with File or URL
+
+The SDKs accept a single payload object/dict as the second argument that contains either `file` or `url` plus any additional inputs your workflow expects.
+
+<Tabs>
+  <Tab title="Python" icon="python">
+    ```python
+    from pathlib import Path
+    from typing import Any, Dict
+    from worqhat import Worqhat
+    import os
+
+    client = Worqhat(api_key=os.environ.get("API_KEY", ""))
+
+    def trigger_flow_with_file() -> Dict[str, Any]:
+        """Trigger a workflow with a local file upload."""
+        workflow_id = "e3f35867-77f4-4c49-b376-ac0f0cedb423"
+        image_path = Path(__file__).parent / "image.png"
+        with open(image_path, "rb") as f:
+            return client.flows.trigger_with_file(
+                workflow_id,
+                {"file": f, "input1": "value1", "input2": "value2"},
+            )
+
+    def trigger_flow_with_url() -> Dict[str, Any]:
+        """Trigger a workflow with a remote file URL."""
+        workflow_id = "e3f35867-77f4-4c49-b376-ac0f0cedb423"
+        url = "https://assets.worqhat.com/worqkitties/kitty-hi.png"
+        return client.flows.trigger_with_file(
+            workflow_id,
+            {"url": url, "input1": "value1", "input2": "value2"},
+        )
+    ```
+  </Tab>
+
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import dotenv from "dotenv";
+    import Worqhat from "worqhat";
+    import fs from "fs";
+    import path from "path";
+
+    dotenv.config();
+
+    const API_KEY = process.env.API_KEY || "";
+
+    export const client = new Worqhat({
+      apiKey: API_KEY,
+    });
+
+    export async function triggerFlowWithFile() {
+      const workflow_id = "e3f35867-77f4-4c49-b376-ac0f0cedb423";
+      const filePath = path.join(__dirname, "../image.png");
+      const response = await client.flows.triggerWithFile(workflow_id, {
+        file: fs.createReadStream(filePath),
+        input1: "value1",
+        input2: "value2",
+      });
+      console.log(JSON.stringify(response, null, 2));
+    }
+
+    export async function triggerFlowWithUrl() {
+      const workflow_id = "e3f35867-77f4-4c49-b376-ac0f0cedb423";
+      const url = "https://assets.worqhat.com/worqkitties/kitty-hi.png";
+      const response = await client.flows.triggerWithFile(workflow_id, {
+        url: url,
+        input1: "value1",
+        input2: "value2",
+      });
+      console.log(JSON.stringify(response, null, 2));
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Sending Files to a Workflow
+
+### API Endpoint
+
+```endpoint
+POST https://api.worqhat.com/flows/file/:flowId
+```
+
+This endpoint accepts `multipart/form-data` with either a file upload or a URL to a file.
+
+### Method 1: Direct File Upload
+
+WorqHat provides multiple ways to upload files directly to your workflows, making it easy to integrate with different environments and file sources.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    import fs from 'fs';
+    import path from 'path';
+    
+    // Initialize the WorqHat client
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function processDocument() {
+      try {
+        // RECOMMENDED: Use a readable stream for efficient file handling
+        const filePath = path.resolve('./contract.pdf');
+        const fileStream = fs.createReadStream(filePath);
+        
+        // Trigger the document processing workflow
+        const response = await client.flows.triggerWithFile(
+          'document-processing-workflow-id',
+          {
+            file: fileStream,  // Pass the stream directly
+            // Additional fields go directly on the payload
+            documentType: "contract",
+            priority: "high",
+            department: "legal",
+            requestedBy: "jane.smith@example.com"
+          }
+        );
+        
+        console.log(`Document processing started! Tracking ID: ${response.analytics_id}`);
+        return response;
+      } catch (error) {
+        console.error('Error processing document:', error);
+        // Handle the error appropriately
+      }
+    }
+    
+    processDocument();
+    ```
+  </Tab>
+  
+  <Tab title="Browser" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the WorqHat client
+    const client = new Worqhat({
+      apiKey: 'YOUR_API_KEY', // In production, use secure methods to store API keys
+    });
+    
+    async function handleFileUpload(event) {
+      try {
+        // Get the file from an input element
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0]; // File API object
+        
+        // Trigger the workflow with the File object
+        const response = await client.flows.triggerWithFile(
+          'document-processing-workflow-id',
+          {
+            file: file,  // Browser File object works directly
+            // Additional fields go directly on the payload
+            documentType: "contract",
+            uploadedBy: "user@example.com"
+          }
+        );
+        
+        console.log(`Processing started! Tracking ID: ${response.analytics_id}`);
+        return response;
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        // Handle the error appropriately
+      }
+    }
+    
+    // Add event listener to your file input
+    document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    def process_document(file_path):
+        try:
+            # Open the file in binary mode
+            with open(file_path, 'rb') as file:
+                # Trigger the workflow
+                response = client.flows.trigger_with_file(
+                    "document-processing-workflow-id",
+                    {
+                        "file": file,
+                        # Additional fields go directly on the payload
+                        "documentType": "contract",
+                        "priority": "high",
+                        "department": "legal",
+                    },
+                )
+                
+                print(f"Document processing started! Tracking ID: {response.analytics_id}")
+                return response
+        except Exception as e:
+            print(f"Error processing document: {str(e)}")
+            # Handle the error appropriately
+    
+    # Process a document
+    process_document("./contract.pdf")
+    ```
+  </Tab>
+</Tabs>
+
+### Method 2: URL-Based Processing
+
+When the file is available at a URL (such as in cloud storage or a public web location), you can simply provide the URL:
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the WorqHat client
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function processRemoteImage() {
+      try {
+        // Trigger the image analysis workflow with a URL
+        const response = await client.flows.triggerWithFile(
+          'image-analysis-workflow-id',
+          {
+            url: 'https://storage.example.com/products/laptop-x1.jpg',
+            // Additional fields go directly on the payload
+            imageType: "product",
+            category: "electronics",
+            productId: "PROD-12345"
+          }
+        );
+        
+        console.log(`Image analysis started! Tracking ID: ${response.analytics_id}`);
+        return response;
+      } catch (error) {
+        console.error('Error processing remote image:', error);
+        // Handle the error appropriately
+      }
+    }
+    
+    processRemoteImage();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    def process_remote_image():
+        try:
+            # Trigger the workflow with a URL
+            response = client.flows.trigger_with_file(
+                "image-analysis-workflow-id",
+                {
+                    "url": "https://storage.example.com/products/laptop-x1.jpg",
+                    # Additional fields go directly on the payload
+                    "imageType": "product",
+                    "category": "electronics",
+                    "productId": "PROD-12345",
+                },
+            )
+            
+            print(f"Image analysis started! Tracking ID: {response.analytics_id}")
+            return response
+        except Exception as e:
+            print(f"Error processing remote image: {str(e)}")
+            # Handle the error appropriately
+    
+    # Process a remote image
+    process_remote_image()
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Trigger the workflow with a URL
+      response, err := client.Flows.TriggerWithFile(context.Background(), worqhat.FlowsTriggerWithFileParams{
+        WorkflowID: "image-analysis-workflow-id",
+        URL:        "https://storage.example.com/products/laptop-x1.jpg",
+      })
+      
+      if err != nil {
+        fmt.Printf("Error processing remote image: %s\n", err)
+        return
+      }
+      
+      fmt.Printf("Image analysis started! Tracking ID: %s\n", response.AnalyticsID)
+    }
+    ```
+  </Tab>
+</Tabs>
+
+## Direct API Access with cURL
+
+If you need to trigger workflows with files directly from the command line or in shell scripts, you can use cURL:
+
+### Option 1: File Upload with cURL
+
+```bash
+curl -X POST "https://api.worqhat.com/flows/file/e3f35867-77f4-4c49-b376-ac0f0cedb423" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F "file=@/path/to/local/file.png" \
+  -F "input1=value1" \
+  -F "input2=value2"
+```
+
+### Option 2: URL Input with cURL
+
+```bash
+curl -X POST "https://api.worqhat.com/flows/file/e3f35867-77f4-4c49-b376-ac0f0cedb423" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -F "url=https://assets.worqhat.com/worqkitties/kitty-hi.png" \
+  -F "input1=value1" \
+  -F "input2=value2"
+```
+
+## Working with Responses
+
+When you trigger a workflow with a file or URL, you'll receive an immediate response. Processing happens asynchronously.
+
+A typical response includes:
+
+```json
+{
+  "success": true,
+  "statusCode": "200",
+  "data": {
+    "output": "In the picture, I see a cute cartoon cat wearing a Santa hat...",
+    "data1": "value1",
+    "data2": "value2"
+  },
+  "message": "Workflow triggered successfully with file upload"
+}
+```
+
+## Request Body Format
+
+The API accepts `multipart/form-data` with the following fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `file` | File | The file to upload (required if not using URL) |
+| `url` | String | URL to a file to be downloaded and processed (required if not uploading a file) |
+| `[custom parameters]` | String/Number/Boolean | Any additional parameters needed by your workflow |
+
+All form fields are forwarded to the workflow, allowing you to include any custom parameters your workflow needs to process the file correctly.
+
+## Combining File Uploads with Additional Parameters
+
+For complex workflows, you can include both file uploads (or URLs) and additional parameters in the same request:
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    import fs from 'fs';
+    
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function processDocumentWithParams() {
+      try {
+        const fileStream = fs.createReadStream('./contract.pdf');
+        
+        // Pass additional parameters directly in the payload
+        const response = await client.flows.triggerWithFile(
+          'document-processing-workflow-id',
+          {
+            file: fileStream,
+            // Additional parameters
+            customerId: "CID-12345",
+            department: "legal",
+            requireSignature: true,
+            processingMode: "detailed"
+          }
+        );
+        
+        console.log(`Document processing started! Tracking ID: ${response.analytics_id}`);
+        return response;
+      } catch (error) {
+        console.error('Error processing document:', error);
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    def process_document_with_params(file_path):
+        try:
+            with open(file_path, 'rb') as file:
+                # Trigger the workflow with file and additional parameters
+                response = client.flows.trigger_with_file(
+                    "document-processing-workflow-id",
+                    {
+                        "file": file,
+                        # Additional parameters
+                        "customerId": "CID-12345",
+                        "department": "legal",
+                        "requireSignature": True,
+                        "processingMode": "detailed",
+                        "documentType": "contract",
+                        "priority": "high",
+                    },
+                )
+                
+                print(f"Document processing started! Tracking ID: {response.analytics_id}")
+                return response
+        except Exception as e:
+            print(f"Error processing document: {str(e)}")
+    ```
+  </Tab>
+</Tabs>
+
+## Best Practices
+
+### File Size and Type Considerations
+
+- **File Size Limits**: WorqHat supports files up to 50MB. For larger files, consider breaking them into smaller chunks or using cloud storage with URL-based processing.
+- **Supported File Types**: Any file type is supported, including:
+  - Documents: PDF, DOCX, TXT, RTF
+  - Images: JPG, PNG, GIF, TIFF, WebP
+  - Data: CSV, JSON, XML, XLSX
+  - Media: MP3, MP4, WAV
+  - And many more
+
+### URL Processing Details
+
+When using URL input instead of direct file upload:
+
+- The server will download the file with a 60-second timeout
+- The filename will be extracted from the Content-Disposition header or URL path
+- The downloaded file will be processed as if it were directly uploaded
+- Request timeout is set to 5 minutes to allow for large file processing
+- Only one file or URL can be processed per request
+- All form fields are forwarded to the backend service
+
+### Multiple Ways to Provide Files
+
+WorqHat's SDK supports various file input formats, giving you flexibility in how you handle files:
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import fs from 'fs';
+    import Worqhat, { toFile } from 'worqhat';
+    
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function demonstrateFileOptions() {
+      const workflowId = 'your-workflow-id';
+      
+      // Option 1: Using fs.createReadStream (most efficient for Node.js)
+      await client.flows.triggerWithFile(workflowId, {
+        file: fs.createReadStream('/path/to/file.pdf'),
+      });
+      
+      // Option 2: Using a Buffer with the toFile helper
+      const buffer = fs.readFileSync('/path/to/file.pdf');
+      await client.flows.triggerWithFile(workflowId, {
+        file: await toFile(buffer, 'document.pdf'),
+      });
+      
+      // Option 3: Using a fetch Response object
+      const response = await fetch('https://example.com/some-file.pdf');
+      await client.flows.triggerWithFile(workflowId, {
+        file: response,
+      });
+      
+      // Option 4: Using a URL directly
+      await client.flows.triggerWithFile(workflowId, {
+        url: 'https://example.com/some-file.pdf',
+      });
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Browser" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    const client = new Worqhat({
+      apiKey: 'YOUR_API_KEY', // Use secure methods in production
+    });
+    
+    async function handleFileUpload() {
+      const workflowId = 'your-workflow-id';
+      
+      // Option 1: Using a File object from an input element
+      const fileInput = document.getElementById('fileInput');
+      await client.flows.triggerWithFile(workflowId, {
+        file: fileInput.files[0],
+      });
+      
+      // Option 2: Using a fetch Response object
+      const response = await fetch('https://example.com/some-file.pdf');
+      await client.flows.triggerWithFile(workflowId, {
+        file: response,
+      });
+      
+      // Option 3: Using a URL directly
+      await client.flows.triggerWithFile(workflowId, {
+        url: 'https://example.com/some-file.pdf',
+      });
+    }
+    ```
+  </Tab>
+</Tabs>
+
+### Security Best Practices
+
+- Always validate files before uploading them to workflows
+- Use HTTPS for all API communications
+- For sensitive documents, consider implementing additional encryption
+- When using URL-based processing, ensure the URLs are properly secured and temporary if needed
+
+### Error Handling
+
+Implement robust error handling for common file-related issues:
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function uploadFileWithErrorHandling(workflowId, file) {
+      try {
+        const response = await client.flows.triggerWithFile(workflowId, { file });
+        console.log(`Success! Tracking ID: ${response.analytics_id}`);
+        return response;
+      } catch (error) {
+        if (error instanceof Worqhat.APIError) {
+          // Handle specific API errors
+          switch (error.status) {
+            case 413:
+              console.error('File too large. Maximum size is 50MB.');
+              break;
+            case 415:
+              console.error('Unsupported file type.');
+              break;
+            case 400:
+              console.error(`Bad request: ${error.message}`);
+              break;
+            case 401:
+              console.error('Authentication error. Check your API key.');
+              break;
+            case 403:
+              console.error('Permission denied. Verify your account permissions.');
+              break;
+            case 404:
+              console.error('Workflow not found. Check the workflow ID.');
+              break;
+            case 429:
+              console.error('Rate limit exceeded. Please try again later.');
+              break;
+            default:
+              console.error(`API error (${error.status}): ${error.message}`);
+          }
+        } else if (error.name === 'AbortError') {
+          console.error('Request timed out. Check your network connection.');
+        } else {
+          console.error('Unexpected error:', error);
+        }
+        throw error; // Re-throw or handle as needed
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    from worqhat.error import APIError
+    import os
+    
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    def upload_file_with_error_handling(workflow_id, file_path):
+        try:
+            with open(file_path, 'rb') as file:
+                response = client.flows.trigger_with_file(
+                    workflow_id=workflow_id,
+                    file=file
+                )
+            print(f"Success! Tracking ID: {response.analytics_id}")
+            return response
+        except APIError as e:
+            # Handle specific API errors
+            if e.status == 413:
+                print("File too large. Maximum size is 50MB.")
+            elif e.status == 415:
+                print("Unsupported file type.")
+            elif e.status == 400:
+                print(f"Bad request: {e.message}")
+            elif e.status == 401:
+                print("Authentication error. Check your API key.")
+            elif e.status == 403:
+                print("Permission denied. Verify your account permissions.")
+            elif e.status == 404:
+                print("Workflow not found. Check the workflow ID.")
+            elif e.status == 429:
+                print("Rate limit exceeded. Please try again later.")
+            else:
+                print(f"API error ({e.status}): {e.message}")
+            raise
+        except Exception as e:
+            print(f"Unexpected error: {str(e)}")
+            raise
+    ```
+  </Tab>
+</Tabs>
+
+## Real-World Use Cases
+
+### Document Processing System
+
+Create a document processing system that extracts information from invoices:
+
+```javascript
+// Process an invoice PDF
+const response = await client.flows.triggerWithFile('invoice-processing-workflow-id', {
+  file: invoiceFileBuffer,
+  // Additional parameters go directly on the payload
+  company: "Acme Corp",
+  department: "Accounts Payable",
+  expectedTotal: 1250.00,
+  currency: "USD",
+  urgent: true
+});
+
+// Store the analytics_id to check processing status later
+const processingId = response.analytics_id;
+```
+
+### Media Analysis Pipeline
+
+Build a media analysis pipeline that processes video content:
+
+```javascript
+// Process a video file from a URL
+const response = await client.flows.triggerWithFile('video-analysis-workflow-id', {
+  url: 'https://storage.example.com/videos/product-demo-v2.mp4',
+  // Additional parameters go directly on the payload
+  title: "Product Demo - Version 2",
+  duration: 187, // seconds
+  language: "en-US",
+  requireTranscription: true,
+  extractKeyMoments: true
+});
+```
+
+## Conclusion
+
+File-based workflow triggers provide a powerful way to process documents, images, and other files in your WorqHat workflows. By leveraging both direct file uploads and URL-based processing, you can build sophisticated document processing systems, media analysis pipelines, and data extraction solutions that integrate seamlessly with your applications.
+
+For more advanced use cases, consider exploring workflow chaining and combining file-based triggers with other trigger types to create comprehensive data processing solutions.

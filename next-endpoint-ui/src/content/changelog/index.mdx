@@ -14,6 +14,153 @@ export async function getStaticProps() {
 ---
 
 <Image
+  src="/content/nov-2025-update.png"
+  alt="Workflow Runtime Hardening"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## November 2025 — Templates, Imports, and Runtime Resilience{{ date: '2025-11-29T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  Template routing, workflow portability, and multi-pass error recovery
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="app" />
+</div>
+
+November focused on making big workflows dependable—even when data, audio, or template routing gets messy. Template redirects are unified, imports got richer metadata, and the runtime now retries failed executions with smarter fallbacks.
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <h3 className="text-lg font-semibold">Workflow templates & communication</h3>
+</div>
+
+- Unified template routing across docs, canvas, and templates so every entry point behaves the same.
+- Send Mail now understands dynamic variables and handles subjects without edge-case hiccups.
+- Docs dialog can auto-import workflow templates with complete metadata and schema information.
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Runtime reliability & scaling</p>
+</div>
+
+- Multi-pass runtime error handling revives failed audio paths and keeps long-running loops moving.
+- Improved queueing system with job IDs, better sanitization, and fewer stuck fetch-data nodes.
+- Bulk imports with abort/cleanup capabilities keep embeddings fresh even under heavy load.
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Builder productivity boosts</p>
+</div>
+
+- App Builder initialization routes, planner prompts, and action-plan streaming now live inside the main canvas.
+- CSV/Excel imports expose table metadata, run with higher concurrency, and keep embeddings warm while syncing.
+- Improved credential management plus stricter runtime validation ensures smoother deployments.
+
+---
+
+<Image
+  src="/content/oct-2025-update.png"
+  alt="Canvas and Billing Upgrades"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## October 2025 — Canvas Merge Sprint & Billing Intelligence{{ date: '2025-10-29T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  New builder surfaces meet upgraded billing, analytics, and semantic tooling
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="api" />
+</div>
+
+October was a marathon merge month. The new App Builder finally lives inside the workflow canvas, billing got a facelift, and semantic automation now stitches together AI summaries, database accordions, and enhanced visibility for every org.
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <h3 className="text-lg font-semibold">Canvas + workflow builder fusion</h3>
+</div>
+
+- Organization routes, enhanced monitoring, and AI code helpers now live in the canvas experience.
+- Improved sandbox orchestration, preview URLs, and builder-mode caching make deployments feel instant.
+- Flow generator stack combines workflow + parameter generators with constraint handling, credential passthrough, and URL-based routing.
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Billing, pricing, and analytics evolution</p>
+</div>
+
+- Dedicated billing screens, payment methods, usage dashboards, and multi-currency pricing tables bring clarity to every invoice.
+- Usage caps, storage quota tracking, automated metering, and workflow analytics APIs keep spending predictable.
+- Subscription webhooks, external LLM subscriptions, and improved infrastructure harden the payments stack for enterprise rollouts.
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Semantic automation & data UX</p>
+</div>
+
+- Database UX overhaul adds accordion lists, seed-type mapping, improved column/index management, and branch-aware URL params.
+- Semantic search tooling, asynchronous embedding generation, and refreshed prompts power the new AI board views.
+- REST API triggers, improved credential management, and enhanced table prompts polish every workflow node.
+
+---
+
+<Image
+  src="/content/sept-2025-update.png"
+  alt="Billing Dashboards and Neon Upgrades"
+  width={500}
+  height={300}
+  className="rounded-lg shadow-lg"
+/>
+
+## September 2025 — Newer Billing UI and Databricks Partnership{{ date: '2025-09-29T00:00Z' }}
+
+<h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+  Usage transparency, storage analytics, and Neon-powered database journeys
+</h3>
+
+<div className="mb-6 flex gap-2">
+  <Badge type="general" />
+</div>
+
+September delivered powerful new features for scale: new billing dashboards, automated deploy tooling, and enhanced database workflows with advanced editors, AI planners, and development sandboxes.
+
+<div className="inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <h3 className="text-lg font-semibold">Billing visibility & usage data</h3>
+</div>
+
+- Dedicated billing screens, payment history, usage dashboards, and seamless upgrade flows landed in one sweep.
+- Workflow analytics APIs, storage usage endpoints, and skeleton loaders keep status pages instant.
+- Pricing improvements: multi-currency support, lower base prices, usage caps, alerts, and automated billing.
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">Database & builder improvements</p>
+</div>
+
+- Enhanced storage with signed URLs, organization buckets, and multi-tenant database provisioning.
+- Database features: branch monitoring, point-in-time restore, autoscaling, saved queries, schema diff tooling, and AI-assisted table creation flows.
+- Backend builder foundations add improved orchestration, preview environments, and container support.
+
+<div className="mt-6 inline-flex items-center gap-x-2">
+  <SparkleIcon className="h-5 w-5 text-sky-400" />
+  <p className="text-lg font-semibold">AI & workflow polish</p>
+</div>
+
+- Function node visualization, workflow persistence, streaming prompts, and improved data integration tighten the backend designer.
+- Calendar & scheduling nodes gain enhanced date inputs plus improved fetch/add APIs, while SQL reliability gets retry logic and AI-powered code generation.
+- AI Builder UX adds real-time project planning, streaming previews, auto-scroll, and improved SQL examples to keep long contexts manageable.
+
+---
+
+<Image
   src="https://assets.worqhat.com/announcements/wizard-cli-announcement.png"
   alt="WorqHat Wizard CLI Announcement"
   width={500}

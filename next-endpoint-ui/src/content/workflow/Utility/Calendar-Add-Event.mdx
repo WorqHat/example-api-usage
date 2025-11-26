@@ -1,0 +1,270 @@
+**Category:** Utility
+**Type:** Calendar Integration
+
+---
+
+## Overview
+
+The **Calendar Add Event** node allows you to automatically create events on a connected calendar.
+It’s ideal for scheduling meetings, setting reminders, or automating event creation based on triggers — such as form submissions, email requests, or AI-generated scheduling suggestions.
+
+With this node, you can define event details like title, description, start and end times, participants, and even automatically include a Google Meet link if desired.
+
+---
+
+## Description
+
+The **Calendar Add Event** node helps automate the process of adding events to your calendar.
+Once connected to a calendar account (like Google Calendar), this node can create events with all necessary details, including the meeting title, time, location, participants, and online meeting links.
+
+It can be combined with other nodes to automatically schedule events based on workflow data — for example:
+
+- Scheduling meetings after receiving an email inquiry.
+- Creating task deadlines after project completion.
+- Generating calendar reminders from AI-generated text or forms.
+
+When executed, the node securely communicates with your calendar service to create the event and returns details such as the event ID, Google Meet link (if applicable), and status confirmation.
+
+---
+
+## Input Parameters
+
+The **Calendar Add Event** node accepts several parameters that define the event’s details.
+
+- **calendarId**
+  The unique identifier of the calendar where the event will be created.
+
+- **attachments**
+  Comma-separated file IDs or URLs to attach to the calendar event (e.g., reports, agendas, or images).
+
+- **title**
+  The name or title of the event, displayed in the calendar view.
+
+- **description**
+  A short description or agenda of the event. Supports plain text or limited HTML formatting.
+
+- **addGoogleMeet**
+  When set to `true`, automatically generates and attaches a Google Meet video conferencing link to the event.
+
+- **startDate**
+  The start date and time of the event in ISO format (e.g., `2025-10-27T09:00:00Z`).
+
+- **endDate**
+  The end date and time of the event in ISO format. Must be later than the start time.
+
+- **location**
+  The location or venue for the event (e.g., “Conference Room A” or “Online”).
+
+- **guestsCanInviteOthers** _(boolean, optional)_
+  If `true`, allows invited guests to add others to the event.
+
+- **guestsCanModify**
+  If `true`, allows guests to edit event details.
+
+- **guestsCanSeeOtherGuests** _(boolean, optional)_
+  If `true`, lets guests see who else is invited.
+
+- **guests**
+  A comma-separated list of guest email addresses (e.g., `alice@example.com,bob@example.com`).
+
+**Notes:**
+
+- Date and time must follow proper ISO formatting for successful creation.
+- The calendar account used must have permission to create events on the specified calendar.
+- You can access input parameters using:
+
+  ```
+  {{calendarAddEvent.input.title}}
+  {{calendarAddEvent.input.startDate}}
+  {{calendarAddEvent.input.guests}}
+  ```
+
+---
+
+## Output Parameters
+
+After successfully adding an event, the node returns detailed information about the created event.
+
+- **eventId** _(string)_
+  The unique identifier for the newly created calendar event.
+
+- **status** _(string)_
+  Indicates whether the event creation was successful (e.g., `"confirmed"`, `"tentative"`).
+
+- **eventLink** _(string)_
+  A direct URL to view the created event in the calendar.
+
+- **meetLink** _(string)_
+  The Google Meet video link generated (if `addGoogleMeet` was set to true).
+
+- **meetId** _(string)_
+  The unique ID of the Google Meet session.
+
+- **createdAt** _(string)_
+  The ISO timestamp of when the event was created.
+
+- **creator** _(string)_
+  The email address of the user or system that created the event.
+
+- **attendees[]** _(array)_
+  A list of invited guests with their email addresses and attendance status.
+
+- **processingTime** _(string)_
+  The total time taken to create the event, returned in ISO duration format.
+
+**Access output values using:**
+
+```
+{{calendarAddEvent.output.eventId}}
+{{calendarAddEvent.output.meetLink}}
+{{calendarAddEvent.output.status}}
+```
+
+---
+
+## Output Type
+
+**Output Type:** Text
+The node returns text-based metadata and URLs related to the event creation.
+
+---
+
+## Example Usage
+
+### Example 1: Add a Meeting with Google Meet
+
+```json
+{
+  "calendarId": "primary",
+  "title": "Project Sync Meeting",
+  "description": "Weekly project sync with the development team.",
+  "addGoogleMeet": true,
+  "startDate": "2025-11-01T10:00:00Z",
+  "endDate": "2025-11-01T11:00:00Z",
+  "guests": "alice@example.com,bob@example.com"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "eventId": "evt_78910",
+  "status": "confirmed",
+  "eventLink": "https://calendar.google.com/event?eid=evt_78910",
+  "meetLink": "https://meet.google.com/abc-defg-hij",
+  "creator": "automation@worqhat.com",
+  "processingTime": "PT2S"
+}
+```
+
+---
+
+### Example 2: Add a Physical Location Event
+
+```json
+{
+  "calendarId": "team_calendar",
+  "title": "Team Strategy Meeting",
+  "description": "Quarterly roadmap discussion.",
+  "startDate": "2025-11-03T09:30:00Z",
+  "endDate": "2025-11-03T11:00:00Z",
+  "location": "Conference Room 2",
+  "guests": "jane@example.com,mark@example.com"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "eventId": "evt_32456",
+  "status": "confirmed",
+  "eventLink": "https://calendar.google.com/event?eid=evt_32456",
+  "createdAt": "2025-11-03T08:00:00Z",
+  "creator": "teamlead@example.com"
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Calendar Add Event Node**
+   Drag and drop the node into your workflow canvas.
+
+2. **Connect a Trigger Node**
+   Link a trigger (e.g., Time Trigger, Email Trigger, or Webhook Trigger) to determine when the event should be created.
+
+3. **Configure Input Parameters**
+
+   - Enter the `calendarId` of your connected account.
+   - Set the `title`, `startDate`, and `endDate`.
+   - Optionally, enable Google Meet integration and add participants.
+
+4. **Connect to Downstream Nodes**
+   Use the output (like `eventLink` or `meetLink`) in downstream actions — for instance, sending notifications or reminders.
+
+5. **Test the Workflow**
+   Run the workflow and verify that the event appears correctly in your calendar.
+
+6. **Save and Activate**
+   Once confirmed, save your workflow to automate event creation.
+
+---
+
+## Best Practices
+
+- Always ensure your time zone and ISO timestamps are accurate to avoid scheduling errors.
+- Use descriptive titles and descriptions for easier event management.
+- When scheduling recurring meetings, combine this node with a **Time Trigger** for automation.
+- Use the `guestsCanInviteOthers` and `guestsCanModify` fields thoughtfully to control collaboration.
+- Validate calendar permissions before using service accounts.
+- Attach only lightweight files to events; use cloud links for larger resources.
+
+---
+
+## Example Workflow Integration
+
+**Use Case:** Automatically schedule a meeting when a support ticket is received.
+
+**Workflow Steps:**
+
+1. **Email Trigger Node:** Detects new support requests.
+2. **AI Node:** Summarizes the issue and proposes a meeting.
+3. **Calendar Add Event Node:** Creates a Google Meet event automatically.
+4. **Slack Message Node:** Notifies the support team with event details.
+
+**Connection Example:**
+
+```
+{{emailTrigger.input.from}} → {{calendarAddEvent.input.guests}}
+{{aiNode.output.content}} → {{calendarAddEvent.input.description}}
+{{calendarAddEvent.output.eventLink}} → {{slackMessage.input.message}}
+```
+
+---
+
+## Common Errors
+
+- **"Invalid calendar ID"**
+  **Cause:** The specified `calendarId` does not exist or access is restricted.
+  **Solution:** Verify the connected account and calendar permissions.
+
+- **"Invalid date format"**
+  **Cause:** `startDate` or `endDate` is not in valid ISO format.
+  **Solution:** Use proper ISO 8601 format, e.g., `"2025-10-27T09:00:00Z"`.
+
+- **"End date earlier than start date"**
+  **Cause:** The end time is set before the start time.
+  **Solution:** Ensure the end date is later than the start date.
+
+- **"Missing title"**
+  **Cause:** The `title` field was left empty.
+  **Solution:** Provide a valid event name.
+
+- **"Meet link creation failed"**
+  **Cause:** The account does not have permission to create Google Meet links.
+  **Solution:** Enable Meet access in account settings or disable `addGoogleMeet`.
+
+---

@@ -1,0 +1,209 @@
+**Category:** Communication
+**Type:** Utility
+
+---
+
+## Overview
+
+The **Send SMS using Plivo** node allows you to send SMS messages directly through your workflow using **Plivo**, a secure and reliable messaging platform.
+This node is ideal for workflows that need to send **notifications, verification codes, or real-time alerts** to users via text message.
+
+---
+
+## Description
+
+This node integrates with **Plivo’s SMS delivery service** to send outbound messages to one or more recipients.
+
+### Important Notice
+
+- Have an active **Plivo account**.
+- Connect your Plivo account to a **DLT (Distributed Ledger Technology)** provider.
+- Register your **sender IDs** with the **DLT provider**.
+
+### Important
+
+You must enable the **Plivo integration** from the Integrations page before using this node. Only **verified Message templates** from Plivo can be used for outbound messages.
+
+Once integrated, you can configure your message details such as **sender ID**, **recipient phone number**, and **message text** directly within the node.
+
+---
+
+## Input Parameters
+
+The **Send SMS using Plivo** node accepts the following input parameters:
+
+- **senderId**
+  The registered sender ID for your SMS messages. Must be **6 characters or fewer**.
+  You can manually enter a sender ID or use a variable reference, such as `{{nodeId.output.sender}}`.
+
+- **phoneNumber**
+  The recipient’s phone number in international format.
+  Example: `+919876543210` (include the country code).
+
+- **message**
+  The actual text message you want to send.
+  Messages longer than **160 characters** are automatically split into multiple segments before sending.
+  Example: `"Your OTP code is 472916. It will expire in 5 minutes."`
+
+---
+
+## Output Parameters
+
+After execution, the node returns delivery-related details about the SMS message.
+
+- **deliveryTime**
+  ISO-formatted timestamp indicating when the message was sent.
+
+- **deliveryId**
+  Provider delivery identifier for the sent message.
+
+- **deliveryStatus**
+  Delivery status (e.g., `"queued"`, `"sent"`, `"failed"`).
+
+---
+
+## Output Type
+
+- **Output Type:** Text
+  The node returns a text-based response containing message metadata, delivery status, and timestamps.
+  You can access these outputs using:
+
+```
+{{plivoSMS.output.deliveryTime}}
+{{plivoSMS.output.deliveryId}}
+{{plivoSMS.output.deliveryStatus}}
+```
+
+---
+
+## Example Usage
+
+### Example 1: Sending a Direct SMS
+
+**Input:**
+
+```json
+{
+  "senderId": "WORQHT",
+  "phoneNumber": "+919876543210",
+  "message": "Your verification code is 524916. Please do not share this code with anyone."
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "deliveryId": "msg-1fbc20b7d9134d",
+  "deliveryStatus": "sent",
+  "deliveryTime": "2025-10-29T18:35:45Z"
+}
+```
+
+---
+
+### Example 2: Alternate Recipient
+
+**Input:**
+
+```json
+{
+  "senderId": "WORQHT",
+  "phoneNumber": "+911234567890",
+  "message": "Your order has been shipped."
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "deliveryId": "msg-a78b9cde213f",
+  "deliveryStatus": "queued",
+  "deliveryTime": "2025-10-29T18:41:12Z"
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Send SMS using Plivo Node**
+
+   - Drag and drop the node from the **Utility** category into your workflow.
+
+2. **Configure Sender ID**
+
+   - Enter your verified Plivo sender ID (6 characters or fewer).
+
+3. **Add Recipient Number**
+
+   - Input the recipient’s phone number in international format (e.g., `+91XXXXXXXXXX`).
+
+4. **Compose the Message**
+
+   - Type your SMS message or click **Generate Message** to let AI write it.
+
+5. **Connect and Run**
+
+   - Link the node to previous workflow steps (e.g., after verification or alert generation) and run the workflow to send your SMS.
+
+6. **Check Outputs**
+
+   - Use the output variables to confirm message delivery or log the message status.
+
+---
+
+## Best Practices
+
+- Always ensure your **Plivo integration** is active before using this node.
+- Register and verify your **sender IDs** and **templates** with your DLT provider.
+- Keep SMS messages concise (under 160 characters).
+- Use AI message generation for consistent tone and quick message creation.
+- Log `deliveryId` and `deliveryStatus` to monitor delivery performance.
+- Test messages with a sample phone number before large-scale deployment.
+
+---
+
+## Example Workflow Integration
+
+**Use Case:** Sending OTP after form submission
+
+**Workflow Example:**
+
+1. **Form Trigger Node** → captures user input.
+2. **AI Node** → generates OTP and stores it.
+3. **Send SMS using Plivo Node** → sends OTP to the user’s phone number.
+
+**Connection Example:**
+
+```
+{{formTrigger.output.phone}} → {{plivoSMS.input.phoneNumber}}
+{{aiNode.output.otpMessage}} → {{plivoSMS.input.message}}
+```
+
+---
+
+## Common Errors
+
+- **“Missing sender ID”**
+  _Cause:_ Sender ID field left blank.
+  _Solution:_ Enter a valid registered sender ID (6 characters or less).
+
+- **“Invalid phone number format”**
+  _Cause:_ The phone number doesn’t include the country code.
+  _Solution:_ Enter the number in full international format (e.g., +91XXXXXXXXXX).
+
+- **“Integration not enabled”**
+  _Cause:_ Plivo integration not activated in settings.
+  _Solution:_ Enable Plivo integration from the **Integrations** page before using this node.
+
+- **“Message template not approved”**
+  _Cause:_ The SMS message doesn’t match any approved template.
+  _Solution:_ Use a verified message template from Plivo.
+
+- **“DLT registration required”**
+  _Cause:_ Sender ID not registered with a DLT provider.
+  _Solution:_ Complete DLT registration before sending outbound messages.
+
+---

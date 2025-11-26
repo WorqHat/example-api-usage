@@ -1,0 +1,181 @@
+**Category:** Trigger
+**Type:** Time-Based
+
+---
+
+## Overview
+
+The **Time-Based Runs (Time Trigger)** node allows you to automatically start workflows at specific times or intervals without manual intervention.
+It is ideal for scheduling recurring tasks such as data updates, report generation, system cleanups, or automated notifications.
+
+This node ensures workflows are triggered consistently according to your defined schedule, making it a reliable automation starter for time-driven operations.
+
+---
+
+## Description
+
+The **Time Trigger** node is used to run workflows on a schedule.
+It can be configured to execute based on three modes:
+
+1. **Interval** – Runs at regular time intervals (e.g., every 3 minutes).
+2. **Natural Description** – Uses simple human-readable time expressions (e.g., “every Monday at 9am”).
+3. **CRON Expression** – Uses an advanced CRON format for precise control (e.g., “0 9 \* \* 1-5” for weekdays at 9am).
+
+You can define **only one scheduling mode** at a time — the other two must be left empty.
+Once configured, the workflow will automatically start at the specified time.
+
+---
+
+## Input Parameters
+
+| **Parameter**           | **Type** | **Description**                                                                                                                            | **Required** |
+| ----------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
+| **interval**            | string   | _(Optional)_ Defines how frequently the workflow should run using a CRON step pattern. Example: `"*/5"` runs the workflow every 5 minutes. | ✖            |
+| **natural_description** | string   | _(Optional)_ A human-readable scheduling format. Example: `"every 3 hours"` or `"every weekday at 9am"`.                                   | ✖            |
+| **cron_description**    | string   | _(Optional)_ A full CRON expression for advanced scheduling. Example: `"0 9 * * 1-5"` to trigger at 9am Monday–Friday.                     | ✖            |
+
+**Instructions:**
+
+- You must provide **only one** of the above parameters per node.
+- All parameters are simple strings (no nested objects or arrays).
+- Unused scheduling parameters should be left blank (`null`).
+- Access parameter values in workflows using:
+
+  ```
+  {{timeTrigger.input.interval}}
+  {{timeTrigger.input.natural_description}}
+  {{timeTrigger.input.cron_description}}
+  ```
+
+---
+
+## Output Parameters
+
+This node does **not** produce outputs.
+It is purely a **trigger** — its role is to initiate workflow execution based on time conditions.
+
+**Output Parameters:** N/A
+**Instructions:** No outputs are exposed to downstream nodes.
+
+---
+
+## Output Type
+
+**Output Type:** N/A
+This node does not generate any data output; it only triggers workflow execution.
+
+---
+
+## Example Usage
+
+### Example 1: Interval-Based Schedule
+
+```json
+{
+  "interval": "*/10",
+  "natural_description": null,
+  "cron_description": null
+}
+```
+
+**Expected Behavior:**
+The workflow runs automatically every 10 minutes.
+
+---
+
+### Example 2: Natural Language Schedule
+
+```json
+{
+  "interval": null,
+  "natural_description": "every day at 6pm",
+  "cron_description": null
+}
+```
+
+**Expected Behavior:**
+The workflow triggers once daily at 6:00 PM local time.
+
+---
+
+### Example 3: CRON Expression Schedule
+
+```json
+{
+  "interval": null,
+  "natural_description": null,
+  "cron_description": "0 9 * * 1-5"
+}
+```
+
+**Expected Behavior:**
+The workflow runs automatically at **9:00 AM, Monday through Friday**.
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Time Trigger Node**
+   Drag and drop the **Time-Based Runs** node as the first node in your workflow.
+
+2. **Select a Scheduling Mode**
+   Choose one of the three available scheduling methods — _interval_, _natural language_, or _CRON expression_.
+
+3. **Configure Schedule**
+
+   - Use **interval** for quick recurring runs (e.g., every 5 minutes).
+   - Use **natural_description** for simple human-readable schedules (e.g., “every day at 9am”).
+   - Use **cron_description** for advanced timing needs.
+
+4. **Leave Other Fields Empty**
+   Make sure only one scheduling parameter is filled; the others must remain `null`.
+
+5. **Connect Downstream Nodes**
+   Link the time trigger to other nodes, such as **Data Fetch**, **AI Generation**, or **Email Notification**, to automate periodic actions.
+
+6. **Activate the Workflow**
+   Once configured, activate the workflow. It will automatically execute according to your defined schedule.
+
+---
+
+## Best Practices
+
+- Use **interval** for simple repeat tasks (e.g., every few minutes or hours).
+- Use **natural_description** for readability in business or team workflows.
+- Use **cron_description** for complex or system-level automation.
+- Ensure your workflow remains active; paused workflows will not run automatically.
+- Avoid overlapping intervals (e.g., setting both “\*/1” and “every minute”).
+- Always test schedules with short intervals before deploying long-running jobs.
+- Use descriptive labels or comments to clarify what each scheduled trigger does.
+
+---
+
+## Example Workflow Integration
+
+**Use Case:** Automatically refresh AI-generated content every day.
+
+**Workflow Steps:**
+
+1. **Trigger Node:** Time-Based Runs. (Runs daily at 9am).
+2. **AI Node:** Text Generation (Generates the day’s content.)
+3. **Utility Node:** Send Email (Sends the generated content to subscribers.)
+
+---
+
+## Common Errors
+
+- **"Multiple schedule parameters set"**
+  **Cause:** More than one scheduling mode (interval/natural/cron) was filled.
+  **Solution:** Only one scheduling parameter should be set; leave others as `null`.
+
+- **"Invalid CRON expression"**
+  **Cause:** Incorrect CRON syntax (missing fields or invalid format).
+  **Solution:** Verify CRON format using a CRON validator (e.g., crontab.guru).
+
+- **"Empty schedule"**
+  **Cause:** All scheduling fields were left empty.
+  **Solution:** Provide at least one valid scheduling parameter.
+
+- **"Workflow did not start"**
+  **Cause:** The workflow is inactive or disabled.
+  **Solution:** Ensure the workflow is active and properly connected.

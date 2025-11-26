@@ -1,0 +1,202 @@
+**Category:** Logic & Control Flow
+**Type:** Iterative Process
+
+---
+
+## Overview
+
+The **Loop Process Node** is used to repeat a set of actions several times inside your workflow.
+It helps you run the same task automatically for a fixed number of iterations or items, without needing to manually duplicate steps.
+
+This node is helpful when you need to process multiple records, perform repetitive operations, or create batch tasks — such as sending several messages, checking multiple values, or looping through a list of data.
+
+---
+
+## Description
+
+The **Loop Process Node** works by running a group of connected actions in a **loop**.
+You can define a **loop variable** that represents the current iteration (like `a` or `i`), and you can specify how many times the loop should run by setting a **maximum iteration count**.
+
+Each time the loop runs, the workflow uses the loop variable’s value for that round.
+Once it finishes all the iterations, the loop stops automatically.
+
+If no actions are placed inside the loop, it still completes the planned iterations but performs no inner actions.
+
+---
+
+## Input Parameters
+
+**Node Description**
+An optional text description explaining what this loop is designed to do.
+
+**Loop Variable**
+The name of the variable used in each loop iteration.
+For example, if you enter `a`, then each round of the loop will reference `a` as the current count or value.
+
+**Maximum Iterations**
+The total number of times the loop should repeat.
+This setting prevents the workflow from looping endlessly.
+
+All of these inputs can be set directly in the **Node Settings** panel.
+
+---
+
+## Output Parameters
+
+**condition (loop result)** — Indicates whether the loop ran successfully or not.
+**totalIterations** — Shows how many total iterations were planned for this loop.
+**completedIterations** — Displays how many times the loop actually completed its actions.
+**batchesProcessed** — If your workflow runs items in groups, this value shows how many batches were processed.
+**Loop Variable Output** — Shows the final value of the loop variable after all iterations are complete.
+
+---
+
+## Output Type
+
+The output of this node is **iterative data**.
+It includes numeric results such as how many iterations were completed and the final state of your loop variable.
+You can use this information in later steps of your workflow.
+
+---
+
+## Example Usage
+
+### Example 1: Simple 10-Iteration Loop
+
+**Input:**
+
+```json
+{
+  "loopVariable": "a",
+  "maximumIterations": 10
+}
+```
+
+**Output:**
+
+```json
+{
+  "totalIterations": 10,
+  "completedIterations": 10,
+  "batchesProcessed": 1,
+  "a": null
+}
+```
+
+**Explanation:**
+This example creates a loop using the variable `a` that runs ten times.
+Since there are no actions inside the loop, it finishes immediately and returns summary details like total and completed iterations.
+
+---
+
+### Example 2: Process Multiple Items
+
+**Input:**
+
+```json
+{
+  "loopVariable": "item",
+  "maximumIterations": 5
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "totalIterations": 5,
+  "completedIterations": 5,
+  "batchesProcessed": 1,
+  "item": "last_processed_value"
+}
+```
+
+**Explanation:**
+This setup loops through five items using the variable `item`.
+Each iteration processes one item, and after all iterations, the last processed value is returned.
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Node**
+   Drag and drop the **Loop Process Node** into your workflow canvas.
+
+2. **Set the Loop Variable**
+   Enter a name for your loop variable (like `item` or `a`).
+   This variable represents the current count or item in each iteration.
+
+3. **Define the Maximum Iterations**
+   Specify how many times you want the loop to run.
+   This ensures the loop stops after the desired number of rounds.
+
+4. **Add Actions Inside the Loop**
+   Place the nodes or actions that you want to repeat **inside** the loop.
+
+5. **Connect the Next Step**
+   Once the loop finishes, connect the next node or action for what should happen next.
+
+6. **Run the Workflow**
+   Execute the workflow to see the loop in action.
+   Review the results to confirm that all iterations ran successfully.
+
+---
+
+## Best Practices
+
+- Always set a **maximum iteration limit** to avoid infinite loops.
+- Start with a **small number of iterations** (like 3 to 5) during testing.
+- Give your **loop variable** a short, meaningful name that reflects its purpose.
+- Combine the Loop Process Node with **If/Else Conditions** for smarter decision-making inside loops.
+- Use the loop for **batch operations** — such as processing lists, updating records, or sending multiple messages.
+- Return loop inside loop wont be executed
+---
+
+## Example Workflow Integration
+
+**Scenario:**
+You want to send a personalized email to 10 users.
+
+**Workflow Steps:**
+
+1. Add a **Trigger Node** to start your workflow (for example, “User List Loaded”).
+2. Add a **Loop Process Node** and set:
+
+   - Loop Variable: `user`
+   - Maximum Iterations: `10`
+
+3. Inside the loop, add a **Send Email Node** to send a personalized message to each user.
+4. After the loop, connect a **Summary Node** or **Log Node** to record that all messages were sent.
+
+**Result:**
+The workflow automatically runs 10 times — one for each user — and stops when all iterations are done.
+
+---
+
+## Common Errors
+
+**Loop variable not defined**
+The loop variable field was left blank.
+→ Always provide a name like `a` or `item`.
+
+**Maximum iterations missing**
+You must set the total number of iterations.
+→ This prevents infinite loops.
+
+**No actions inside the loop**
+The node has nothing to process.
+→ Add at least one action or node inside the loop.
+
+**Loop did not start**
+The input data was empty or invalid.
+→ Make sure the previous node provides valid data for looping.
+
+---
+
+## Summary
+
+The **Loop Process Node** lets you automate repetitive actions easily — no coding required.
+You can repeat steps a specific number of times, work through lists of items, or perform batch operations automatically.
+It’s a simple yet powerful way to make your workflow **smarter, faster, and more efficient**.
+
+---

@@ -1,0 +1,360 @@
+---
+title: 'Delete Data'
+description: 'Delete records from a database table'
+---
+
+Deletes records from the specified WorqDB table based on the provided `where` conditions. This endpoint allows you to remove existing records from your database by specifying which records to delete.
+
+```endpoint
+DELETE https://api.worqhat.com/db/delete
+```
+
+## What Does This Endpoint Do?
+
+This endpoint removes records from your database tables that match specific criteria. Think of it like removing rows from a spreadsheet based on certain conditions - you specify which table to delete from and what conditions the records must meet to be deleted.
+
+## When to Use Delete Data
+
+You'll find this endpoint useful when you need to:
+
+- **Remove inactive users**: Delete user accounts that are no longer active
+- **Clean up old data**: Remove outdated or expired records
+- **Delete completed tasks**: Remove tasks that have been finished
+- **Implement data retention policies**: Delete data that's beyond your retention period
+- **Remove test data**: Clean up test or temporary records
+- **Handle user requests**: Delete user data upon request (e.g., for privacy compliance)
+
+## How It Works
+
+1. You specify the **table name** where you want to delete records
+2. You provide the **where conditions** to identify which records to delete
+3. The API deletes matching records and returns the count of deleted records
+
+## Code Examples
+
+### Example 1: Delete Records with a Single Condition
+
+This example shows how to delete records that match a single condition.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function deleteInactiveUsers() {
+      try {
+        // Call the deleteRecords method
+        const response = await client.db.deleteRecords({
+          table: 'users',          // The table to delete from
+          where: {                 // The condition to match records
+            status: 'inactive'
+          },
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Deleted ${response.deletedCount} inactive users`);
+        console.log(`Message: ${response.message}`);
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error deleting users:', error.message);
+      }
+    }
+    
+    // Call the function
+    deleteInactiveUsers();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Delete inactive users
+    try:
+        response = client.db.delete_records(
+            table="users",          # The table to delete from
+            where={                 # The condition to match records
+                "status": "inactive"
+            },
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Deleted {response.deleted_count} inactive users")
+        print(f"Message: {response.message}")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error deleting users: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+
+    func getEnvOrDefault(key, defaultValue string) string {
+      if value := os.Getenv(key); value != "" {
+        return value
+      }
+      return defaultValue
+    }
+    
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Delete inactive users
+      response, err := client.DB.DeleteRecords(context.TODO(), worqhat.DBDeleteRecordsParams{
+        Table: "users",            // The table to delete from
+        Where: map[string]interface{}{ // The condition to match records
+          "status": "inactive",
+        },
+        Environment: getEnvOrDefault("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error deleting users: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Deleted %d inactive users\n", response.DeletedCount)
+      fmt.Printf("Message: %s\n", response.Message)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Delete inactive users
+    curl -X DELETE "https://api.worqhat.com/db/delete" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "users",
+        "where": {
+          "status": "inactive"
+        },
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: Delete Records with Multiple Conditions
+
+This example shows how to delete records that match multiple conditions.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function deleteOldCompletedTasks() {
+      try {
+        // Get date from 30 days ago
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        
+        // Call the deleteRecords method with multiple conditions
+        const response = await client.db.deleteRecords({
+          table: 'tasks',         // The table to delete from
+          where: {                // Multiple conditions to match records
+            status: 'completed',
+            priority: 'low'
+          },
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Deleted ${response.deletedCount} old completed tasks`);
+        return response;
+      } catch (error) {
+        console.error('Error deleting tasks:', error.message);
+      }
+    }
+    
+    deleteOldCompletedTasks();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    from datetime import datetime, timedelta
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+        environment=os.environ.get("WORQHAT_ENVIRONMENT", "production"),  # Defaults to production
+    )
+    
+    # Get date from 30 days ago
+    thirty_days_ago = (datetime.now() - timedelta(days=30)).isoformat()
+    
+    # Delete old completed tasks
+    try:
+        response = client.db.delete_records(
+            table="tasks",         # The table to delete from
+            where={                # Multiple conditions to match records
+                "status": "completed",
+                "priority": "low"
+            }
+        )
+        
+        # Handle the successful response
+        print(f"Deleted {response.deleted_count} old completed tasks")
+        print(f"Message: {response.message}")
+    except Exception as e:
+        print(f"Error deleting tasks: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+      "time"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+        option.WithEnvironment(getEnvOrDefault("WORQHAT_ENVIRONMENT", "production")),  // Defaults to production
+      )
+      
+      // Get date from 30 days ago
+      thirtyDaysAgo := time.Now().AddDate(0, 0, -30).Format(time.RFC3339)
+      
+      // Delete old completed tasks
+      response, err := client.DB.DeleteRecords(context.TODO(), worqhat.DBDeleteRecordsParams{
+        Table: "tasks",           // The table to delete from
+        Where: map[string]interface{}{ // Multiple conditions to match records
+          "status": "completed",
+          "priority": "low",
+        },
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error deleting tasks: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Deleted %d old completed tasks\n", response.DeletedCount)
+      fmt.Printf("Message: %s\n", response.Message)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Delete old completed tasks
+    curl -X DELETE "https://api.worqhat.com/db/delete" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "table": "tasks",
+        "where": {
+          "status": "completed",
+          "priority": "low"
+        },
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+## Request Body Explained
+
+<ParamField body="table" type="string" required>
+  The name of the table where you want to delete records. For example, `users`, `products`, or `orders`.
+</ParamField>
+
+<ParamField body="where" type="object" required>
+  The conditions that records must match to be deleted. This is an object where each key is a field name and each value is the value to match.
+  
+  For example, `{"status": "inactive"}` will match records where the status field equals "inactive".
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if the delete operation was successful, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="deletedCount" type="integer">
+  The number of records that were deleted by this operation.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  A human-readable message describing the result of the operation.
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "deletedCount": 5,
+  "message": "5 record(s) deleted successfully from users"
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Table not found" | The specified table doesn't exist | Check your table name for typos |
+| "Missing where conditions" | The where parameter is empty | Provide at least one condition in the where object |
+| "No records match the conditions" | No records matched your where conditions | This is not an error, but check your conditions if you expected records to be deleted |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+
+## Tips for Successful Deletions
+
+- **Always use specific conditions** to avoid accidentally deleting too many records
+- **Consider using a query first** to verify which records will be deleted
+- **Be careful with delete operations** as they cannot be undone
+- **Use multiple conditions** when needed to precisely target records
+- **Consider soft deletes** (updating a status field instead of actually deleting) for data that might need to be recovered

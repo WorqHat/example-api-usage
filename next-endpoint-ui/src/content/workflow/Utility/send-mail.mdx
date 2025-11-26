@@ -1,0 +1,222 @@
+
+**Category:** Communication / Email
+**Type:** Action Node (Email Sending)
+
+---
+
+## Overview
+
+The **Send Mail Node** allows you to send emails directly from your workflow.
+It’s commonly used for sending notifications, confirmations, reports, or automated messages — all without writing any email or server code.
+
+---
+
+## Description
+
+This node helps you send an email through a configured sender identity. You can define who the email is from, who receives it, the subject, the message content, and optionally include attachments.
+When the email is sent, the node returns details such as whether it was successfully delivered, how long it took, and a unique delivery ID you can use for tracking or logs.
+
+---
+
+## Input Parameters
+
+Here’s what you need to provide when configuring the node:
+
+* **senderEmail:**
+  The email address used to send the message. This must be a verified or authorized sender email. *(Required)*
+
+* **senderName:**
+  A display name that appears as the sender. For example, “Harshada”. *(Optional)*
+
+* **recipientAddress:**
+  The email address of the recipient. You can also enter multiple addresses separated by commas or as a list. *(Required)*
+
+* **cc:**
+  Optional email addresses to send a carbon copy to. Can be a single address or multiple ones separated by commas. *(Optional)*
+
+* **bcc:**
+  Optional blind carbon copy addresses that stay hidden from other recipients. *(Optional)*
+
+* **subject:**
+  The subject line of your email. *(Required)*
+
+* **body:**
+  The main message of your email. You can write plain text or HTML, such as `<p>Hello</p>`. *(Required)*
+
+* **attachments:**
+  Any files you want to send with the email. These can be file objects or URLs, depending on the platform. *(Optional)*
+
+---
+
+## Output Parameters
+
+When the node runs, it returns the following:
+
+* **deliveryStatus:**
+  Tells you if the email was sent successfully or failed (for example, “sent”, “failed”, or “queued”).
+
+* **deliveryTime:**
+  Shows how long it took to send the email, usually in milliseconds.
+
+* **deliveryId:**
+  A unique identifier for the email delivery. You can use this for logging or debugging.
+
+---
+
+## Output Type
+
+The output is a **JSON object** containing delivery information, such as the status, time, and a unique ID. You can use this output for confirmation messages, conditional logic, or audit records in your workflow.
+
+---
+
+## Example Usage
+
+**Example 1 – Simple Email**
+
+**Input:**
+
+```json
+{
+  "senderEmail": "harshada@notifs.worqhat.com",
+  "senderName": "harshada",
+  "recipientAddress": "kolekarharshada08@gmail.com",
+  "cc": null,
+  "bcc": null,
+  "subject": "hello",
+  "body": "<p>hello</p>",
+  "attachments": null
+}
+```
+
+**Output:**
+
+```json
+{
+  "output": {
+    "deliveryStatus": "sent",
+    "deliveryTime": 590,
+    "deliveryId": "<0108019a2f48fb00-ddc25dab-dfa2-48d6-b9ac-b36f99e2b43b-000000@ap-southeast-2.worqhat.com>"
+  }
+}
+```
+
+---
+
+**Example 2 – Email with CC, BCC, and Attachment**
+
+**Input:**
+
+```json
+{
+  "senderEmail": "no-reply@yourorg.com",
+  "senderName": "Your Org",
+  "recipientAddress": "user@example.com",
+  "cc": "manager@example.com",
+  "bcc": ["audit@example.com"],
+  "subject": "Monthly Report",
+  "body": "<h1>Your monthly report</h1><p>Attached is the report.</p>",
+  "attachments": [
+    { "fileName": "report.pdf", "url": "https://storage.example.com/report.pdf" }
+  ]
+}
+```
+
+**Output:**
+
+```json
+{
+  "output": {
+    "deliveryStatus": "sent",
+    "deliveryTime": 1200,
+    "deliveryId": "<unique-delivery-id@example.com>"
+  }
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. Add the **Send Mail Node** to your workflow.
+2. Open its settings panel.
+3. Choose or enter your **sender email** (must be a verified sender).
+4. Add your **sender name** if you want it to show up in the “From” field.
+5. Enter the **recipient’s email address**.
+6. Add **CC** or **BCC** addresses if needed.
+7. Type your **subject line**.
+8. Write your **email body**. You can use plain text or HTML.
+9. If you want to attach files, add them under **Attachments**.
+10. Save your changes and connect this node to your previous nodes.
+11. When the workflow runs, this node will send the email automatically and return the delivery details.
+
+---
+
+## Best Practices
+
+* Always use a verified sender email to prevent messages from landing in spam.
+* Keep subject lines short and relevant.
+* Use simple HTML for formatting (avoid heavy styles or scripts).
+* Test your email content by sending to yourself before final deployment.
+* Avoid sending large attachments; use file links instead.
+* Store or log the `deliveryId` and `deliveryStatus` for troubleshooting or record keeping.
+* Add retry logic if an email fails to send.
+
+---
+
+## Example Workflow Integration
+
+Here are a few ways this node fits into workflows:
+
+* **Form Submission → Send Mail → Return Status:**
+  Send a confirmation email after someone submits a form.
+
+* **Report Generation → Send Mail:**
+  Generate a document or summary report and email it to a user.
+
+* **Scheduled Trigger → Send Mail:**
+  Automatically send reminders or summaries at set intervals.
+
+---
+
+## Common Errors
+
+* **Email not sent (deliveryStatus: failed):**
+  The recipient’s email address may be invalid or the sender is not authorized.
+
+* **Sender not verified:**
+  The email used as sender must be verified with the platform.
+
+* **Attachment not found:**
+  Ensure that any attachment file or URL is valid and accessible.
+
+* **Spam filtering issues:**
+  Avoid spammy words or large images. Use verified domains with SPF/DKIM setup.
+
+---
+
+## Configure Sender Email Address
+
+1. **WorqHat's domain**
+- You will be using the subdomain for sending emails.
+- Assign a name, for example "xyz," as the Sender Name.
+- The Sender email will be xyz@notifs.worqhat.com.
+
+2. **Your own Domain**
+- To verify ownership of a domain, you must have access to its DNS settings to add the necessary records.
+- Select your region.
+- Enter your Sender Name, with examples such as:
+  - john@company.com
+  - john@mail.company.com
+  - john@subdomain.company.org
+
+3. **Email address**
+- To verify ownership of an email address, you must have access to its inbox to open the verification email.
+- Configure the email address by adding and verifying it as a sender.
+- Enter your email address and a verification link will be sent to your inbox.
+- After submitting your email, you will see this message: **"We need to verify your email address before you can send emails from it. Please check your inbox for the verification link. The link will expire in 24 hours."**
+- Once you verify your email by clicking the link, you can start sending emails.
+
+
+---
+
+

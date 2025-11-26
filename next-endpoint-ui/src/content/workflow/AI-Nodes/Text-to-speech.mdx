@@ -1,0 +1,193 @@
+**Category:** AI
+**Type:** Audio Processing
+
+---
+
+## Overview
+
+The **Text to Speech Node** converts written text into natural-sounding speech using advanced AI voice models. It allows you to transform text-based content (like messages, summaries, or prompts) into an audio format that can be played, downloaded, or passed to other workflow nodes for further use.
+
+This node is designed for **no-code workflows**, meaning you can generate spoken audio directly from text without any programming. It supports multiple pre-configured voices and allows integration with other nodes for automated voice responses or multimedia content creation.
+
+---
+
+## Description
+
+Use the **Text to Speech Node** to turn any text into human-like speech. Simply provide the text you want to convert and choose a voice from the available options.
+The node outputs an audio file (or URL) that contains the generated voice output, which can then be used in downstream nodes like playback, file storage, or notifications.
+
+---
+
+## Input Parameters
+
+The **Text to Speech** node accepts flat key-value inputs that define what text to convert and which voice to use.
+
+- **text**
+  The text content to be converted into speech.
+  You can use static text or dynamic variables from previous nodes, for example:
+
+  ```
+  {{nodeId.output.field}}
+  ```
+
+- **voiceId**
+  The unique identifier of the voice used for speech synthesis.
+  Available voices include:
+
+  - `"SOYHLrjzK2X1ezoPC6cr"` – Harry
+  - `"TX3LPaxmHKxFdv7VOQHJ"` – Liam
+  - `"ThT5KcBeYPX3keUQqHPh"` – Dorothy
+  - `"XB0fDUnXU5powFXDhCwa"` – Charlotte
+
+**Instructions:**
+Provide all input parameters as flat key-value pairs.
+You can reference data dynamically within the workflow using:
+
+```
+{{nodeId.input.<key>}}
+```
+
+or
+
+```
+{{nodeId.output.<key>}}
+```
+
+---
+
+## Output Parameters
+
+After execution, the **Text to Speech** node returns information about the generated audio and process details.
+
+- **processingCount**
+  Indicates the total number of audio segments or speech outputs generated.
+
+- **processingTime**
+  The total time taken to process and generate the speech output, returned in ISO timestamp format.
+
+- **processingId**
+  A unique identifier assigned to this specific speech generation request.
+  Useful for tracking or debugging individual runs.
+
+- **audio**
+  The file reference or URL of the generated audio output.
+  This can be used in downstream nodes to send, play, or store the generated speech.
+
+- **message**
+  A short status message indicating whether the operation was successful or if an error occurred.
+
+---
+
+## Output Type
+
+**Type:** `audio`
+This node **always outputs an audio file or reference**. Do not modify this value — it ensures proper audio handling in your workflow.
+
+---
+
+## Example Usage
+
+### Example 1 — Simple Text to Speech
+
+**Input:**
+
+```json
+{
+  "text": "Welcome to the workflow automation demo!",
+  "voiceId": "TX3LPaxmHKxFdv7VOQHJ"
+}
+```
+
+**Output:**
+
+```json
+{
+  "processingTime": "2025-10-28T13:20:45.123Z",
+  "processingId": "tts-90128xkf",
+  "audio": "https://example.com/audio/welcome_demo.mp3",
+  "message": "Speech generated successfully."
+}
+```
+
+### Example 2 — Using Variables from Another Node
+
+**Input:**
+
+```json
+{
+  "text": "{{rest-api-trigger-initial.input.test_input}}",
+  "voiceId": "ThT5KcBeYPX3keUQqHPh"
+}
+```
+
+**Output:**
+
+```json
+{
+  "processingCount": 1,
+  "processingTime": "2025-10-28T14:05:09.004Z",
+  "processingId": "tts-90782pqr",
+  "audio": "https://example.com/audio/demo.mp3",
+  "message": "Text processed successfully."
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Node:** Drag and drop the **Text to Speech Node** into your workflow editor.
+2. **Connect Input:** Link the output of a text-generating node (like _Text Generation_) or static text as the input for the `text` field.
+3. **Select a Voice:** Choose a voice ID (e.g., “Harry” or “Charlotte”) for speech output.
+4. **Run the Workflow:** Execute the workflow to automatically convert the text into an audio file.
+5. **Access Audio Output:** The generated file link can be used in:
+
+   - Notification systems
+   - Audio playback modules
+   - File storage or sharing nodes
+
+---
+
+## Best Practices
+
+- Keep text **under 2,000 characters** per request for faster processing.
+- Choose a **consistent voice ID** across similar nodes for a uniform tone.
+- Use **descriptive variable names** like `{{introNode.output.text}}` to make the workflow readable.
+- For multilingual support, verify that your chosen voice supports the target language.
+
+---
+
+## Example Workflow Integration
+
+**Scenario:**
+A workflow where AI generates daily motivational quotes and automatically converts them to audio.
+
+**Example Flow:**
+
+1. **Trigger Node:** REST API (to receive input data)
+2. **AI Node:** Text to Speech (to convert text to speech)
+3. **Process Node:** Return State Node (to display the url containing the audio)
+
+---
+
+## Common Errors
+
+Below are common issues you might encounter while using the **Text to Speech** node, along with their causes and recommended solutions.
+
+- **"Missing text input"**
+  **Cause:** The `text` field was left empty or not connected.
+  **Solution:** Provide valid text directly or connect the `text` field to a previous node’s output.
+
+- **"Invalid voiceId"**
+  **Cause:** An unsupported or incorrect `voiceId` was entered.
+  **Solution:** Use one of the supported voice IDs listed in the input parameters or a verified custom voice ID.
+
+- **"Audio generation failed"**
+  **Cause:** The AI model encountered an internal error or the request timed out.
+  **Solution:** Retry after a short delay or reduce the length of the input text.
+
+- **"Empty audio output"**
+  **Cause:** The node did not connect correctly to downstream workflow components.
+  **Solution:** Recheck node connections and run the workflow again to ensure proper linkage.
+
+---

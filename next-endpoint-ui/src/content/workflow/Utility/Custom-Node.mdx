@@ -1,0 +1,225 @@
+**Category:** Utility
+**Type:** Custom Code Execution
+
+---
+
+## Overview
+
+The **Custom Node** allows you to create and run your own custom logic inside a workflow.
+It’s designed for advanced users who need to perform specialized operations that are not covered by existing nodes — such as data manipulation, transformation, or custom API calls.
+
+By writing a short function in a supported programming language, you can fully customize how this node behaves and what kind of output it produces.
+
+---
+
+## Description
+
+The **Custom Node** gives developers the freedom to write and execute custom code directly within a workflow.
+This is especially useful when you want to:
+
+- Process data in a unique or complex way.
+- Connect to APIs not natively supported.
+- Apply custom business logic or transformations.
+- Extend the workflow’s functionality without external services.
+
+When configured, the node runs your provided code using the selected language (such as JavaScript or Python) and returns the results to downstream nodes.
+This flexibility makes it a powerful tool for building advanced automations and integrations.
+
+---
+
+## Input Parameters
+
+The **Custom Node** accepts parameters that define the programming language and code you want to execute.
+
+- **language**
+  Defines which programming language to use for your custom function.
+  Supported languages include:
+
+  - `"javascript"` – Run code using Node.js environment.
+  - `"python"` – Execute Python code for logic or data processing.
+    Example:
+
+  ```json
+  "language": "python"
+  ```
+
+- **functionCode**
+  The actual code that the node will execute. This should be written as a function that processes inputs and returns results.
+  Example:
+
+  ```javascript
+  function run(input) {
+    const output = input.value * 2;
+    return { result: output };
+  }
+  ```
+
+**Notes:**
+
+- Always ensure that your code is self-contained and does not depend on unavailable external modules.
+- Inputs from previous nodes can be accessed using standard variable syntax like:
+
+  ```
+  {{previousNode.output.value}}
+  ```
+
+- Outputs from this node can be passed to other nodes using variable references like:
+
+  ```
+  {{customNode.output.result}}
+  ```
+
+---
+
+## Output Parameters
+
+This node does **not have fixed output parameters**.
+Instead, outputs depend entirely on what your custom function returns.
+
+**Typical Output Examples:**
+
+- You can return a JSON object, a text string, or even arrays — for example:
+
+  ```json
+  { "result": "Processed successfully" }
+  ```
+
+- These returned fields will automatically become available as outputs for downstream nodes.
+
+**Accessing Outputs:**
+Use variable references in the workflow, such as:
+
+```
+{{customNode.output.result}}
+{{customNode.output.status}}
+```
+
+---
+
+## Output Type
+
+**Output Type:** Dynamic
+The output type depends on the return value of the custom function.
+It may be text, JSON, or a structured object depending on your implementation.
+
+---
+
+## Example Usage
+
+### Example 1: Basic Calculation in JavaScript
+
+```json
+{
+  "language": "javascript",
+  "functionCode": "function run(input) { return { result: input.value * 2 }; }"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "result": 10
+}
+```
+
+_(If input value was 5)_
+
+---
+
+### Example 2: String Manipulation in Python
+
+```json
+{
+  "language": "python",
+  "functionCode": "def run(input):\n    return { 'message': input['text'].upper() }"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "message": "HELLO WORLD"
+}
+```
+
+_(If input text was “hello world”)_
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Custom Node**
+   Drag and drop the **Custom Node** into your workflow from the Utilities category.
+
+2. **Select a Programming Language**
+   Choose your preferred language — for example, **JavaScript** or **Python**.
+
+3. **Write Your Custom Function**
+   Add your code logic inside the `functionCode` field. Make sure it returns an output in JSON format for easy downstream use.
+
+4. **Pass Inputs from Other Nodes**
+   You can reference data from previous nodes using variable syntax, such as:
+
+   ```
+   {{textGeneration.output.content}}
+   ```
+
+5. **Connect to Downstream Nodes**
+   Link the node’s outputs to other workflow nodes. For example, send the result to a Slack message or a data storage node.
+
+6. **Test and Validate**
+   Run the workflow in test mode to ensure your custom logic works as intended.
+
+---
+
+## Best Practices
+
+- Keep your function small and focused on one task.
+- Always validate your input data before processing.
+- Include error handling within your code to prevent workflow crashes.
+- Return results in a consistent JSON structure for easy use in other nodes.
+- Avoid long-running or infinite loops that could delay the workflow.
+- Test your code thoroughly before deploying to production workflows.
+
+---
+
+## Example Workflow Integration
+
+**Use Case:** Automatically transform AI-generated text before sending it via Slack.
+
+**Workflow Steps:**
+
+1. **Text Generation Node:** Produces a paragraph of AI-generated text.
+2. **Custom Node:** Uses JavaScript to shorten or clean the generated text.
+3. **Slack Message Node:** Sends the transformed text to a team channel.
+
+**Connection Example:**
+
+```
+{{textGeneration.output.content}} → {{customNode.input.text}}
+{{customNode.output.cleanedText}} → {{slackMessage.input.message}}
+```
+
+This setup allows you to use custom logic to modify AI outputs before sending or storing them.
+
+---
+
+## Common Errors
+
+- **"Missing language"**
+  **Cause:** The `language` field was left empty.
+  **Solution:** Specify a supported language like `"javascript"` or `"python"`.
+
+- **"Invalid function code"**
+  **Cause:** The provided code has syntax errors or missing return statements.
+  **Solution:** Verify the code syntax and ensure the function returns a JSON-compatible object.
+
+- **"Runtime error"**
+  **Cause:** The custom code failed during execution due to invalid input or logic.
+  **Solution:** Add try-catch or equivalent error handling in your function.
+
+- **"No output generated"**
+  **Cause:** The code executed but didn’t return any value.
+  **Solution:** Always return an object with at least one key-value pair.

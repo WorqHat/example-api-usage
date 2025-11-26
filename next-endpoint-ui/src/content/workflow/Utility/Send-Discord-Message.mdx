@@ -1,0 +1,141 @@
+**Category:** Communication
+**Type:** Utility
+
+---
+
+## Overview
+
+The **Send Discord Message** node posts messages to a Discord channel using a webhook.
+Use it for alerts, summaries, and notifications.
+
+---
+
+## Description
+
+Provide a Discord webhook URL and message content. Optionally add rich fields like embeds/images.
+
+---
+
+## Input Parameters
+
+- **webhookUrl**
+  Discord webhook URL.
+
+- **title**
+  Optional title for embeds.
+
+- **message**
+  Main text content.
+
+- **color**
+  Optional embed color (hex string or integer).
+
+- **author**
+  Optional author name.
+
+- **authorIcon**
+  Optional author icon URL.
+
+- **thumbnail**
+  Optional thumbnail image URL.
+
+- **image**
+  Optional main image URL.
+
+- **attachments**
+  JSON-encoded array of additional embed objects (optional).
+
+**Notes:**
+
+- Provide flat key-value pairs. For arrays/objects, use JSON-encoded strings.
+
+---
+
+## Output Parameters
+
+- **deliveryTime**
+  ISO timestamp of request completion.
+
+- **deliveryStatus**
+  `success` or `failed`.
+
+- **responseStatus**
+  HTTP status code.
+
+---
+
+## Output Type
+
+**Output Type:** JSON
+
+---
+
+## Example Usage
+
+**Input:**
+
+```json
+{
+  "webhookUrl": "https://discord.com/api/webhooks/...",
+  "title": "Build Notification",
+  "message": "Deployment succeeded.",
+  "color": "65280"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "deliveryStatus": "success",
+  "responseStatus": 204
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Node**
+   Place the **Send Discord Message** node in your notification flow.
+
+2. **Map Inputs**
+   Provide `webhookUrl` and `message`, optionally add embed fields.
+
+3. **Check Outputs**
+   Confirm `deliveryStatus` and `responseStatus`.
+
+---
+
+## Best Practices
+
+- Keep messages concise; use embeds for structure.
+- Avoid posting secrets or PII.
+- Rate-limit frequent alerts.
+
+---
+
+## Common Errors
+
+- **"Invalid webhook"**
+  Ensure the webhook URL is correct.
+
+- **"Request blocked"**
+  Check network restrictions and Discord rate limits.
+
+---
+
+## Create a Discord webhook URL
+
+- Open Discord and select the server where you want to create the webhook.​
+- Click the arrow next to your server name in the upper left corner and choose "Server Settings".​
+- In the left sidebar, go to "Integrations" and then click on "Webhooks".​
+- Click the "Create Webhook" button.​
+- Give your webhook a name and optionally upload a profile picture.​
+- Select the channel where messages from this webhook will be posted.​
+- Click "Save" or "Create" to finalize the webhook setup.​
+- Click the "Copy Webhook URL" button to copy the webhook URL to your clipboard.​
+- Use this URL in your Workflow to send messages to your Discord channel.​
+
+
+- **Important**: Only users with "Manage Webhooks" permission can create webhooks, and the webhook URL should be kept secure to prevent unauthorized access.

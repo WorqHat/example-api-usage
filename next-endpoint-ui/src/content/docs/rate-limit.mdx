@@ -1,0 +1,229 @@
+---
+title: "🔄 API Usage Guidelines"
+---
+
+## API Usage Guidelines
+
+While the WorqHat API currently does not enforce strict rate limits, we recommend following these best practices to ensure optimal performance and reliability for all users.
+
+### Automatic Retries
+
+The official WorqHat JavaScript/TypeScript library automatically handles retries for certain types of errors. By default, the library will retry failed requests up to 2 times with an exponential backoff strategy.
+
+#### What Gets Retried
+
+The following types of errors are automatically retried:
+
+- Connection errors (network connectivity problems)
+- 408 Request Timeout errors
+- 409 Conflict errors
+- 429 Rate Limit errors
+- 500+ Internal Server errors
+
+#### Configuring Retries
+
+You can configure the retry behavior using the `maxRetries` option:
+
+<CodeGroup>
+```javascript client-config.js
+// Configure the default for all requests:
+const client = new Worqhat({ 
+  maxRetries: 0, // Disable retries (default is 2)
+});
+
+// Or, configure per-request:
+await client.db.executeQuery(
+  { query: 'SELECT * FROM users' }, 
+  { maxRetries: 5 } // Override with 5 retries for this request
+);
+```
+
+```typescript client-config.ts
+// Configure the default for all requests:
+const client = new Worqhat({ 
+  maxRetries: 0, // Disable retries (default is 2)
+});
+
+// Or, configure per-request:
+await client.db.executeQuery(
+  { query: 'SELECT * FROM users' }, 
+  { maxRetries: 5 } // Override with 5 retries for this request
+);
+```
+</CodeGroup>
+
+### Request Timeouts
+
+Requests to the WorqHat API time out after 1 minute by default. You can configure this timeout period to better suit your application's needs.
+
+<CodeGroup>
+```javascript timeout-config.js
+// Configure the default timeout for all requests:
+const client = new Worqhat({ 
+  timeout: 20 * 1000, // 20 seconds (default is 1 minute)
+});
+
+// Override timeout per-request:
+await client.db.executeQuery(
+  { query: 'SELECT * FROM users' }, 
+  { timeout: 5 * 1000 } // 5 second timeout for this request
+);
+```
+
+```typescript timeout-config.ts
+// Configure the default timeout for all requests:
+const client = new Worqhat({ 
+  timeout: 20 * 1000, // 20 seconds (default is 1 minute)
+});
+
+// Override timeout per-request:
+await client.db.executeQuery(
+  { query: 'SELECT * FROM users' }, 
+  { timeout: 5 * 1000 } // 5 second timeout for this request
+);
+```
+</CodeGroup>
+
+When a request times out, an `APIConnectionTimeoutError` is thrown. Note that requests which time out will be retried according to your retry configuration.
+
+### Python Library Retries
+
+The official WorqHat Python library also includes automatic retry functionality similar to the JavaScript library. By default, it retries certain errors 2 times with exponential backoff.
+
+<CodeGroup>
+```python retry-config.py
+from worqhat import Worqhat
+
+# Configure the default for all requests:
+client = Worqhat(
+    api_key="YOUR_API_KEY",
+    max_retries=0,  # Disable retries (default is 2)
+)
+
+# Or, configure per-request:
+client.with_options(max_retries=5).db.execute_query(
+    query="SELECT * FROM users",
+)
+```
+
+```python timeout-config.py
+from worqhat import Worqhat
+import httpx
+
+# Configure the default timeout for all requests:
+client = Worqhat(
+    api_key="YOUR_API_KEY",
+    timeout=20.0,  # 20 seconds (default is 1 minute)
+)
+
+# More granular control:
+client = Worqhat(
+    api_key="YOUR_API_KEY",
+    timeout=httpx.Timeout(60.0, read=5.0, write=10.0, connect=2.0),
+)
+
+# Override per-request:
+client.with_options(timeout=5.0).db.execute_query(
+    query="SELECT * FROM users",
+)
+```
+</CodeGroup>
+
+### Custom Retry Logic
+
+If you're using a language without an official WorqHat library, we recommend implementing similar retry logic in your API client:
+
+<CodeGroup>
+```python custom-retry.py
+import time
+import random
+from typing import Callable, TypeVar, Any
+
+T = TypeVar('T')
+
+def with_retry(api_call: Callable[[], T], max_retries: int = 2) -> T:
+    """Execute an API call with retry logic"""
+    retries = 0
+    
+    while True:
+        try:
+            return api_call()
+        except Exception as error:
+            # Check if it's a retryable error
+            is_retryable = (
+                hasattr(error, 'status_code') and 
+                (error.status_code == 408 or 
+                 error.status_code == 409 or
+                 error.status_code == 429 or 
+                 error.status_code >= 500)
+            )
+            
+            if not is_retryable or retries >= max_retries:
+                raise
+                
+            # Calculate delay with exponential backoff
+            delay = (2 ** retries) + random.random()
+            print(f"Request failed, retrying in {delay:.2f}s... ({retries+1}/{max_retries})")
+            time.sleep(delay)
+            retries += 1
+```
+
+```go retry.go
+package main
+
+import (
+	"errors"
+	"math"
+	"math/rand"
+	"net/http"
+	"time"
+)
+
+// WithRetry executes an API call with retry logic
+func WithRetry(apiCall func() (*http.Response, error), maxRetries int) (*http.Response, error) {
+	var resp *http.Response
+	var err error
+
+	for retries := 0; retries <= maxRetries; retries++ {
+		resp, err = apiCall()
+
+		// If no error or non-retryable error, return immediately
+		if err == nil {
+			return resp, nil
+		}
+
+		// Check if we should retry based on status code
+		var httpErr *HttpError
+		if errors.As(err, &httpErr) {
+			code := httpErr.StatusCode
+			if code != 408 && code != 409 && code != 429 && code < 500 {
+				return resp, err
+			}
+		}
+
+		// Don't sleep after the last retry
+		if retries == maxRetries {
+			break
+		}
+
+		// Calculate delay with exponential backoff
+		delay := time.Duration(math.Pow(2, float64(retries))+rand.Float64()) * time.Second
+		time.Sleep(delay)
+	}
+
+	return resp, err
+}
+```
+</CodeGroup>
+
+### Monitoring Your API Usage
+
+While we don't currently enforce strict rate limits, we do monitor API usage patterns to ensure the stability and performance of our platform. If we detect unusual or potentially harmful usage patterns, we may reach out to you to discuss your use case and find a solution that works for everyone.
+
+### Future Considerations
+
+As our platform grows, we may introduce rate limits to ensure fair usage across all customers. We will provide advance notice of any changes to our API usage policies.
+
+<Card title="Need Help?" icon="question" href="https://worqhat.com/contact-us">
+  If you have questions about API usage or need higher throughput for your application, please contact our support team.
+</Card>

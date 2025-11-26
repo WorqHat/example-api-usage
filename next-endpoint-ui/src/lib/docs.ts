@@ -1,20 +1,13 @@
 import fs from "fs";
 import path from "path";
+import matter from "gray-matter";
 
-export type DocItem = {
-  id: string;
-  title: string;
-  href: string;
-  segment?: string;
-};
+import { docSections, type DocItem } from "./docs-client";
+
+export type { DocItem };
 
 // Client-safe: can be imported in client components
-export const docSections: DocItem[] = [
-  { id: "getting-started", title: "Getting Started", href: "/docs/getting-started", segment: "Get started" },
-  { id: "authentication", title: "Authentication", href: "/docs/authentication", segment: "Get started" },
-  { id: "database", title: "Database Operations", href: "/docs/database", segment: "Core concepts" },
-  { id: "workflows", title: "Workflows", href: "/docs/workflows", segment: "Core concepts" },
-];
+export { docSections };
 
 // Server-only: uses Node.js fs module
 export function getDocContent(docId: string): string | null {
@@ -26,7 +19,9 @@ export function getDocContent(docId: string): string | null {
       "docs",
       `${docId}.mdx`
     );
-    return fs.readFileSync(filePath, "utf-8");
+    const raw = fs.readFileSync(filePath, "utf-8");
+    const { content } = matter(raw);
+    return content.trim();
   } catch {
     return null;
   }

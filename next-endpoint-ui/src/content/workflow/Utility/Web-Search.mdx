@@ -1,0 +1,192 @@
+**Category:** Utility
+**Type:** Information Retrieval
+
+---
+
+## Overview
+
+The **Web Search Node** enables your workflow to search the internet in real time.
+It retrieves up-to-date information, articles, summaries, and metadata from web sources based on a user-defined query.
+This node is ideal for workflows that need live data — such as researching topics, finding references, or generating summaries from the latest information available online.
+
+---
+
+## Description
+
+The **Web Search Node** connects your workflow to a web search engine using AI-assisted processing.
+When given a search query, it automatically:
+
+* Searches the web for the most relevant results.
+* Extracts titles, URLs, publication dates, and short descriptions (snippets).
+* Optionally provides a concise AI-generated summary of the top results.
+
+This node helps automate research workflows, news monitoring, or any process that benefits from current web data — without leaving your automation environment.
+
+---
+
+## Input Parameters
+
+The **Web Search Node** accepts the following input parameter:
+
+* **searchQuery** *(string, required)*
+  The main search term or question you want to query on the web.
+  Example: `"latest breakthroughs in quantum computing"` or `"top AI startups 2025"`.
+  This input determines what kind of content the node retrieves and analyzes.
+
+---
+
+## Output Parameters
+
+After execution, the node returns structured web search data and metadata.
+
+* **summary** *(string)*
+  A short AI-generated summary of the most relevant search results.
+  Useful for quickly understanding the overall context of the search.
+
+* **results[]** *(array)*
+  A list of individual search results retrieved from the web. Each result includes the following fields:
+
+  * **results[].title** *(string)* — Title of the web page or article.
+  * **results[].url** *(string)* — Direct link to the web page.
+  * **results[].snippet** *(string)* — A short excerpt or description from the page content.
+  * **results[].date** *(string)* — The original publication date of the content (if available).
+  * **results[].last_updated** *(string)* — The last modified or indexed date of the page.
+
+* **searchId** *(string)*
+  A unique identifier assigned to each web search operation. Useful for logging or debugging multiple search runs.
+
+---
+
+## Output Type
+
+* **Output Type:** Text (Structured JSON Result)
+
+The node returns all data in structured JSON format, allowing downstream nodes (e.g., summarization or report-generation nodes) to easily access and process web content.
+
+Example variable access syntax:
+
+```
+{{webSearch.output.summary}}
+{{webSearch.output.results[0].title}}
+{{webSearch.output.results[0].url}}
+{{webSearch.output.searchId}}
+```
+
+---
+
+## Example Usage
+
+### Example 1: Basic Web Search
+
+**Input:**
+
+```json
+{
+  "searchQuery": "Top 10 programming languages 2025"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "summary": "In 2025, Python, JavaScript, and Rust continue to dominate the developer community...",
+  "results": [
+    {
+      "title": "Top Programming Languages in 2025",
+      "url": "https://example.com/top-languages-2025",
+      "snippet": "Python remains the most popular choice due to its versatility and AI ecosystem...",
+      "date": "2025-09-10",
+      "last_updated": "2025-10-20"
+    }
+  ],
+  "searchId": "search-483912"
+}
+```
+
+---
+
+### Example 2: Research Query
+
+**Input:**
+
+```json
+{
+  "searchQuery": "impact of climate change on agriculture"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "summary": "Recent studies show a significant effect of rising temperatures and droughts on crop yields...",
+  "results": [
+    {
+      "title": "Climate Change and Global Agriculture",
+      "url": "https://example.org/climate-agriculture",
+      "snippet": "Research indicates that food security challenges are expected to rise...",
+      "date": "2025-08-15",
+      "last_updated": "2025-10-22"
+    }
+  ],
+  "searchId": "search-948172"
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Web Search Node**
+
+   * From the **Utility** category, drag and drop the **Web Search** node into your workflow canvas.
+
+2. **Set the Input**
+
+   * In the input field, enter your search query or connect it dynamically from another node, e.g., `{{userInput.output.query}}`.
+
+3. **Run the Workflow**
+
+   * The node will perform a real-time web search and retrieve the latest information.
+
+4. **Use Outputs in Other Nodes**
+
+   * Connect the output to other nodes such as a **Text Generation** node for summarization or a **Database** node for logging search results.
+
+5. **Access Dynamic Data**
+
+   * Use syntax like `{{webSearch.output.summary}}` or `{{webSearch.output.results[0].url}}` in downstream steps.
+
+---
+
+## Best Practices
+
+* Always provide a **clear and specific search query** to get the most accurate results.
+* Avoid vague or overly long queries — concise phrasing yields better relevance.
+* Combine this node with **AI Text Generation** to summarize or interpret web findings automatically.
+* Use **Logger** or **Database Nodes** to store search results for later analysis.
+* Be mindful of the **search frequency** to prevent exceeding API limits or redundant requests.
+
+---
+
+## Common Errors
+
+* **"Missing searchQuery"**
+  *Cause:* The search query input was empty.
+  *Solution:* Ensure you provide a valid text input under `searchQuery`.
+
+* **"No results found"**
+  *Cause:* The query returned no relevant web pages.
+  *Solution:* Rephrase or broaden your search query.
+
+* **"Network request failed"**
+  *Cause:* The node could not connect to the search service.
+  *Solution:* Check your internet connection or retry later.
+
+* **"Invalid response structure"**
+  *Cause:* The search service returned an unexpected response.
+  *Solution:* Contact support or retry with a simpler query.
+
+---
+

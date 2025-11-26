@@ -1,0 +1,154 @@
+**Category:** Utility
+**Type:** Stripe Integration
+
+---
+
+## Overview
+
+The **Stripe Customer** node manages customer records in Stripe.
+Use it to create, update, or retrieve customer details as part of your workflow.
+
+---
+
+## Description
+
+This node connects to Stripe to perform customer-related operations such as creating a new customer, updating an existing one, or fetching a customer by ID.
+Pass flat key-value inputs; nested objects should be JSON-encoded strings.
+
+---
+
+## Input Parameters
+
+- **operationType**
+  Operation to perform: `create`, `update`, or `retrieve`.
+
+- **customerId**
+  Customer ID (required for `update` and `retrieve`).
+
+- **name**
+  Customer name (used on `create`/`update`).
+
+- **email**
+  Customer email (used on `create`/`update`).
+
+- **phone**
+  Customer phone (optional).
+
+- **description**
+  Free-form description (optional).
+
+- **address**
+  JSON-encoded address object.
+
+- **shipping**
+  JSON-encoded shipping object.
+
+- **metadata**
+  JSON-encoded key-value object for custom fields.
+
+**Notes:**
+
+- Provide all values as flat key-value pairs.
+- Use JSON-encoded strings for address/shipping/metadata.
+- Access values with `{{nodeId.input.<key>}}`.
+
+---
+
+## Output Parameters
+
+- **id**
+- **object**
+- **created**
+- **currency**
+- **balance**
+- **livemode**
+- **name**
+- **email**
+- **phone**
+- **description**
+- **address.city**
+- **address.country**
+- **address.line1**
+- **address.line2**
+- **address.postal_code**
+- **address.state**
+- **shipping.name**
+- **shipping.phone**
+- **shipping.address.city**
+- **shipping.address.country**
+- **shipping.address.line1**
+- **shipping.address.line2**
+- **shipping.address.postal_code**
+- **shipping.address.state**
+
+**Access outputs using:**
+
+```
+{{stripeCustomer.output.id}}
+{{stripeCustomer.output.email}}
+```
+
+---
+
+## Output Type
+
+**Output Type:** JSON
+
+---
+
+## Example Usage
+
+**Create Customer (Input):**
+
+```json
+{
+  "operationType": "create",
+  "name": "Jane Doe",
+  "email": "jane@example.com",
+  "metadata": "{\"segment\":\"pro\"}"
+}
+```
+
+**Expected Output (partial):**
+
+```json
+{
+  "id": "cus_12345",
+  "email": "jane@example.com",
+  "name": "Jane Doe",
+  "created": 1698576000
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Node**
+   Place the **Stripe Customer** node in your workflow.
+
+2. **Select operationType**
+   Use `create`, `update`, or `retrieve` accordingly.
+
+3. **Map Inputs**
+   Provide required fields based on the operation.
+
+---
+
+## Best Practices
+
+- Always validate emails before creating customers.
+- Use `metadata` for tagging customer segments.
+- Store the returned `id` for future updates.
+
+---
+
+## Common Errors
+
+- **"Missing customerId"** (update/retrieve)
+  Provide a valid Stripe customer ID.
+
+- **"Invalid address JSON"**
+  Ensure JSON-encoded strings are valid.
+
+---

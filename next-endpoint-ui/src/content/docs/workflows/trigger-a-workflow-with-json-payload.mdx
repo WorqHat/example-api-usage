@@ -1,0 +1,504 @@
+---
+title: 'Triggering Workflows with JSON Data'
+description: 'Learn how to trigger WorqHat workflows by sending JSON data'
+---
+
+Trigger WorqHat workflows by sending JSON data to them, allowing you to integrate workflow automation with your applications and respond to events in real-time.
+
+```endpoint
+POST https://api.worqhat.com/flows/trigger/{flowId}
+```
+
+## What Does This Endpoint Do?
+
+This endpoint allows you to start a workflow execution by sending structured JSON data. The workflow processes this data according to the steps you've defined in the WorqHat Workflow Builder, enabling automation based on your specific business logic.
+
+## When to Use JSON Payload Triggers
+
+You'll find this endpoint useful when you need to:
+
+- **Integrate with applications**: Send data from your applications to trigger automated processes
+- **Respond to events**: Start workflows when specific events occur in your systems
+- **Process structured data**: Pass complex data structures for processing by AI and other workflow steps
+- **Customize workflow behavior**: Dynamically control how workflows operate based on input parameters
+- **Connect third-party services**: Use webhooks to trigger workflows from external platforms
+
+## How It Works
+
+1. You send a **POST request** with your JSON payload to the workflow's unique endpoint
+2. The workflow **processes the data** according to the steps you've defined
+3. You receive an immediate **confirmation response** with a tracking ID
+4. The workflow **continues executing** in the background
+
+## Prerequisites
+
+Before triggering a workflow, you'll need:
+
+1. A WorqHat account with workflow creation permissions
+2. An API key with appropriate permissions
+3. The workflow ID of the workflow you want to trigger
+
+## Request Parameters
+
+<ParamField body="payload" type="object" required>
+  The JSON data to send to the workflow. This can be any valid JSON object structure that your workflow is designed to process.
+  
+  Example: Customer data, order information, configuration settings, etc.
+</ParamField>
+
+<ParamField header="Authorization" type="string" required>
+  Your API key in the format: `Bearer YOUR_API_KEY`
+</ParamField>
+
+<ParamField header="Content-Type" type="string" required>
+  Must be set to `application/json`
+</ParamField>
+
+<ParamField path="flowId" type="string" required>
+  The unique identifier (UUID) of the workflow you want to trigger
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  Indicates whether the workflow was successfully triggered
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  A human-readable message describing the result of the operation
+</ResponseField>
+
+<ResponseField name="analytics_id" type="string">
+  A unique identifier for tracking this specific workflow execution. You can use this ID to query the status or results of the workflow later.
+</ResponseField>
+
+<ResponseField name="timestamp" type="string">
+  ISO 8601 timestamp indicating when the workflow was triggered
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Additional data about the workflow execution
+</ResponseField>
+
+<ResponseField name="data.workflow_status" type="string">
+  The initial status of the workflow, typically "started"
+</ResponseField>
+
+## Code Examples
+
+### Example 1: Customer Onboarding Workflow
+
+This example shows how to trigger a workflow that processes new customer information.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the WorqHat client
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    // Customer data to be processed by the workflow
+    const customerData = {
+      name: "Jane Smith",
+      email: "jane.smith@example.com",
+      plan: "premium",
+      company: "Acme Inc.",
+      preferences: {
+        notifications: true,
+        newsletter: false,
+        productUpdates: true
+      }
+    };
+    
+    async function onboardNewCustomer() {
+      try {
+        // Trigger the onboarding workflow with customer data
+        const response = await client.flows.triggerWithPayload(
+          'flowId-for-customer-onboarding',
+          { body: customerData }
+        );
+        
+        console.log(`Onboarding workflow started! Tracking ID: ${response.analytics_id}`);
+        
+        // You can store this analytics_id to check the status later
+        return response;
+      } catch (error) {
+        console.error('Error triggering onboarding workflow:', error);
+        // Handle the error appropriately
+      }
+    }
+    
+    onboardNewCustomer();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    import os
+    from worqhat import Worqhat
+    
+    # Initialize the WorqHat client
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY")  # Always use environment variables for API keys
+    )
+    
+    # Customer data to be processed by the workflow
+    customer_data = {
+        "name": "Jane Smith",
+        "email": "jane.smith@example.com",
+        "plan": "premium",
+        "company": "Acme Inc.",
+        "preferences": {
+            "notifications": True,
+            "newsletter": False,
+            "productUpdates": True
+        }
+    }
+    
+    def onboard_new_customer():
+        try:
+            # Trigger the onboarding workflow with customer data
+            response = client.flows.trigger_with_payload(
+                "flowId-for-customer-onboarding",
+                body=customer_data
+            )
+            
+            print(f"Onboarding workflow started! Tracking ID: {response.analytics_id}")
+            
+            # You can store this analytics_id to check the status later
+            return response
+        except Exception as error:
+            print(f"Error triggering onboarding workflow: {error}")
+            # Handle the error appropriately
+    
+    onboard_new_customer()
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    curl -X POST "https://api.worqhat.com/api/flows/trigger/{flowId-for-customer-onboarding}" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -H "Content-Type: application/json" \
+      -d '{
+        "name": "Jane Smith",
+        "email": "jane.smith@example.com",
+        "plan": "premium",
+        "company": "Acme Inc.",
+        "preferences": {
+          "notifications": true,
+          "newsletter": false,
+          "productUpdates": true
+        }
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+
+## Example Response
+
+Here's what a successful response looks like when triggering a workflow:
+
+```json
+{
+  "success": true,
+  "message": "Workflow triggered successfully",
+  "analytics_id": "wf-exec-12345-abcde-67890",
+  "timestamp": "2023-07-24T15:30:45Z",
+  "data": {
+    "workflow_status": "started"
+  }
+}
+```
+
+## Error Handling
+
+When triggering workflows, it's essential to implement proper error handling to ensure your application can gracefully handle failures.
+
+### Common Error Scenarios
+
+<AccordionGroup>
+  <Accordion title="Authentication Errors">
+    If your API key is invalid or missing, you'll receive a 401 Unauthorized response.
+    
+    ```json
+    {
+      "success": false,
+      "message": "Invalid API key provided",
+      "error_code": "auth_failed"
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Workflow Not Found">
+    If the workflow ID doesn't exist, you'll receive a 404 Not Found response.
+    
+    ```json
+    {
+      "success": false,
+      "message": "Workflow not found",
+      "error_code": "workflow_not_found"
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Invalid Payload">
+    If your JSON payload is malformed or doesn't meet the workflow's requirements, you'll receive a 400 Bad Request response.
+    
+    ```json
+    {
+      "success": false,
+      "message": "Invalid payload format",
+      "error_code": "invalid_payload",
+      "details": {
+        "missing_fields": ["email", "name"]
+      }
+    }
+    ```
+  </Accordion>
+  
+  <Accordion title="Rate Limiting">
+    If you exceed your API rate limits, you'll receive a 429 Too Many Requests response.
+    
+    ```json
+    {
+      "success": false,
+      "message": "Rate limit exceeded",
+      "error_code": "rate_limited",
+      "retry_after": 60
+    }
+    ```
+  </Accordion>
+</AccordionGroup>
+- Always store your API keys securely and never expose them in client-side code
+- Consider what data you're sending to workflows and ensure sensitive information is handled appropriately
+- Use HTTPS for all API communications
+
+### Error Handling
+
+Implement robust error handling to manage cases where:
+
+- The workflow trigger request fails
+- The workflow ID is invalid
+- The API key doesn't have sufficient permissions
+- The JSON payload is malformed
+
+<CodeGroup>
+```javascript
+try {
+  const response = await client.flows.triggerWithPayload(workflowId, { body: data });
+  // Handle success
+} catch (error) {
+  if (error.status === 401) {
+    console.error('Authentication failed. Check your API key.');
+  } else if (error.status === 404) {
+    console.error('Workflow not found. Verify the workflow ID.');
+  } else if (error.status === 400) {
+    console.error('Invalid request format:', error.message);
+  } else {
+    console.error('Unexpected error:', error);
+  }
+}
+```
+
+```python
+try:
+    response = client.flows.trigger_with_payload(workflow_id, body=data)
+    # Handle success
+except Exception as error:
+    if hasattr(error, 'status'):
+        if error.status == 401:
+            print('Authentication failed. Check your API key.')
+        elif error.status == 404:
+            print('Workflow not found. Verify the workflow ID.')
+        elif error.status == 400:
+            print(f'Invalid request format: {error.message}')
+        else:
+            print(f'Unexpected error: {error}')
+    else:
+        print(f'Unexpected error: {error}')
+```
+
+```bash
+# When using cURL, you'll need to handle the response and errors in your script
+# Example with response processing using jq (if available)
+curl -X POST "https://api.worqhat.com/api/flows/trigger/{flowId}" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"key": "value"}' \
+  -w "\nHTTP Status: %{http_code}\n" \
+  | jq 2>/dev/null || echo "Error processing response"
+```
+</CodeGroup>
+
+
+### Payload Size Limits
+
+Be mindful of payload size limits when sending data to workflows:
+
+- The maximum payload size is 10MB
+- For larger datasets, consider using file uploads or breaking the data into smaller chunks
+
+## Real-World Use Cases
+
+### E-commerce Order Processing
+
+Trigger a workflow when a new order is placed to handle inventory updates, payment processing, and shipping notifications:
+
+<CodeGroup>
+```javascript
+await client.flows.triggerWithPayload('order-processing-workflow-id', {
+  body: {
+    orderId: "ORD-12345",
+    customer: {
+      id: "CUST-789",
+      name: "Alex Johnson",
+      email: "alex@example.com"
+    },
+    items: [
+      { productId: "PROD-001", quantity: 2, price: 29.99 },
+      { productId: "PROD-042", quantity: 1, price: 49.99 }
+    ],
+    shipping: {
+      method: "express",
+      address: {
+        street: "123 Main St",
+        city: "Boston",
+        state: "MA",
+        zip: "02108"
+      }
+    },
+    payment: {
+      method: "credit_card",
+      transactionId: "TXN-5678"
+    }
+  }
+});
+```
+
+```python
+# Using synchronous client
+response = client.flows.trigger_with_payload('order-processing-workflow-id', body={
+    "orderId": "ORD-12345",
+    "customer": {
+        "id": "CUST-789",
+        "name": "Alex Johnson",
+        "email": "alex@example.com"
+    },
+    "items": [
+        {"productId": "PROD-001", "quantity": 2, "price": 29.99},
+        {"productId": "PROD-042", "quantity": 1, "price": 49.99}
+    ],
+    "shipping": {
+        "method": "express",
+        "address": {
+            "street": "123 Main St",
+            "city": "Boston",
+            "state": "MA",
+            "zip": "02108"
+        }
+    },
+    "payment": {
+        "method": "credit_card",
+        "transactionId": "TXN-5678"
+    }
+})
+```
+
+```bash
+curl -X POST "https://api.worqhat.com/api/flows/trigger/order-processing-workflow-id" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "orderId": "ORD-12345",
+    "customer": {
+      "id": "CUST-789",
+      "name": "Alex Johnson",
+      "email": "alex@example.com"
+    },
+    "items": [
+      {"productId": "PROD-001", "quantity": 2, "price": 29.99},
+      {"productId": "PROD-042", "quantity": 1, "price": 49.99}
+    ],
+    "shipping": {
+      "method": "express",
+      "address": {
+        "street": "123 Main St",
+        "city": "Boston",
+        "state": "MA",
+        "zip": "02108"
+      }
+    },
+    "payment": {
+      "method": "credit_card",
+      "transactionId": "TXN-5678"
+    }
+  }'
+```
+</CodeGroup>
+
+
+### Data Analysis Pipeline
+
+Trigger a workflow to analyze data and generate reports:
+
+<CodeGroup>
+```javascript
+await client.flows.triggerWithPayload('data-analysis-workflow-id', {
+  body: {
+    datasetId: "DS-456",
+    analysisParameters: {
+      timeRange: { start: "2025-01-01", end: "2025-07-31" },
+      metrics: ["revenue", "user_growth", "conversion_rate"],
+      segmentation: ["region", "device_type", "user_tier"],
+      comparisonPeriod: "previous_quarter"
+    },
+    outputFormat: "pdf",
+    notifyEmail: "reports@yourcompany.com"
+  }
+});
+```
+
+```python
+# Using synchronous client
+response = client.flows.trigger_with_payload('data-analysis-workflow-id', body={
+    "datasetId": "DS-456",
+    "analysisParameters": {
+        "timeRange": {"start": "2025-01-01", "end": "2025-07-31"},
+        "metrics": ["revenue", "user_growth", "conversion_rate"],
+        "segmentation": ["region", "device_type", "user_tier"],
+        "comparisonPeriod": "previous_quarter"
+    },
+    "outputFormat": "pdf",
+    "notifyEmail": "reports@yourcompany.com"
+})
+```
+
+```bash
+curl -X POST "https://api.worqhat.com/flows/trigger/data-analysis-workflow-id" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "datasetId": "DS-456",
+    "analysisParameters": {
+      "timeRange": {"start": "2025-01-01", "end": "2025-07-31"},
+      "metrics": ["revenue", "user_growth", "conversion_rate"],
+      "segmentation": ["region", "device_type", "user_tier"],
+      "comparisonPeriod": "previous_quarter"
+    },
+    "outputFormat": "pdf",
+    "notifyEmail": "reports@yourcompany.com"
+  }'
+```
+</CodeGroup>
+
+
+## Conclusion
+
+Triggering workflows with JSON payloads provides a flexible way to integrate WorqHat's automation capabilities into your applications. By following the patterns and practices outlined in this guide, you can create powerful, event-driven systems that respond to your business needs in real-time.
+
+For more advanced use cases, consider exploring workflow chaining (triggering workflows from other workflows) and combining JSON payload triggers with file upload triggers for comprehensive data processing solutions.

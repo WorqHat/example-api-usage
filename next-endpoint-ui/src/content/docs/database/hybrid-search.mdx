@@ -1,0 +1,581 @@
+---
+title: 'Hybrid Search'
+description: 'Combine semantic and keyword search for optimal results'
+---
+
+Combines semantic search using vector embeddings with traditional keyword search. This endpoint provides weighted scoring between semantic similarity and keyword matching, giving you the best of both worlds for comprehensive search results.
+
+```endpoint
+POST https://api.worqhat.com/db/hybrid-search
+```
+
+## What Does This Endpoint Do?
+
+This endpoint intelligently combines two powerful search methods:
+- **Semantic search**: Understands the meaning and context of your query
+- **Keyword search**: Finds exact matches for specific terms
+
+By blending these approaches with configurable weights, you get more comprehensive and accurate search results that capture both conceptual relevance and precise term matching.
+
+## When to Use Hybrid Search
+
+You'll find this endpoint useful when you need to:
+
+- **Balance precision and recall**: Get both exact matches and conceptually similar results
+- **Handle technical queries**: Find documents containing specific terms while understanding context
+- **Improve search quality**: Combine the strengths of both semantic and keyword search
+- **Handle mixed queries**: Search queries that contain both natural language and specific keywords
+- **Optimize for your use case**: Adjust weights based on whether you prioritize semantic understanding or exact matching
+
+## How It Works
+
+1. You provide a **search query** that can contain both natural language and keywords
+2. The system performs **semantic analysis** using vector embeddings
+3. Simultaneously, it performs **keyword matching** on specified text columns
+4. Results are scored using **configurable weights** for semantic vs keyword relevance
+5. A **combined score** ranks results by overall relevance
+
+## Code Examples
+
+### Example 1: Basic Hybrid Search
+
+This example shows how to perform a hybrid search with default weights.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function hybridSearch() {
+      try {
+        // Call the hybridSearch method
+        const response = await client.db.hybridSearch({
+          query: "machine learning algorithms neural networks",
+          table: "products",
+          limit: 10,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Found ${response.results.length} relevant products`);
+        response.results.forEach(result => {
+          console.log(`Combined Score: ${result.combined_score}, Semantic: ${result.semantic_score}, Keyword: ${result.keyword_score}`);
+        });
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error performing hybrid search:', error.message);
+      }
+    }
+    
+    // Call the function
+    hybridSearch();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Perform hybrid search
+    try:
+        response = client.db.hybrid_search(
+            query="machine learning algorithms neural networks",
+            table="products",
+            limit=10,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Found {len(response.results)} relevant products")
+        for result in response.results:
+            print(f"Combined Score: {result.combined_score}, Semantic: {result.semantic_score}, Keyword: {result.keyword_score}")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error performing hybrid search: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Perform hybrid search
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
+      response, err := client.DB.HybridSearch(context.TODO(), worqhat.DBHybridSearchParams{
+        Query: "machine learning algorithms neural networks",
+        Table: "products",
+        Limit: 10,
+        Environment: env, // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error performing hybrid search: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Found %d relevant products\n", len(response.Results))
+      for _, result := range response.Results {
+        fmt.Printf("Combined Score: %.3f, Semantic: %.3f, Keyword: %.3f\n", 
+          result.CombinedScore, result.SemanticScore, result.KeywordScore)
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Perform hybrid search
+    curl -X POST "https://api.worqhat.com/db/hybrid-search" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "query": "machine learning algorithms neural networks",
+        "table": "products",
+        "limit": 10,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: Custom Weight Configuration
+
+This example shows how to adjust the weights for semantic vs keyword scoring.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function customWeightSearch() {
+      try {
+        // Hybrid search with custom weights (prioritize semantic understanding)
+        const response = await client.db.hybridSearch({
+          query: "AI-powered automation solutions",
+          table: "products",
+          semantic_weight: 0.8,  // Higher weight for semantic understanding
+          keyword_weight: 0.2,   // Lower weight for exact keyword matching
+          limit: 10,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Found ${response.results.length} products with semantic focus`);
+        console.log('Results:', response.results);
+        return response;
+      } catch (error) {
+        console.error('Error performing custom weight search:', error.message);
+      }
+    }
+    
+    customWeightSearch();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Hybrid search with custom weights
+    try:
+        response = client.db.hybrid_search(
+            query="AI-powered automation solutions",
+            table="products",
+            semantic_weight=0.8,  # Higher weight for semantic understanding
+            keyword_weight=0.2,  # Lower weight for exact keyword matching
+            limit=10,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Found {len(response.results)} products with semantic focus")
+        print(f"Results: {response.results}")
+    except Exception as e:
+        print(f"Error performing custom weight search: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Hybrid search with custom weights
+      response, err := client.DB.HybridSearch(context.TODO(), worqhat.DBHybridSearchParams{
+        Query: "AI-powered automation solutions",
+        Table: "products",
+        SemanticWeight: 0.8,  // Higher weight for semantic understanding
+        KeywordWeight: 0.2,  // Lower weight for exact keyword matching
+        Limit: 10,
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error performing custom weight search: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Found %d products with semantic focus\n", len(response.Results))
+      fmt.Printf("Results: %+v\n", response.Results)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Hybrid search with custom weights
+    curl -X POST "https://api.worqhat.com/db/hybrid-search" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "query": "AI-powered automation solutions",
+        "table": "products",
+        "semantic_weight": 0.8,
+        "keyword_weight": 0.2,
+        "limit": 10,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+### Example 3: Custom Text Columns
+
+This example shows how to specify which columns to include in keyword search.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function customColumnsSearch() {
+      try {
+        // Hybrid search with custom text columns
+        const response = await client.db.hybridSearch({
+          query: "sustainable energy renewable power",
+          table: "articles",
+          text_columns: ["title", "summary", "tags"], // Only search these columns for keywords
+          semantic_weight: 0.6,
+          keyword_weight: 0.4,
+          limit: 15,
+          environment: process.env.WORQHAT_ENVIRONMENT || 'production' // Defaults to production
+        });
+        
+        // Handle the successful response
+        console.log(`Found ${response.results.length} articles`);
+        console.log('Search results:', response.results);
+        return response;
+      } catch (error) {
+        console.error('Error performing custom columns search:', error.message);
+      }
+    }
+    
+    customColumnsSearch();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Hybrid search with custom text columns
+    try:
+        response = client.db.hybrid_search(
+            query="sustainable energy renewable power",
+            table="articles",
+            text_columns=["title", "summary", "tags"],  # Only search these columns for keywords
+            semantic_weight=0.6,
+            keyword_weight=0.4,
+            limit=15,
+            environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
+        )
+        
+        # Handle the successful response
+        print(f"Found {len(response.results)} articles")
+        print(f"Search results: {response.results}")
+    except Exception as e:
+        print(f"Error performing custom columns search: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Hybrid search with custom text columns
+      textColumns := []string{"title", "summary", "tags"}
+      response, err := client.DB.HybridSearch(context.TODO(), worqhat.DBHybridSearchParams{
+        Query: "sustainable energy renewable power",
+        Table: "articles",
+        TextColumns: textColumns,  // Only search these columns for keywords
+        SemanticWeight: 0.6,
+        KeywordWeight: 0.4,
+        Limit: 15,
+        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error performing custom columns search: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Printf("Found %d articles\n", len(response.Results))
+      fmt.Printf("Search results: %+v\n", response.Results)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Hybrid search with custom text columns
+    curl -X POST "https://api.worqhat.com/db/hybrid-search" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_API_KEY" \
+      -d '{
+        "query": "sustainable energy renewable power",
+        "table": "articles",
+        "text_columns": ["title", "summary", "tags"],
+        "semantic_weight": 0.6,
+        "keyword_weight": 0.4,
+        "limit": 15,
+        "environment": "production"
+      }'
+    ```
+  </Tab>
+</Tabs>
+
+## Request Body Explained
+
+<ParamField body="query" type="string" required>
+  Search query combining natural language and keywords. Can include both conceptual descriptions and specific terms.
+  
+  Examples: "machine learning algorithms neural networks", "AI-powered automation solutions", "sustainable energy renewable power"
+</ParamField>
+
+<ParamField body="table" type="string" required>
+  Table to search in.
+  
+  Example: "products"
+</ParamField>
+
+<ParamField body="text_columns" type="array" optional>
+  Columns to include in keyword search. Defaults to ["description", "content", "title", "name"] if not specified.
+  
+  Example: ["title", "description", "tags"]
+</ParamField>
+
+<ParamField body="semantic_weight" type="number" optional>
+  Weight for semantic similarity score (0-1). Default: 0.7. Higher values prioritize semantic understanding over exact keyword matching.
+</ParamField>
+
+<ParamField body="keyword_weight" type="number" optional>
+  Weight for keyword matching score (0-1). Default: 0.3. Higher values prioritize exact term matching over semantic understanding.
+</ParamField>
+
+<ParamField body="limit" type="number" optional>
+  Maximum number of results to return. Range: 1-100, default: 10.
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if the search was successful, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="results" type="array">
+  Array of search results, each containing:
+  - `record`: The actual record data
+  - `combined_score`: Overall relevance score combining semantic and keyword scores
+  - `semantic_score`: Semantic similarity score (0-1)
+  - `keyword_score`: Keyword matching score (0-1)
+  - `_meta`: Additional metadata including search type and weights used
+</ResponseField>
+
+<ResponseField name="query_embedding_preview" type="array">
+  First 5 dimensions of the query embedding vector for debugging purposes.
+</ResponseField>
+
+<ResponseField name="executionTime" type="number">
+  Search execution time in milliseconds.
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "results": [
+    {
+      "record": {
+        "id": "prod_123",
+        "name": "AI-Powered Smart Assistant",
+        "description": "Advanced machine learning device for home automation",
+        "category": "electronics",
+        "price": 299.99
+      },
+      "combined_score": 0.823,
+      "semantic_score": 0.756,
+      "keyword_score": 0.234,
+      "_meta": {
+        "search_type": "hybrid",
+        "weights": {
+          "semantic": 0.7,
+          "keyword": 0.3
+        }
+      }
+    },
+    {
+      "record": {
+        "id": "prod_456",
+        "name": "Neural Network Processor",
+        "description": "High-performance computing unit for AI applications",
+        "category": "electronics",
+        "price": 599.99
+      },
+      "combined_score": 0.789,
+      "semantic_score": 0.712,
+      "keyword_score": 0.198,
+      "_meta": {
+        "search_type": "hybrid",
+        "weights": {
+          "semantic": 0.7,
+          "keyword": 0.3
+        }
+      }
+    }
+  ],
+  "query_embedding_preview": [0.123, -0.456, 0.789, -0.321, 0.654],
+  "executionTime": 312
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "Table not found" | The specified table doesn't exist | Check your table name for typos |
+| "No embeddings found" | The table doesn't have vector embeddings | Ensure your table has been processed for embeddings |
+| "Invalid weight values" | Semantic and keyword weights don't sum to 1.0 | Ensure weights sum to 1.0 (e.g., 0.7 + 0.3 = 1.0) |
+| "Text columns not found" | Specified columns don't exist in the table | Check column names and ensure they exist |
+| "Query too short" | The search query is too brief | Use more descriptive queries with at least 3-5 words |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+
+## Tips for Better Results
+
+- **Balance your weights**: Start with default 0.7/0.3 ratio and adjust based on your needs
+- **Use descriptive queries**: Include both conceptual terms and specific keywords
+- **Choose relevant text columns**: Select columns that contain searchable content
+- **Experiment with weights**: 
+  - Higher semantic weight (0.8-0.9) for conceptual searches
+  - Higher keyword weight (0.6-0.8) for exact term matching
+- **Monitor scores**: Review individual semantic and keyword scores to understand result quality
+- **Combine with filters**: Use additional WHERE conditions to narrow results after hybrid scoring
+
+## Weight Configuration Guidelines
+
+### Semantic-Focused (0.8 semantic, 0.2 keyword)
+- Use when you want to find conceptually similar content
+- Good for discovery and exploration
+- Handles synonyms and related concepts well
+
+### Balanced (0.7 semantic, 0.3 keyword)
+- Default configuration for most use cases
+- Provides good balance between precision and recall
+- Works well for general-purpose search
+
+### Keyword-Focused (0.4 semantic, 0.6 keyword)
+- Use when exact term matching is important
+- Good for technical documentation and specifications
+- Prioritizes precision over conceptual understanding
+
+### Equal Weight (0.5 semantic, 0.5 keyword)
+- Use when you're unsure which approach works better
+- Good starting point for experimentation
+- Provides equal consideration to both methods

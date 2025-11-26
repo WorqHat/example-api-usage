@@ -1,0 +1,150 @@
+## Description
+
+The For Loop Process node allows you to repeat a group of workflow steps multiple times.
+You define how many times the loop should run using a start value and an end value.
+Each iteration runs the same inner actions.
+
+This is useful when a task needs to be executed several times, such as sending multiple notifications, performing repeated calculations, or processing multiple items.
+
+---
+
+## Input Parameters
+
+start
+A number that defines the first value of the loop.
+Required.
+
+end
+A number that defines the final value of the loop.
+Required.
+
+step
+A number that defines how much to increase on each loop cycle.
+Optional. Default is 1.
+
+The loop repeats from start to end, increasing by step until the end value is reached.
+
+---
+
+## Output Parameters
+
+iterations
+List of iteration values produced during the loop.
+
+totalIterations
+Total count of times the loop ran.
+
+Final Output
+A summary of the loop execution that can be used by the next step in the workflow.
+
+---
+
+## Output Type
+
+This node produces an iterative output.
+It runs a set of inner steps multiple times and returns results from each cycle.
+
+---
+
+## Example Usage
+
+Example 1
+Loop runs five times, from 1 to 5.
+
+Input
+
+```
+{
+  "start": 1,
+  "end": 5
+}
+```
+
+Expected Output
+
+```
+{
+  "iterations": [1, 2, 3, 4, 5],
+  "totalIterations": 5
+}
+```
+
+---
+
+Example 2
+Loop runs four times, from 0 to 3.
+
+Input
+
+```
+{
+  "start": 0,
+  "end": 3
+}
+```
+
+Expected Output
+
+```
+{
+  "iterations": [0, 1, 2, 3],
+  "totalIterations": 4
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. Add the For Loop Process node to your workflow.
+2. Set the start value.
+3. Set the end value.
+4. Set step if needed.
+5. Place one or more nodes inside the loop.
+   These nodes will run every time the loop cycles.
+6. Connect the next node after the loop to continue workflow execution.
+7. Save and run your workflow.
+
+---
+
+## Best Practices
+
+• Test with a small range first.
+• Avoid very large end values to prevent performance issues.
+• Always place at least one node inside the loop.
+• Use logging to confirm iterations run correctly.
+
+---
+
+## Example Workflow Integration
+
+Scenario
+You want to send five reminder messages.
+
+Steps
+
+1. Add a trigger node.
+2. Add a For Loop Process node and set start to 1 and end to 5.
+3. Inside the loop, add a notification or message-sending node.
+4. After the loop, add a summary node to indicate all messages were sent.
+
+Result
+The inner action runs five times.
+
+---
+
+## Common Errors
+
+Missing start or end
+Both must be set for the loop to execute.
+
+Loop does not run
+At least one node must be placed inside the loop.
+
+Too many iterations
+Large ranges can slow down or block execution.
+
+Empty output
+If no inner nodes produce output, results will be empty.
+
+---

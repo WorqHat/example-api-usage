@@ -1,0 +1,368 @@
+---
+title: 'Fetch File by Path'
+description: 'Retrieve a file from storage using its path'
+---
+
+Retrieves a file from storage by its path within your organization's storage. Returns the file metadata and a download URL that you can use to access the file.
+
+```endpoint
+GET https://api.worqhat.com/storage/fetch-by-path
+```
+
+## What Does This Endpoint Do?
+
+This endpoint allows you to retrieve a file using its path instead of its ID. Think of it like finding a file in a folder by its location - you provide the path to the file and get back the file information and a way to access it.
+
+## When to Use Fetch File by Path
+
+You'll find this endpoint useful when you need to:
+
+- **Retrieve files by location**: Get files when you know their path but not their ID
+- **Access organized files**: Retrieve files from specific folders you created
+- **Build file browsers**: Create interfaces that navigate by folder structure
+- **Process files by category**: Get files from specific organizational paths
+- **Backup and restore**: Retrieve files from known backup locations
+- **Organize file access**: Access files based on your organizational structure
+
+## How It Works
+
+1. You provide the **file path** (the path where the file is stored)
+2. The API looks up the file in your organization's storage using the path
+3. The API returns file metadata and a signed download URL
+4. You can use the download URL to access the file (URL expires in 1 hour)
+
+## Code Examples
+
+### Example 1: Basic File Retrieval by Path
+
+This example shows how to fetch a file using its path.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY, // Always use environment variables for API keys
+    });
+    
+    async function fetchDocumentByPath() {
+      try {
+        const filePath = 'documents/invoices/invoice_2025.pdf';
+        
+        // Call the retrieveFileByPath method
+        const response = await client.storage.retrieveFileByPath({
+          filepath: filePath
+        });
+        
+        // Handle the successful response
+        console.log('File retrieved successfully!');
+        console.log('File name:', response.file.filename);
+        console.log('File size:', response.file.size, 'bytes');
+        console.log('Download URL:', response.file.url);
+        console.log('Full path:', response.file.path);
+        return response;
+      } catch (error) {
+        // Handle any errors
+        console.error('Error fetching file:', error.message);
+      }
+    }
+    
+    // Call the function
+    fetchDocumentByPath();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),  # Using environment variables for security
+    )
+    
+    # Fetch a file by path
+    try:
+        file_path = "documents/invoices/invoice_2025.pdf"
+        response = client.storage.retrieve_file_by_path(filepath=file_path)
+        
+        # Handle the successful response
+        print("File retrieved successfully!")
+        print(f"File name: {response.file.filename}")
+        print(f"File size: {response.file.size} bytes")
+        print(f"Download URL: {response.file.url}")
+        print(f"Full path: {response.file.path}")
+    except Exception as e:
+        # Handle any errors
+        print(f"Error fetching file: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),  // Using environment variables
+      )
+      
+      // Fetch a file by path
+      filePath := "documents/invoices/invoice_2025.pdf"
+      response, err := client.Storage.RetrieveFileByPath(context.TODO(), worqhat.StorageRetrieveFileByPathParams{
+        Filepath: filePath,
+      })
+      
+      // Handle errors
+      if err != nil {
+        fmt.Printf("Error fetching file: %s\n", err.Error())
+        return
+      }
+      
+      // Handle the successful response
+      fmt.Println("File retrieved successfully!")
+      fmt.Printf("File name: %s\n", response.File.Filename)
+      fmt.Printf("File size: %d bytes\n", response.File.Size)
+      fmt.Printf("Download URL: %s\n", response.File.URL)
+      fmt.Printf("Full path: %s\n", response.File.Path)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Fetch a file by path
+    curl -X GET "https://api.worqhat.com/storage/fetch-by-path?filepath=documents/invoices/invoice_2025.pdf" \
+      -H "Authorization: Bearer YOUR_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+### Example 2: Retrieve Files from Organized Structure
+
+This example shows how to fetch files from different organizational paths.
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    // Initialize the client with your API key
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    async function fetchOrganizedFiles() {
+      try {
+        // Fetch files from different organized paths
+        const paths = [
+          'invoices/2025/january/invoice_001.pdf',
+          'documents/contracts/contract_2025.pdf',
+          'user-uploads/images/profile_photo.jpg'
+        ];
+        
+        for (const path of paths) {
+          try {
+            const response = await client.storage.retrieveFileByPath({
+              filepath: path
+            });
+            
+            console.log(`Found file: ${response.file.filename} at ${path}`);
+            console.log(`Size: ${response.file.size} bytes`);
+            console.log(`Type: ${response.file.contentType}`);
+          } catch (error) {
+            console.log(`File not found at path: ${path}`);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching files:', error.message);
+      }
+    }
+    
+    fetchOrganizedFiles();
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    # Initialize the client with your API key
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    
+    # Fetch files from different organized paths
+    try:
+        paths = [
+            "invoices/2025/january/invoice_001.pdf",
+            "documents/contracts/contract_2025.pdf",
+            "user-uploads/images/profile_photo.jpg"
+        ]
+        
+        for path in paths:
+            try:
+                response = client.storage.retrieve_file_by_path(filepath=path)
+                print(f"Found file: {response.file.filename} at {path}")
+                print(f"Size: {response.file.size} bytes")
+                print(f"Type: {response.file.contentType}")
+            except Exception as e:
+                print(f"File not found at path: {path}")
+    except Exception as e:
+        print(f"Error fetching files: {str(e)}")
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      // Initialize the client with your API key
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      
+      // Fetch files from different organized paths
+      paths := []string{
+        "invoices/2025/january/invoice_001.pdf",
+        "documents/contracts/contract_2025.pdf",
+        "user-uploads/images/profile_photo.jpg",
+      }
+      
+      for _, path := range paths {
+        response, err := client.Storage.RetrieveFileByPath(context.TODO(), worqhat.StorageRetrieveFileByPathParams{
+          Filepath: path,
+        })
+        
+        if err != nil {
+          fmt.Printf("File not found at path: %s\n", path)
+          continue
+        }
+        
+        fmt.Printf("Found file: %s at %s\n", response.File.Filename, path)
+        fmt.Printf("Size: %d bytes\n", response.File.Size)
+        fmt.Printf("Type: %s\n", response.File.ContentType)
+      }
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    # Fetch files from different organized paths
+    curl -X GET "https://api.worqhat.com/storage/fetch-by-path?filepath=invoices/2025/january/invoice_001.pdf" \
+      -H "Authorization: Bearer YOUR_API_KEY"
+    
+    curl -X GET "https://api.worqhat.com/storage/fetch-by-path?filepath=documents/contracts/contract_2025.pdf" \
+      -H "Authorization: Bearer YOUR_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+## Request Parameters
+
+<ParamField query="filepath" type="string" required>
+  The path to the file within your organization's storage. This should match the path structure you used when uploading the file.
+  
+  Examples: 
+  - `"documents/invoice.pdf"`
+  - `"invoices/2025/january/invoice_001.pdf"`
+  - `"user-uploads/images/profile.jpg"`
+</ParamField>
+
+## Response Fields Explained
+
+<ResponseField name="success" type="boolean">
+  `true` if the file was retrieved successfully, `false` otherwise.
+</ResponseField>
+
+<ResponseField name="file" type="object">
+  An object containing all the file metadata and information.
+</ResponseField>
+
+<ResponseField name="file.id" type="string">
+  The unique identifier of the file.
+</ResponseField>
+
+<ResponseField name="file.filename" type="string">
+  The original name of the file when it was uploaded.
+</ResponseField>
+
+<ResponseField name="file.path" type="string">
+  The full path where the file is stored in your organization's storage.
+</ResponseField>
+
+<ResponseField name="file.size" type="integer">
+  The size of the file in bytes.
+</ResponseField>
+
+<ResponseField name="file.contentType" type="string">
+  The MIME type of the file (e.g., "application/pdf", "image/jpeg").
+</ResponseField>
+
+<ResponseField name="file.uploadedAt" type="string">
+  The timestamp when the file was originally uploaded (ISO 8601 format).
+</ResponseField>
+
+<ResponseField name="file.url" type="string">
+  A signed URL for downloading the file. This URL expires in 1 hour and provides secure access to the file.
+</ResponseField>
+
+## Example Response
+
+```json
+{
+  "success": true,
+  "file": {
+    "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "filename": "invoice_2025.pdf",
+    "path": "org_123/documents/invoices/invoice_2025.pdf",
+    "size": 245678,
+    "contentType": "application/pdf",
+    "uploadedAt": "2025-07-26T03:28:08.123Z",
+    "url": "https://storage.worqhat.com/org_123/documents/invoices/invoice_2025.pdf?signature=..."
+  }
+}
+```
+
+## Common Errors and How to Fix Them
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| "File not found" | The file path doesn't exist | Check that the file path is correct and the file exists |
+| "Invalid path format" | The path format is incorrect | Use proper path format without leading slashes |
+| "Unauthorized" | Invalid or missing API key | Check that you're using a valid API key |
+| "File access denied" | You don't have permission to access this file | Ensure the file belongs to your organization |
+
+## Tips for Successful File Retrieval by Path
+
+- **Use consistent path structures** when uploading files
+- **Remember the exact path** used during upload
+- **Use organized folder structures** for better file management
+- **Handle missing files gracefully** as paths might change
+- **Consider using file IDs** for more reliable file access
+- **Document your path conventions** for team consistency

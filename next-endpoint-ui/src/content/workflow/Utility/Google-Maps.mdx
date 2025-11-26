@@ -1,0 +1,169 @@
+**Category:** Utility
+**Type:** Integration
+
+---
+
+## Overview
+
+The **Google Maps Node** allows your workflow to connect with Google Maps services and retrieve various location-based data or features.
+This can include operations such as finding routes, geocoding addresses, fetching nearby places, or analyzing map data, depending on the selected option.
+
+It serves as a convenient bridge between your workflow and Google Maps functionalities without requiring direct API setup or code.
+
+---
+
+## Description
+
+The **Google Maps Node** enables you to use features of Google Maps within your workflow.
+You can select a specific function (like “get directions”, “find nearby places”, or “get distance”) through the `option` parameter.
+
+Once executed, this node interacts with Google Maps and returns structured results such as processing time, count, and a unique identifier for the request.
+It’s ideal for automating tasks that involve location lookup, distance calculation, travel planning, or region-based analysis.
+
+---
+
+## Input Parameters
+
+The **Google Maps Node** accepts the following input parameters:
+
+* **option** *(string, required)*
+  Defines which Google Maps feature or function you want to perform.
+  Examples:
+
+  * `"geocode"` – Convert address to coordinates.
+  * `"reverse-geocode"` – Convert coordinates to an address.
+  * `"get-directions"` – Retrieve route details between two points.
+  * `"get-distance"` – Calculate travel distance and duration.
+  * `"nearby-search"` – Find nearby locations or landmarks.
+
+**Notes:**
+
+* The value must be one of the supported options available in the integration.
+* The input must be clear and relevant to the desired operation (for example, “get-distance” requires location data).
+
+---
+
+## Output Parameters
+
+The node returns key details about the operation, which help in identifying and processing the result.
+
+* **processingCount** *(number)*
+  The number of items or results processed in the Google Maps request.
+
+* **processingTime** *(string)*
+  The total time taken to complete the Google Maps operation, expressed in an ISO timestamp or duration format.
+
+* **processingId** *(string)*
+  A unique identifier assigned to this specific Google Maps request, useful for debugging or tracking.
+
+---
+
+## Output Type
+
+**Output Type:** Text (Structured JSON Result)
+
+The output of this node is returned as structured text in JSON format, which may include location details, travel times, or place information depending on the `option` used.
+Downstream nodes can access these outputs using variables like:
+
+```
+{{googleMaps.output.processingCount}}
+{{googleMaps.output.processingTime}}
+{{googleMaps.output.processingId}}
+```
+
+---
+
+## Example Usage
+
+### Example 1: Get Coordinates from an Address
+
+```json
+{
+  "option": "geocode"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "processingCount": 1,
+  "processingTime": "2025-10-27T11:22:00Z",
+  "processingId": "gmaps-req-98213"
+}
+```
+
+---
+
+### Example 2: Calculate Distance Between Two Points
+
+```json
+{
+  "option": "get-distance"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "processingCount": 1,
+  "processingTime": "2025-10-27T11:23:00Z",
+  "processingId": "gmaps-req-12478"
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Google Maps Node**
+
+   * Drag and drop the **Google Maps Node** into your workflow under the “Utility” category.
+
+2. **Set the Option**
+
+   * In the node settings, specify what you want Google Maps to do by entering a value in the `option` field (e.g., `"get-distance"`).
+
+3. **Provide Supporting Data**
+
+   * If your selected option requires input (like addresses or coordinates), use previous nodes to supply those values.
+
+4. **Connect to Downstream Nodes**
+
+   * Pass the extracted or computed map information to another node (for example, display distance results in an email or store them in a database).
+
+5. **Test the Workflow**
+
+   * Run a test to verify that the Google Maps node executes correctly and returns the expected details.
+
+---
+
+## Best Practices
+
+* Always double-check the `option` value to ensure it matches the operation you intend to perform.
+* Combine this node with input nodes (like form submissions or database fetches) to dynamically provide location data.
+* Use the returned `processingId` for troubleshooting or tracking multiple map-related requests.
+* Ensure that your workflow has the necessary permissions or API access to interact with Google Maps services.
+* Use descriptive naming conventions for map-related nodes (e.g., “Get Office Distance” or “Locate Delivery Area”).
+
+---
+
+## Common Errors
+
+* **"Missing option"**
+  **Cause:** The `option` parameter was not provided.
+  **Solution:** Always specify a valid Google Maps function (e.g., `"geocode"`).
+
+* **"Invalid option value"**
+  **Cause:** The selected `option` is not supported.
+  **Solution:** Use one of the predefined supported values.
+
+* **"Request failed"**
+  **Cause:** The Google Maps API could not process the request due to invalid or missing data.
+  **Solution:** Verify that all required fields (like address or coordinates) are provided.
+
+* **"API connection error"**
+  **Cause:** Network or API authentication issues.
+  **Solution:** Check your API configuration or reconnect the Google Maps service.
+

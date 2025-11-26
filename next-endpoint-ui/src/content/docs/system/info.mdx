@@ -1,0 +1,97 @@
+---
+title: 'System Info'
+description: 'Get detailed information about the API system'
+---
+
+Get basic server information and status, including version, environment, and available features.
+
+```endpoint
+GET https://api.worqhat.com/
+```
+
+## Response
+
+<ResponseField name="name" type="string">
+  The name of the API service
+</ResponseField>
+
+<ResponseField name="version" type="string">
+  The current version of the API
+</ResponseField>
+
+<ResponseField name="environment" type="string">
+  The environment the API is running in (e.g., "production", "staging")
+</ResponseField>
+
+## Code Examples
+
+<Tabs>
+  <Tab title="Node.js" icon="js">
+    ```javascript
+    import Worqhat from 'worqhat';
+    
+    const client = new Worqhat({
+      apiKey: process.env.WORQHAT_API_KEY,
+    });
+    
+    const response = await client.getServerInfo();
+    console.log(response.environment);
+    ```
+  </Tab>
+  
+  <Tab title="Python" icon="python">
+    ```python
+    from worqhat import Worqhat
+    import os
+    
+    client = Worqhat(
+        api_key=os.environ.get("WORQHAT_API_KEY"),
+    )
+    response = client.get_server_info()
+    print(response.environment)
+    ```
+  </Tab>
+  
+  <Tab title="Go" icon="golang">
+    ```go
+    package main
+    
+    import (
+      "context"
+      "fmt"
+      "os"
+    
+      "github.com/WorqHat/worqhat-go-sdk"
+      "github.com/WorqHat/worqhat-go-sdk/option"
+    )
+    
+    func main() {
+      client := worqhat.NewClient(
+        option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
+      )
+      response, err := client.GetServerInfo(context.TODO())
+      if err != nil {
+        panic(err.Error())
+      }
+      fmt.Printf("%+v\n", response.Environment)
+    }
+    ```
+  </Tab>
+  
+  <Tab title="cURL" icon="terminal">
+    ```bash
+    curl -X GET "https://api.worqhat.com/" \
+      -H "Authorization: Bearer YOUR_API_KEY"
+    ```
+  </Tab>
+</Tabs>
+
+<ResponseExample>
+```json
+{
+  "name": "WorqHat API",
+  "version": "1.0.0",
+  "environment": "production"
+}
+```
+</ResponseExample>

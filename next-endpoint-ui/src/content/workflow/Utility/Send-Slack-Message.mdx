@@ -1,0 +1,124 @@
+**Category:** Communication
+**Type:** Utility
+
+---
+
+## Overview
+
+The **Send Slack Message** node posts messages to Slack via an incoming webhook.
+Use it to notify channels about events, errors, or summaries.
+
+---
+
+## Description
+
+Provide a Slack webhook URL and message content. Optionally pass blocks/attachments as JSON-encoded strings for rich formatting.
+
+---
+
+## Input Parameters
+
+- **webhookUrl**
+  Slack incoming webhook URL.
+
+- **username**
+  Optional display name to show as the message sender.
+
+- **message**
+  Main text content.
+
+- **attachments**
+  JSON-encoded Slack blocks/attachments for rich messages.
+
+**Notes:**
+
+- Provide flat key-value pairs; use JSON-encoded strings for complex fields.
+
+---
+
+## Output Parameters
+
+- **deliveryTime**
+  ISO timestamp of request completion.
+
+- **deliveryStatus**
+  `success` or `failed`.
+
+- **responseStatus**
+  HTTP status code.
+
+---
+
+## Output Type
+
+**Output Type:** JSON
+
+---
+
+## Example Usage
+
+**Input:**
+
+```json
+{
+  "webhookUrl": "https://hooks.slack.com/services/...",
+  "username": "Notifier Bot",
+  "message": "Daily report is ready.",
+  "attachments": "{\"blocks\":[{\"type\":\"section\",\"text\":{\"type\":\"mrkdwn\",\"text\":\"*Summary:* All systems operational.\"}}]}"
+}
+```
+
+**Expected Output:**
+
+```json
+{
+  "deliveryStatus": "success",
+  "responseStatus": 200
+}
+```
+
+---
+
+## How to Use in a No-Code Workflow
+
+1. **Add the Node**
+   Place the **Send Slack Message** node in your notification flow.
+
+2. **Map Inputs**
+   Provide `webhookUrl` and `message`, optionally pass blocks/attachments.
+
+3. **Check Outputs**
+   Confirm `deliveryStatus` and `responseStatus`.
+
+---
+
+## Best Practices
+
+- Prefer blocks for structured messages.
+- Do not include secrets in payloads.
+- Consider channel-specific webhooks for access control.
+
+---
+
+## Common Errors
+
+- **"invalid_payload"**
+  Ensure your JSON matches Slack's schema.
+
+- **"channel_not_found"**
+  Check webhook permissions and channel name.
+
+---
+
+## Create a Slack webhook URL
+
+- Visit the Slack API website at https://api.slack.com/.
+- Click on "Create New App" and select "From scratch."
+- Give your app a name and select the workspace where you want to install it.
+- In the app settings, find the "Incoming Webhooks" section and toggle it on to enable it.
+- Click on "Add New Webhook to Workspace."
+- Select the channel where the webhook will post messages and authorize the app.
+- After authorization, you'll be redirected back to the app settings where the new webhook URL will be displayed.
+- Copy this webhook URL to use it for sending messages to the selected Slack channel.
+
+---

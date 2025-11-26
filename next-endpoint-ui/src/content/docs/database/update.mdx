@@ -131,6 +131,10 @@ This example shows how to update records that match multiple conditions (both ID
       )
       
       // Update records in the database
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       response, err := client.DB.UpdateRecords(context.TODO(), worqhat.DBUpdateRecordsParams{
         Table: "users",                // The table to update
         Where: map[string]interface{}{ // Which records to update
@@ -141,7 +145,7 @@ This example shows how to update records that match multiple conditions (both ID
           "status": "active",         // Change status to active
           "name": "Updated Name",      // Update the name
         },
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors
@@ -272,6 +276,10 @@ This example shows how to update all records that match a single condition (stat
       )
       
       // Update all inactive users to active
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       response, err := client.DB.UpdateRecords(context.TODO(), worqhat.DBUpdateRecordsParams{
         Table: "users",                // The table to update
         Where: map[string]interface{}{ // Which records to update
@@ -281,7 +289,7 @@ This example shows how to update all records that match a single condition (stat
           "status": "active",         // Change status to active
           "updatedBy": "system",       // Add audit information
         },
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors

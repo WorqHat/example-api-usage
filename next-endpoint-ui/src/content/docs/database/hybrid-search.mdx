@@ -127,11 +127,15 @@ This example shows how to perform a hybrid search with default weights.
       )
       
       // Perform hybrid search
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       response, err := client.DB.HybridSearch(context.TODO(), worqhat.DBHybridSearchParams{
         Query: "machine learning algorithms neural networks",
         Table: "products",
         Limit: 10,
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors

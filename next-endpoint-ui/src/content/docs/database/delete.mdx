@@ -260,7 +260,7 @@ This example shows how to delete records that match multiple conditions.
       // Initialize the client with your API key
       client := worqhat.NewClient(
         option.WithAPIKey(os.Getenv("WORQHAT_API_KEY")),
-        option.WithEnvironment(os.Getenv("WORQHAT_ENVIRONMENT", "production")),  // Defaults to production
+        option.WithEnvironment(getEnvOrDefault("WORQHAT_ENVIRONMENT", "production")),  // Defaults to production
       )
       
       // Get date from 30 days ago

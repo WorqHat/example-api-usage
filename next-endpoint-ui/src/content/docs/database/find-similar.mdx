@@ -127,13 +127,17 @@ This example shows how to find records similar to a specific product.
       )
       
       // Find similar records
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       response, err := client.DB.FindSimilar(context.TODO(), worqhat.DBFindSimilarParams{
         Table: "products",
         RecordID: "123",
         Limit: 10,
         Threshold: 0.7,
         ExcludeSelf: true,
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors

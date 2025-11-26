@@ -613,7 +613,7 @@ Implement robust error handling for common file-related issues:
           // Handle specific API errors
           switch (error.status) {
             case 413:
-              console.error('File too large. Maximum size is 100MB.');
+              console.error('File too large. Maximum size is 50MB.');
               break;
             case 415:
               console.error('Unsupported file type.');
@@ -669,7 +669,7 @@ Implement robust error handling for common file-related issues:
         except APIError as e:
             # Handle specific API errors
             if e.status == 413:
-                print("File too large. Maximum size is 100MB.")
+                print("File too large. Maximum size is 50MB.")
             elif e.status == 415:
                 print("Unsupported file type.")
             elif e.status == 400:

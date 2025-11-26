@@ -41,6 +41,7 @@ This example shows how to upload a file with an auto-generated path.
   <Tab title="Node.js" icon="js">
     ```javascript
     import Worqhat from 'worqhat';
+    import fs from 'fs';
     
     // Initialize the client with your API key
     const client = new Worqhat({
@@ -49,14 +50,13 @@ This example shows how to upload a file with an auto-generated path.
     
     async function uploadDocument() {
       try {
-        // Create FormData for file upload
-        const formData = new FormData();
-        const fileInput = document.querySelector('input[type="file"]');
-        formData.append('file', fileInput.files[0]);
+        // Read a local file from disk (Node.js environment)
+        const filePath = './document.pdf';
+        const fileStream = fs.createReadStream(filePath);
         
         // Call the uploadFile method
         const response = await client.storage.uploadFile({
-          file: fileInput.files[0],
+          file: fileStream,
           path: 'documents/' // Optional custom path
         });
         
@@ -174,6 +174,7 @@ This example shows how to upload a file to a specific organized path.
   <Tab title="Node.js" icon="js">
     ```javascript
     import Worqhat from 'worqhat';
+    import fs from 'fs';
     
     // Initialize the client with your API key
     const client = new Worqhat({
@@ -182,6 +183,9 @@ This example shows how to upload a file to a specific organized path.
     
     async function uploadInvoice() {
       try {
+        // Open the invoice file from disk
+        const invoiceFile = fs.createReadStream('./invoice_001.pdf');
+        
         // Upload invoice to organized path
         const response = await client.storage.uploadFile({
           file: invoiceFile,

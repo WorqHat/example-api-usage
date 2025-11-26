@@ -146,9 +146,13 @@ This example shows how to execute a simple natural language query to retrieve ac
       )
       
       // Execute natural language query
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       response, err := client.DB.ProcessNlQuery(context.TODO(), worqhat.DBProcessNlQueryParams{
         Question: "How many active users do we have?",
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors

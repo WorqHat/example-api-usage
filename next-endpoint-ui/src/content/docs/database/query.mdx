@@ -128,13 +128,17 @@ This example shows how to execute a simple SQL query using named parameters to s
       )
       
       // Execute SQL query with named parameters
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       response, err := client.DB.ExecuteQuery(context.TODO(), worqhat.DBExecuteQueryParams{
         Query: "SELECT * FROM users WHERE status = {status} LIMIT {limit}",
         Params: map[string]interface{}{
           "status": "active",
           "limit": 10,
         },
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors
@@ -374,13 +378,15 @@ This example shows how to use both named and positional parameters in the same q
         api_key=os.environ.get("WORQHAT_API_KEY"),
     )
     
-    # Search users with mixed parameters
+    # Search users with mixed-style parameters (all passed as named params)
     try:
         response = client.db.execute_query(
-            query="SELECT * FROM users WHERE status = {status} AND created_at >= $1 ORDER BY {sort_by} LIMIT $2",
+            query="SELECT * FROM users WHERE status = {status} AND created_at >= {created_after} ORDER BY {sort_by} LIMIT {limit}",
             params={
                 "status": "active",
-                "sort_by": "created_at"
+                "sort_by": "created_at",
+                "created_after": "2025-01-01",
+                "limit": 10,
             },
             environment=os.environ.get("WORQHAT_ENVIRONMENT", "production")  # Defaults to production
         )

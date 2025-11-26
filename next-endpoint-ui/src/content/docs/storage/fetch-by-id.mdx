@@ -260,7 +260,7 @@ This example shows how to fetch a file and then download it.
       defer downloadResp.Body.Close()
       
       // Save the file locally
-      file, err := os.Create(f"./downloads/{response.File.Filename}")
+      file, err := os.Create(fmt.Sprintf("./downloads/%s", response.File.Filename))
       if err != nil {
         fmt.Printf("Error creating file: %s\n", err.Error())
         return

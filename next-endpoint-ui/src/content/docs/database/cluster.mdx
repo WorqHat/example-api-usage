@@ -138,10 +138,14 @@ This example shows how to automatically cluster products with optimal cluster de
       )
       
       // Cluster products
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       response, err := client.DB.Cluster(context.TODO(), worqhat.DBClusterParams{
         Table: "products",
         GenerateLabels: true,
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors

@@ -127,12 +127,16 @@ This example shows how to generate recommendations based on a specific item.
       )
       
       // Generate recommendations
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       response, err := client.DB.Recommend(context.TODO(), worqhat.DBRecommendParams{
         Table: "products",
         RecordID: "123",
         Strategy: "similar",
         Limit: 10,
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors
@@ -262,6 +266,10 @@ This example shows how to generate recommendations based on a user's interaction
       // Generate recommendations based on user history
       userHistory := []string{"123", "456", "789"}
       excludeIDs := []string{"123", "456"}
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       
       response, err := client.DB.Recommend(context.TODO(), worqhat.DBRecommendParams{
         Table: "products",
@@ -269,7 +277,7 @@ This example shows how to generate recommendations based on a user's interaction
         Strategy: "similar",
         Limit: 15,
         ExcludeIDs: excludeIDs,  // Exclude items user already interacted with
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors
@@ -398,13 +406,17 @@ This example shows how to generate diverse recommendations to avoid filter bubbl
       
       // Generate diverse recommendations
       userHistory := []string{"art_1", "art_2", "art_3"}
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       
       response, err := client.DB.Recommend(context.TODO(), worqhat.DBRecommendParams{
         Table: "articles",
         UserHistory: userHistory,
         Strategy: "diverse",  // Use diverse strategy
         Limit: 20,
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors

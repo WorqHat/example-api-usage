@@ -128,6 +128,10 @@ This example shows how to insert a record with an auto-generated documentId.
       )
       
       // Insert a new record
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       response, err := client.DB.InsertRecord(context.TODO(), worqhat.DBInsertRecordParams{
         Table: "users",            // The table to insert into
         Data: map[string]interface{}{ // The data to insert
@@ -136,7 +140,7 @@ This example shows how to insert a record with an auto-generated documentId.
           "role": "user",
           "active": true,
         },
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors
@@ -277,6 +281,10 @@ This example shows how to insert a record with a custom documentId that you spec
       customID := "prod_" + strconv.FormatInt(time.Now().Unix(), 10)
       
       // Insert a record with custom documentId
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       response, err := client.DB.InsertRecord(context.TODO(), worqhat.DBInsertRecordParams{
         Table: "products",         // The table to insert into
         Data: map[string]interface{}{ // The data to insert
@@ -286,7 +294,7 @@ This example shows how to insert a record with a custom documentId that you spec
           "inStock": true,
           "category": "electronics",
         },
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors
@@ -465,10 +473,14 @@ This example shows how to insert multiple records at once by providing an array 
       }
       
       // Insert multiple records at once
+      env := os.Getenv("WORQHAT_ENVIRONMENT")
+      if env == "" {
+        env = "production"
+      }
       response, err := client.DB.InsertRecord(context.TODO(), worqhat.DBInsertRecordParams{
         Table: "products",         // The table to insert into
         Data:  productsData,       // Array of data objects to insert
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: env, // Defaults to production
       })
       
       // Handle errors

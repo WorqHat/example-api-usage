@@ -15,6 +15,21 @@ import AccordionGroup, { Accordion } from "@/components/AccordionGroup";
 import Note, { Warning } from "@/components/Note";
 import ResponseExample from "@/components/ResponseExample";
 import { createSlugger } from "@/lib/slugger";
+import {
+  CodeBlock,
+  CodeBlockBody,
+  CodeBlockContent,
+  CodeBlockCopyButton,
+  CodeBlockFiles,
+  CodeBlockHeader,
+  CodeBlockItem,
+  CodeBlockFilename,
+  CodeBlockSelect,
+  CodeBlockSelectContent,
+  CodeBlockSelectItem,
+  CodeBlockSelectTrigger,
+  CodeBlockSelectValue,
+} from "@/components/CodeBlock";
 
 type DocsPageProps = {
   params: Promise<{ slug: string[] }>;
@@ -73,7 +88,7 @@ function createMDXComponents(generateId: (text: string) => string) {
       );
     },
     p: (props: React.HTMLAttributes<HTMLParagraphElement>) => (
-      <p className="mb-4 leading-7 text-white/80" {...props} />
+      <p className="leading-7 text-white/80" {...props} />
     ),
     a: (props: React.AnchorHTMLAttributes<HTMLAnchorElement>) => (
       <a
@@ -90,6 +105,19 @@ function createMDXComponents(generateId: (text: string) => string) {
     li: (props: React.HTMLAttributes<HTMLLIElement>) => (
       <li className="mb-2" {...props} />
     ),
+    CodeBlock,
+    CodeBlockBody,
+    CodeBlockContent,
+    CodeBlockCopyButton,
+    CodeBlockFiles,
+    CodeBlockHeader,
+    CodeBlockItem,
+    CodeBlockFilename,
+    CodeBlockSelect,
+    CodeBlockSelectContent,
+    CodeBlockSelectItem,
+    CodeBlockSelectTrigger,
+    CodeBlockSelectValue,
   };
 }
 

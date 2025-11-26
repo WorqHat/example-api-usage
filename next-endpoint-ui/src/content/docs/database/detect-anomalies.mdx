@@ -118,6 +118,13 @@ This example shows how to detect anomalies in a transactions table.
       "github.com/WorqHat/worqhat-go-sdk/option"
     )
     
+    func getEnvOrDefault(key, defaultValue string) string {
+      if value := os.Getenv(key); value != "" {
+        return value
+      }
+      return defaultValue
+    }
+    
     func main() {
       // Initialize the client with your API key
       client := worqhat.NewClient(
@@ -130,7 +137,7 @@ This example shows how to detect anomalies in a transactions table.
         K: 10,
         Threshold: 0.8,
         Limit: 50,
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: getEnvOrDefault("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
       })
       
       // Handle errors

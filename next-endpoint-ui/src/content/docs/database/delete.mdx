@@ -113,6 +113,14 @@ This example shows how to delete records that match a single condition.
       "github.com/WorqHat/worqhat-go-sdk"
       "github.com/WorqHat/worqhat-go-sdk/option"
     )
+
+    func getEnvOrDefault(key, defaultValue string) string {
+      if value := os.Getenv(key); value != "" {
+        return value
+      }
+      return defaultValue
+    }
+    
     
     func main() {
       // Initialize the client with your API key
@@ -126,7 +134,7 @@ This example shows how to delete records that match a single condition.
         Where: map[string]interface{}{ // The condition to match records
           "status": "inactive",
         },
-        Environment: os.Getenv("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
+        Environment: getEnvOrDefault("WORQHAT_ENVIRONMENT", "production"), // Defaults to production
       })
       
       // Handle errors

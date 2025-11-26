@@ -1,0 +1,172 @@
+---
+title: "KYC Document Parsing & Verification Workflow"
+date: "Jan 2026"
+tags:
+  - FINTECH
+  - ONBOARDING
+  - OPERATIONS
+authors:
+  - name: "Ayush Kulshreshtha"
+    username: "ayush"
+description: "Ready-made WorqHat Template to automate KYC document parsing, structured field extraction, and duplicate detection for fintech onboarding workflows."
+ogImage: ""
+videoUrl: ""
+videoPoster: ""
+videoDescription: ""
+---
+
+# KYC Document Parsing & Verification Workflow
+
+A fintech onboarding team replaced their manual KYC process with a WorqHat workflow that reads an uploaded ID card, extracts structured fields, checks for existing customers, and stores new entries automatically.
+
+Result:
+
+- Zero manual data entry
+- Instant duplicate detection
+- Consistent KYC records across the system
+
+## Previous State
+
+Customer uploads ID →
+
+Agent downloads file →
+
+OCR in a third-party tool →
+
+Manual copy/paste →
+
+CRM update →
+
+Duplicate check (manual) →
+
+Approval
+
+Average processing time: **8–12 minutes per ID.**
+
+Error-prone. Slow. Impossible to scale.
+
+## Target State
+
+A 7-node WorqHat workflow completes KYC parsing in **under 3 seconds.**
+
+## Workflow Breakdown
+
+### 1. File Upload Trigger
+
+**Purpose:** Accept ID card images (Aadhaar, PAN, DL).
+
+**Input:** `file`
+
+**Output:** File object for OCR.
+
+### 2. Text Extraction (OCR)
+
+**Purpose:** Convert the uploaded image into raw machine-readable text.
+
+**Input:** `attachments: {{file}}`
+
+**Output:** `content` (raw OCR text)
+
+### 3. Text Generation (Structuring AI)
+
+**Purpose:** Turn raw OCR text into a clean, predictable JSON block.
+
+**Prompt:**
+
+"Extract the Name, ID Number, and DOB from this raw OCR text:
+
+`{{text-extraction.output.content}}`.
+
+Return JSON only."
+
+**Output (JSON):**
+
+```json
+{
+  "name": "...",
+  "idNumber": "...",
+  "dob": "..."
+}
+```
+
+### 4. Query Data (Duplicate Detection)
+
+**Purpose:** Check if the extracted `idNumber` already exists.
+
+**Query:**
+
+```
+find customers with ID Number {{structuredData.idNumber}}
+```
+
+**Output:** `records[]`
+
+### 5. If-Else Condition
+
+**Condition:**
+
+- `records[] isEmpty` → New Customer
+- `else` → Existing Customer
+
+Routes workflow accordingly.
+
+### 6. Add New Data (When New Customer)
+
+**Collection:** `Customers`
+
+**Fields Saved:**
+
+- `name`
+- `idNumber`
+- `dob`
+- `fileUrl` (original uploaded image)
+
+### 7. Return State
+
+#### New Customer Branch
+
+```json
+{
+  "status": 200,
+  "message": "Verification Successful",
+  "data": "{{structuredData}}"
+}
+```
+
+#### Existing Customer Branch
+
+```json
+{
+  "status": "error",
+  "message": "User Exists"
+}
+```
+
+## Outcomes
+
+- **KYC processing time reduced from 10 mins to under ~3 seconds**
+- **Consistent field extraction across ID formats**
+- **Eliminated manual entry errors**
+- **Automatic DB hygiene via duplicate detection**
+- **Instant feedback for onboarding flows & customer portals**
+
+## Recommended Extensions
+
+- Add confidence scoring to flag low-quality OCR scans
+- Auto-notify compliance team for mismatched or suspicious IDs
+- Attach extracted JSON + file URL to a CRM pipeline
+- Add Text-to-Speech for voice-based onboarding flows
+
+## Next Steps
+
+This pattern can power any high-volume verification pipeline:
+
+- Seller onboarding
+- Loan document verification
+- Insurance KYC
+- University admissions
+- HR background checks
+
+Build it once → reuse everywhere.
+
+👉 **Install this template in WorqHat and ship KYC automation in minutes.**

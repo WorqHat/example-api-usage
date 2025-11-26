@@ -2,6 +2,7 @@ import PageLayout from "@/components/PageLayout";
 import DocsLayout from "@/components/DocsLayout";
 import { getDocContent, getDocById, docSections } from "@/lib/docs";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import { notFound } from "next/navigation";
 import MDXCodeBlock from "@/components/MDXCodeBlock";
 import ParamField from "@/components/ParamField";
@@ -105,6 +106,41 @@ function createMDXComponents(generateId: (text: string) => string) {
     li: (props: React.HTMLAttributes<HTMLLIElement>) => (
       <li className="mb-2" {...props} />
     ),
+    table: ({ children, ...props }: React.HTMLAttributes<HTMLTableElement>) => (
+      <div className="my-6 w-full overflow-x-auto">
+        <table className="w-full border-collapse rounded-lg border border-white/10 bg-black/50" {...props}>
+          {children}
+        </table>
+      </div>
+    ),
+    thead: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
+      <thead className="bg-black/40" {...props}>
+        {children}
+      </thead>
+    ),
+    tbody: ({ children, ...props }: React.HTMLAttributes<HTMLTableSectionElement>) => (
+      <tbody {...props}>
+        {children}
+      </tbody>
+    ),
+    tr: ({ children, ...props }: React.HTMLAttributes<HTMLTableRowElement>) => (
+      <tr className="border-b border-white/10 last:border-b-0 hover:bg-white/5" {...props}>
+        {children}
+      </tr>
+    ),
+    th: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
+      <th
+        className="px-4 py-3 text-left text-sm font-semibold text-white"
+        {...props}
+      >
+        {children}
+      </th>
+    ),
+    td: ({ children, ...props }: React.HTMLAttributes<HTMLTableCellElement>) => (
+      <td className="px-4 py-3 text-sm text-white/80" {...props}>
+        {children}
+      </td>
+    ),
     CodeBlock,
     CodeBlockBody,
     CodeBlockContent,
@@ -174,7 +210,15 @@ export default async function DocsSlugPage({ params }: DocsPageProps) {
         title={docTitle}
         segment={doc.segment}
       >
-        <MDXRemote source={content} components={customComponents} />
+        <MDXRemote 
+          source={content} 
+          components={customComponents}
+          options={{
+            mdxOptions: {
+              remarkPlugins: [remarkGfm],
+            },
+          }}
+        />
       </DocsLayout>
     </PageLayout>
   );

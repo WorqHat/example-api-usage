@@ -1085,8 +1085,13 @@ func main() {
 
 ## Example Response
 
-```json
-{
+<CodeBlock
+  defaultValue="json"
+  data={[
+    {
+      language: "json",
+      filename: "response.json",
+      code: `{
   "success": true,
   "anomalies": [
     {
@@ -1130,8 +1135,72 @@ func main() {
     "threshold": 0.8
   },
   "executionTime": 1247
-}
-```
+}`,
+    },
+  ]}
+>
+  <CodeBlockHeader>
+    <CodeBlockFiles>
+      <CodeBlockFilename value="json">
+        response.json
+      </CodeBlockFilename>
+    </CodeBlockFiles>
+
+    <CodeBlockCopyButton />
+  </CodeBlockHeader>
+
+  <CodeBlockBody>
+    <CodeBlockItem value="json">
+      <CodeBlockContent language="json">
+        {`{
+  "success": true,
+  "anomalies": [
+    {
+      "record": {
+        "id": "txn_123",
+        "amount": 50000.00,
+        "currency": "USD",
+        "merchant": "Unknown",
+        "location": "Remote"
+      },
+      "anomaly_score": 0.923,
+      "avg_distance": 0.456,
+      "nearest_neighbors": [
+        {
+          "record": {
+            "id": "txn_456",
+            "amount": 25.50,
+            "currency": "USD",
+            "merchant": "Coffee Shop",
+            "location": "Local"
+          },
+          "distance": 0.234
+        },
+        {
+          "record": {
+            "id": "txn_789",
+            "amount": 15.75,
+            "currency": "USD",
+            "merchant": "Restaurant",
+            "location": "Local"
+          },
+          "distance": 0.312
+        }
+      ]
+    }
+  ],
+  "total_records": 1000,
+  "anomaly_count": 15,
+  "parameters": {
+    "k": 10,
+    "threshold": 0.8
+  },
+  "executionTime": 1247
+}`}
+      </CodeBlockContent>
+    </CodeBlockItem>
+  </CodeBlockBody>
+</CodeBlock>
 
 ## Common Errors and How to Fix Them
 

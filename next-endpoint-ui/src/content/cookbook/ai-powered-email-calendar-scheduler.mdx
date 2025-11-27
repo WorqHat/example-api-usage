@@ -1,0 +1,168 @@
+---
+title: "AI-Powered Email → Calendar Scheduler"
+date: "Nov 2025"
+tags:
+  - AUTOMATION
+  - PRODUCTIVITY
+  - PERSONAL ASSISTANT
+authors:
+  - name: "Ayush Kulshreshtha"
+    username: "ayush"
+description: "Ready-made WorqHat Template that turns your inbox into a personal executive assistant, automatically reading emails, detecting meeting requests, and booking them on Google Calendar."
+ogImage: ""
+videoUrl: ""
+videoPoster: ""
+videoDescription: ""
+---
+
+# AI-Powered Email → Calendar Scheduler
+
+This workflow automates one of the most frustrating productivity drains: scheduling meetings.
+
+Instead of manually parsing emails, figuring out dates, and creating calendar events — this workflow does all of it in seconds.
+
+It:
+
+- Understands natural language like "next Tuesday afternoon"
+- Extracts meeting details
+- Creates the calendar invite
+- Emails the person back with a confirmation
+
+All with zero human involvement.
+
+## Previous State
+
+Email arrives → you read it → interpret the date → look up your calendar → create event → send confirmation → repeat for every person.
+
+Outcome:
+
+Slow, repetitive, error-prone, and mentally draining.
+
+## Target State
+
+A fully hands-free automation pipeline:
+
+- Email arrives
+- AI reads and extracts meeting details
+- Validates intent
+- Books the right slot
+- Sends confirmation
+- You stay focused on deep work
+
+## Workflow Breakdown
+
+### 1. Email Trigger
+
+**Purpose:** Start the workflow when a new email arrives.
+
+The trigger captures:
+
+- Sender
+- Subject
+- Body text
+- HTML content
+- Timestamp
+
+This becomes the core input for the AI.
+
+### 2. Text Generation (AI Meeting Parser)
+
+**Purpose:** Understand whether the email is a meeting request and extract all required details.
+
+**Extracted JSON fields:**
+
+- `is_meeting` (boolean)
+- `event_title`
+- `start_time` (ISO 8601)
+- `duration` (minutes)
+- `agenda`
+
+The AI converts vague language ("tomorrow morning", "sometime next Friday") into exact timestamps.
+
+### 3. If-Else Condition
+
+**Logic:**
+
+- `IF is_meeting == true` → continue to booking
+- `ELSE` → stop workflow
+
+This prevents the system from scheduling random or spam emails.
+
+### 4. Calendar (Add Event)
+
+**Purpose:** Create the event in your Google Calendar.
+
+**Event includes:**
+
+- Title
+- Start time
+- End time
+- Description (includes original email)
+- Attendee (email sender)
+- Google Meet link (optional)
+
+This becomes your official meeting invite.
+
+### 5. Send Mail (Confirmation Email)
+
+**To:** The sender
+
+**Subject:** `Confirmed: {{event_title}}`
+
+**Body:** Friendly confirmation with:
+
+- Date & time
+- Duration
+- Brief agenda
+
+They immediately get the invite + a confirmation.
+
+### 6. Return State
+
+**Final output confirming:**
+
+```json
+{
+  "status": "success",
+  "message": "Meeting scheduled successfully."
+}
+```
+
+If not a meeting request:
+
+```json
+{
+  "status": "success",
+  "message": "No valid meeting request found."
+}
+```
+
+## Outcomes
+
+- 100% automated meeting scheduling
+- Zero back-and-forth emails
+- Reduced cognitive load
+- Consistent, error-free invites
+- Real-time confirmations sent to sender
+
+This effectively becomes your AI executive assistant, available 24/7.
+
+## Recommended Extensions
+
+- Add conflict detection using Calendar: Fetch Events
+- Add reminder emails ("Your meeting starts in 30 minutes")
+- Add multi-language meeting replies
+- Create a multi-person scheduling flow ("Find a common slot for 3 people")
+
+## Next Steps
+
+Use this pattern to automate any email-based scheduling workflow:
+
+- Interview scheduling
+- Client consultation booking
+- Team standup coordination
+- Automated appointment confirmations
+
+Build it once → never manually schedule again.
+
+👉 **Install this template in WorqHat and transform your inbox into an AI assistant.**

@@ -1,0 +1,180 @@
+---
+title: "Competitor & Market Intelligence Monitor Workflow"
+date: "Nov 2025"
+tags:
+  - MARKETING
+  - STRATEGY
+  - GTM
+  - COMPETITIVE INTEL
+authors:
+  - name: "Ayush Kulshreshtha"
+    username: "ayush"
+description: "Ready-made WorqHat Template for automated weekly competitor intelligence gathering, web search, AI summarization, and consolidated report delivery to strategy teams."
+ogImage: ""
+videoUrl: ""
+videoPoster: ""
+videoDescription: ""
+---
+
+# Competitor & Market Intelligence Monitor Workflow
+
+Most companies track competitors manually: reading blogs, scrolling social media, checking for new releases, and monitoring product updates.
+
+It's inconsistent, time-consuming, and easy to forget.
+
+This workflow replaces all of that with a weekly intelligence engine:
+
+- Fetches your competitor list
+- Searches for relevant updates
+- Uses AI to summarize the findings
+- Compiles a clean digest
+- Sends it automatically
+
+Leadership receives actionable insights without anyone doing manual research.
+
+## Previous State
+
+Occasional Googling →
+
+Outdated competitor docs →
+
+Lost announcements →
+
+No single source of truth →
+
+Zero cadence
+
+Result:
+
+Inconsistent intelligence. Missed competitive moves. No systematic tracking.
+
+## Target State
+
+A predictable, automated intelligence loop:
+
+- Weekly insights delivered on time
+- Structured competitor updates
+- Single consolidated report
+- Zero manual research required
+
+## Workflow Breakdown
+
+### 1. Time Based Runs
+
+**Purpose:** Schedule the intelligence sweep.
+
+**Example:** Every Monday at 09:00.
+
+This ensures the team gets updates at a predictable cadence.
+
+### 2. Fetch Data (Competitors Table)
+
+**Purpose:** Retrieve your full competitor list.
+
+**Example output:**
+
+```json
+[{ "name": "abc" }, { "name": "xyz" }, { "name": "pqr" }]
+```
+
+Every competitor moves through the loop.
+
+### 3. For Loop (Iterate Competitors)
+
+**Purpose:** Run research steps per competitor.
+
+Each iteration receives a single competitor's name.
+
+### 4. Web Search (Inside Loop)
+
+**Purpose:** Gather the latest public information.
+
+**Query format:**
+
+```
+{{competitor.name}} latest news features releases
+```
+
+**Output includes:**
+
+- Headlines
+- URLs
+- Snippets
+- Dates
+
+### 5. Text Generation (Inside Loop)
+
+**Purpose:** Summarize findings into clean intelligence.
+
+**Prompt:**
+
+```
+Summarize key updates for {{competitor.name}} using these search results: {{webSearch.summary}}.
+
+Return 3 concise bullet points.
+```
+
+The result becomes one competitor's update block.
+
+### 6. Handle Variable (Accumulate Summaries)
+
+**Purpose:** Combine all summaries into one digest.
+
+**Example final output:**
+
+- abc: 3 key updates
+- xyz: 3 key updates
+- pqr: 3 key updates
+
+### 7. Send Mail (After Loop)
+
+**Purpose:** Deliver the full report to the strategy or leadership team.
+
+**Email subject:**
+
+```
+Weekly Market Intelligence Report
+```
+
+**HTML body includes the consolidated summaries.**
+
+### 8. Return State
+
+**Purpose:** Provide a clean workflow status output.
+
+```json
+{
+  "status": "success",
+  "message": "Weekly intelligence report delivered",
+  "competitorsProcessed": 3
+}
+```
+
+## Outcomes
+
+- Consistent weekly competitive intelligence
+- Zero manual research required
+- Search + Summaries fully automated
+- Leadership always staying ahead
+- Growing historical competitor archive
+
+## Recommended Extensions
+
+- Auto-create a Notion page per week
+- Add sentiment scoring for each competitor update
+- Highlight "red flag" competitor moves (via AI)
+- Create a Slack version of the digest
+- Track feature launches and categorize them
+
+## Next Steps
+
+Use this pattern to automate any periodic intelligence gathering:
+
+- Industry news monitoring
+- Customer feedback aggregation
+- Market trend analysis
+- Product launch tracking
+
+Build it once → stay ahead of the competition automatically.
+
+👉 **Install this template in WorqHat and transform your competitive intelligence operations.**

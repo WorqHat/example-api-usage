@@ -1,0 +1,168 @@
+---
+title: "Smart EMI Collections with Dynamic Tone"
+date: "Nov 2025"
+tags:
+  - FINTECH
+  - COLLECTIONS
+  - OPERATIONS
+authors:
+  - name: "Ayush Kulshreshtha"
+    username: "ayush"
+description: "Ready-made WorqHat Template to automate EMI collection reminders with AI-driven tone adjustment based on payment delay severity for higher recovery rates."
+ogImage: ""
+videoUrl: ""
+videoPoster: ""
+videoDescription: ""
+---
+
+# Smart EMI Collections with Dynamic Tone
+
+A digital lending team replaced generic payment reminders with a WorqHat workflow that tailors the tone of every EMI message based on days overdue.
+
+Business impact:
+
+- Polite nudges for fresh delays
+- Firm reminders for mid-cycle delays
+- Legal-tone escalation for chronic defaults
+- Higher collection rates with better customer experience
+
+The entire pipeline runs automatically every morning.
+
+## Previous State
+
+Support team manually scanned overdue loans →
+
+Checked how late each payment was →
+
+Copy-pasted different template messages →
+
+Sent WhatsApp reminders individually
+
+Result:
+
+Slow. Inconsistent. Zero personalization. Lower recovery rates.
+
+## Target State
+
+A 7-node automated WorqHat workflow handles the entire collection cycle:
+
+- Calculates delay for each customer
+- Classifies tone based on severity
+- Generates the correct message tone via AI
+- Sends the WhatsApp message instantly
+- Runs daily with no agents involved.
+
+## Workflow Breakdown
+
+### 1. Time Based Runs (Trigger)
+
+**Purpose:** Start the collection routine every day at 10 AM.
+
+**Output:** Initiates the pipeline.
+
+### 2. Query Data (Fetch Overdue Loans)
+
+**Query:**
+
+```
+payment_status == "Overdue"
+```
+
+**Output:** Array of overdue loans
+
+(loan amount, customer name, phone, due_date, etc.)
+
+### 3. For Loop (Process Each Loan Individually)
+
+Iterates through each overdue record retrieved.
+
+Provides loop context for loan-specific processing.
+
+### 4. Custom Node (Calculate Days Overdue)
+
+**Logic:**
+
+```
+days_overdue = Today – due_date
+```
+
+**Output:** Integer days late
+
+### 5. Dynamic Tone Logic
+
+Instead of multiple branches, this workflow uses one AI prompt that adapts tone internally based on `days_overdue`.
+
+**Tone categories:**
+
+- 1–7 days: Polite
+- 8–30 days: Firm
+- 30+ days: Stern / Legal
+
+### 6. Text Generation (Draft Message)
+
+**Prompt:**
+
+```
+Write a personalized WhatsApp reminder for {{name}} about the overdue payment of {{amount}}.
+
+Payment is {{days_overdue}} days late.
+
+Tone rules:
+
+- 1–7 days → polite
+- 8–30 days → firm
+- 30+ days → urgent, mention credit score impact.
+```
+
+**Output:** Final WhatsApp message text.
+
+### 7. Send WhatsApp (Deliver Reminder)
+
+**Input:**
+
+- `phoneNumber` → borrower's phone
+- `message` → AI-generated content
+
+Sends the message instantly.
+
+### 8. Return State
+
+**Output:**
+
+```json
+{
+  "status": "success",
+  "message": "Collection run completed",
+  "data": "total overdue accounts processed"
+}
+```
+
+## Outcomes
+
+- Higher repayment rates through tone-matched messaging
+- Zero manual chasing for support teams
+- Consistency at scale — new defaults handled instantly
+- Improved customer experience with contextual communication
+- Automated escalation without rewriting templates
+
+## Recommended Extensions
+
+- Add auto-escalation notifications to internal collections team
+- Add payment link generation per message
+- Add multi-language AI messaging (English/Hinglish/Regional)
+- Add AI categorization of chronic defaulters
+
+## Next Steps
+
+Use this pattern to automate any periodic behavioral messaging:
+
+- Invoice reminders
+- Subscription renewals
+- Maintenance alerts
+- Policy expiries
+
+Simple rule:
+
+If tone needs to change with time — automate it.
+
+👉 **Install this template in WorqHat and upgrade your collections workflow.**

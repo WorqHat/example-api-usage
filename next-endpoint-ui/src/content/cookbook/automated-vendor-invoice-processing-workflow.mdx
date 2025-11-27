@@ -1,0 +1,158 @@
+---
+title: "Automated Vendor Invoice Processing Workflow"
+date: "Nov 2025"
+tags:
+  - FINANCE
+  - OPERATIONS
+  - ACCOUNTS PAYABLE
+authors:
+  - name: "Ayush Kulshreshtha"
+    username: "ayush"
+description: "Ready-made WorqHat Template to automate vendor invoice processing from email ingestion to structured database storage with OCR extraction and finance team notifications."
+ogImage: ""
+videoUrl: ""
+videoPoster: ""
+videoDescription: ""
+---
+
+# Automated Vendor Invoice Processing Workflow
+
+Finance teams routinely lose hours each week manually reading invoice PDFs and typing totals into spreadsheets or ERPs.
+
+This workflow automates that process completely:
+
+- Reads the attached PDF
+- Extracts text via OCR
+- Uses AI to pull key fields
+- Saves the invoice in a structured database
+- Alerts the finance team instantly
+
+Once set up, your AP pipeline becomes fully hands-free.
+
+## Previous State
+
+Vendor emails → PDF attached → manual reading → data entry → Slack ping someone → update tracker → repeat.
+
+Issues:
+
+- Time-consuming
+- Error-prone
+- No audit trail
+- Slow approvals
+
+## Target State
+
+A deterministic, transparent, automated pipeline:
+
+- Invoices arrive
+- OCR reads PDF
+- AI extracts Invoice No, Vendor, Amount, Due Date
+- Data enters DB with "Pending Approval"
+- Finance gets a notification instantly
+
+Consistent, fast, and reliable.
+
+## Workflow Breakdown
+
+### 1. Email Trigger
+
+**Purpose:** Start whenever a vendor sends an invoice email.
+
+**Captures:**
+
+- Sender
+- Subject
+- Body
+- PDF attachment
+
+This becomes the entry point for invoice processing.
+
+### 2. Text Extraction (OCR)
+
+**Purpose:** Convert the PDF invoice into raw readable text.
+
+**Inputs:** PDF file from the email trigger
+
+**Outputs:** Raw text block containing invoice details
+
+This prepares the data for AI interpretation.
+
+### 3. Text Generation (AI Parsing)
+
+**Purpose:** Convert messy extracted text into clean, structured JSON.
+
+**Extracted fields:**
+
+- `invoiceNumber`
+- `vendorName`
+- `totalAmount`
+- `dueDate`
+
+The AI handles inconsistencies across vendor templates and formats.
+
+### 4. Add New Data (Database Entry)
+
+**Purpose:** Store structured invoice data in the database.
+
+**Sample row added:**
+
+| invoiceNumber | vendorName | totalAmount | dueDate    | status           |
+| ------------- | ---------- | ----------- | ---------- | ---------------- |
+| INV-20391     | Acme Corp  | 1,250.00    | 2025-11-14 | Pending Approval |
+
+This becomes your single source of truth for all invoices.
+
+### 5. Send Discord/Slack Message
+
+**Purpose:** Notify the finance team instantly.
+
+**Message Format:**
+
+```
+🧾 New Invoice Received
+
+Vendor: {{vendorName}}
+Amount: ${{totalAmount}}
+Status: Pending Approval
+```
+
+Ensures finance never misses an incoming invoice.
+
+### 6. Return State
+
+**Final output indicating successful processing.**
+
+```json
+{
+  "status": "success",
+  "message": "Invoice processed and stored successfully"
+}
+```
+
+## Outcomes
+
+- Hours saved weekly on manual AP work
+- Clean, structured invoice records
+- Instant notifications for approval
+- Better compliance and audit trail
+- Zero manual data entry
+
+## Recommended Extensions
+
+- Auto-approve invoices below a certain amount
+- Add a "Duplicate Invoice" check
+- Sync with Tally / Zoho Books / QuickBooks
+- Add a reminder workflow ("Invoice due in 3 days")
+
+## Next Steps
+
+Use this pattern to automate any document processing pipeline:
+
+- Purchase order processing
+- Receipt extraction and categorization
+- Contract parsing and storage
+- Expense report automation
+
+Build it once → eliminate manual data entry forever.
+
+👉 **Install this template in WorqHat and streamline your accounts payable operations.**
